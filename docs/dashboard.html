@@ -10,6 +10,7 @@
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/help.js"></script>
   <style>
     body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
     ::-webkit-scrollbar { width: 6px; }
@@ -162,6 +163,59 @@
           </div>
           <p class="text-gray-400 text-xs mt-3 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> Operational</p>
         </div>
+      </div>
+
+      <!-- Lab Workflow Guide -->
+      <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-gray-900 font-semibold text-sm">Lab Workflow</h3>
+            <p class="text-gray-400 text-xs mt-0.5">Follow these 5 steps for every patient visit</p>
+          </div>
+          <span class="text-xs text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full font-medium border border-blue-100">Quick Guide</span>
+        </div>
+        <div class="flex items-stretch gap-2 overflow-x-auto pb-1">
+          <a href="patients.html" class="flex-1 min-w-[130px] flex flex-col items-center text-center p-3 rounded-xl border-2 border-blue-100 bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-all group">
+            <div class="w-9 h-9 bg-blue-100 group-hover:bg-blue-200 rounded-xl flex items-center justify-center mb-2 transition-colors">
+              <i class="fas fa-users text-blue-600 text-sm"></i>
+            </div>
+            <span class="text-xs font-bold text-blue-700 leading-tight">1. Register</span>
+            <span class="text-xs text-blue-500 leading-tight">Patient</span>
+          </a>
+          <div class="flex items-center text-gray-300 flex-shrink-0"><i class="fas fa-chevron-right text-xs"></i></div>
+          <a href="samples.html" class="flex-1 min-w-[130px] flex flex-col items-center text-center p-3 rounded-xl border-2 border-green-100 bg-green-50 hover:border-green-400 hover:bg-green-100 transition-all group">
+            <div class="w-9 h-9 bg-green-100 group-hover:bg-green-200 rounded-xl flex items-center justify-center mb-2 transition-colors">
+              <i class="fas fa-vial text-green-600 text-sm"></i>
+            </div>
+            <span class="text-xs font-bold text-green-700 leading-tight">2. Receive</span>
+            <span class="text-xs text-green-500 leading-tight">Sample</span>
+          </a>
+          <div class="flex items-center text-gray-300 flex-shrink-0"><i class="fas fa-chevron-right text-xs"></i></div>
+          <a href="orders.html" class="flex-1 min-w-[130px] flex flex-col items-center text-center p-3 rounded-xl border-2 border-amber-100 bg-amber-50 hover:border-amber-400 hover:bg-amber-100 transition-all group">
+            <div class="w-9 h-9 bg-amber-100 group-hover:bg-amber-200 rounded-xl flex items-center justify-center mb-2 transition-colors">
+              <i class="fas fa-clipboard-list text-amber-600 text-sm"></i>
+            </div>
+            <span class="text-xs font-bold text-amber-700 leading-tight">3. Order</span>
+            <span class="text-xs text-amber-500 leading-tight">Tests</span>
+          </a>
+          <div class="flex items-center text-gray-300 flex-shrink-0"><i class="fas fa-chevron-right text-xs"></i></div>
+          <a href="results.html" class="flex-1 min-w-[130px] flex flex-col items-center text-center p-3 rounded-xl border-2 border-purple-100 bg-purple-50 hover:border-purple-400 hover:bg-purple-100 transition-all group">
+            <div class="w-9 h-9 bg-purple-100 group-hover:bg-purple-200 rounded-xl flex items-center justify-center mb-2 transition-colors">
+              <i class="fas fa-chart-bar text-purple-600 text-sm"></i>
+            </div>
+            <span class="text-xs font-bold text-purple-700 leading-tight">4. Enter</span>
+            <span class="text-xs text-purple-500 leading-tight">Results</span>
+          </a>
+          <div class="flex items-center text-gray-300 flex-shrink-0"><i class="fas fa-chevron-right text-xs"></i></div>
+          <a href="reports.html" class="flex-1 min-w-[130px] flex flex-col items-center text-center p-3 rounded-xl border-2 border-rose-100 bg-rose-50 hover:border-rose-400 hover:bg-rose-100 transition-all group">
+            <div class="w-9 h-9 bg-rose-100 group-hover:bg-rose-200 rounded-xl flex items-center justify-center mb-2 transition-colors">
+              <i class="fas fa-file-medical text-rose-600 text-sm"></i>
+            </div>
+            <span class="text-xs font-bold text-rose-700 leading-tight">5. Print</span>
+            <span class="text-xs text-rose-500 leading-tight">Report</span>
+          </a>
+        </div>
+        <p class="text-gray-400 text-xs mt-3 text-center">Click any step to go there &middot; <button onclick="localStorage.removeItem('enigma_tour_done');location.reload()" class="text-blue-500 hover:text-blue-600 underline underline-offset-2">Replay onboarding tour</button></p>
       </div>
 
       <!-- Charts -->
@@ -401,6 +455,8 @@
     }
 
     loadDashboard();
+    Help.init('dashboard');
+    Help.startTour();
   </script>
 </body>
 </html>
