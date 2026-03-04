@@ -182,15 +182,28 @@ async def general_exception_handler(request, exc):
 # ROOT ENDPOINT
 # ============================================================================
 
-@app.get("/")
+@app.get("/api")
 def root():
-    """Root endpoint"""
+    """Root API endpoint"""
     return {
         "message": "Welcome to Kotli LIMS",
         "docs": "/api/docs",
         "health": "/api/health",
         "info": "/api/info"
     }
+
+
+# ============================================================================
+# STATIC FILE SERVING — Offline EXE mode
+# Set LIMS_FRONTEND_DIR env var to enable (done by launcher.py)
+# ============================================================================
+
+import os as _os
+_frontend_dir = _os.environ.get('LIMS_FRONTEND_DIR')
+if _frontend_dir and _os.path.exists(_frontend_dir):
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="static")
+    logger.info(f"Serving frontend from: {_frontend_dir}")
 
 
 # ============================================================================

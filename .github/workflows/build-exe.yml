@@ -1,0 +1,48 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller==6.3.0
+
+      - name: Build EnigmaLIMS.exe
+        run: pyinstaller enigma_lims.spec
+
+      - name: Verify build output
+        run: |
+          if (Test-Path "dist/EnigmaLIMS.exe") {
+            $size = (Get-Item "dist/EnigmaLIMS.exe").Length / 1MB
+            Write-Host "Build successful! EnigmaLIMS.exe size: $([math]::Round($size, 1)) MB"
+          } else {
+            Write-Error "Build failed - EnigmaLIMS.exe not found"
+            exit 1
+          }
+
+      - name: Upload EXE as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EnigmaLIMS-Windows-${{ github.sha }}
+          path: dist/EnigmaLIMS.exe
+          retention-days: 30
+          if-no-files-found: error
