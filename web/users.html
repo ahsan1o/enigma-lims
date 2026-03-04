@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users - Enigma LIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    .nav-item.active { background-color: #2563eb !important; color: white !important; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    select option { background:#1e293b; color:#f1f5f9; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col flex-shrink-0">
+    <div class="p-5 border-b border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-flask text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="text-white font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+    </nav>
+    <div class="p-4 border-t border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-slate-400 text-xs" id="userRole">Administrator</div>
+        </div>
+        <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout">
+          <i class="fas fa-sign-out-alt text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="bg-slate-800 border-b border-slate-700 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <div>
+        <h1 class="text-white font-bold text-xl">Users</h1>
+        <p class="text-slate-400 text-xs mt-0.5">Manage system users and access control</p>
+      </div>
+      <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+        <i class="fas fa-user-plus"></i> Add User
+      </button>
+    </div>
+
+    <div class="p-6">
+      <!-- Search + count -->
+      <div class="flex items-center gap-3 mb-5">
+        <div class="relative flex-1 max-w-sm">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+          <input id="searchInput" type="text" placeholder="Search users…" oninput="handleSearch(this.value)"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-4 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+        </div>
+        <span class="text-slate-500 text-sm ml-auto" id="userCount"></span>
+      </div>
+
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-700">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">User</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Contact</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Login</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="6" class="px-5 py-12 text-center text-slate-500 text-sm">
+                <i class="fas fa-spinner fa-spin mr-2"></i>Loading users…
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ADD / EDIT USER MODAL -->
+  <div id="userModal" class="modal-overlay">
+    <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-lg border border-slate-700 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-white font-bold text-lg" id="modalTitle">Add User</h3>
+        <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <form id="userForm" class="space-y-4">
+        <input type="hidden" id="uId">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Username <span class="text-red-400">*</span></label>
+            <input id="uUsername" type="text" required placeholder="johnsmith"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">
+              Password <span class="text-red-400" id="pwRequired">*</span>
+            </label>
+            <input id="uPassword" type="password" placeholder="••••••••"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+            <p id="pwHint" class="text-slate-600 text-xs mt-1 hidden">Leave blank to keep current</p>
+          </div>
+          <div class="col-span-2">
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Full Name <span class="text-red-400">*</span></label>
+            <input id="uFullName" type="text" required placeholder="John Smith"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Email</label>
+            <input id="uEmail" type="email" placeholder="john@lab.com"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Phone</label>
+            <input id="uPhone" type="tel" placeholder="+92-300-0000000"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+          </div>
+          <div class="col-span-2">
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Role <span class="text-red-400">*</span></label>
+            <select id="uRole" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none">
+              <option value="">Select role…</option>
+              <option value="admin">Administrator</option>
+              <option value="supervisor">Supervisor</option>
+              <option value="technician">Technician</option>
+              <option value="doctor">Doctor</option>
+            </select>
+          </div>
+        </div>
+        <div id="userError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button type="submit" id="userBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+            <i class="fas fa-user-plus" id="userBtnIcon"></i>
+            <span id="userBtnText">Create User</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    if (!Auth.requireAuth()) throw new Error('not logged in');
+
+    // Admin-only guard
+    const currentUser = Auth.getUser();
+    if (currentUser && currentUser.role !== 'admin') {
+      window.location.href = 'dashboard.html';
+    }
+
+    document.querySelectorAll('.nav-item').forEach(link => {
+      if (link.getAttribute('href') === 'users.html') {
+        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-slate-300');
+      }
+    });
+
+    if (currentUser) {
+      document.getElementById('userName').textContent = currentUser.full_name || currentUser.username;
+      document.getElementById('userRole').textContent = (currentUser.role||'').charAt(0).toUpperCase()+(currentUser.role||'').slice(1);
+      document.getElementById('userAvatar').textContent = (currentUser.full_name||currentUser.username||'A').charAt(0).toUpperCase();
+    }
+
+    function showToast(msg, type='success') {
+      const colors={success:'bg-green-600',error:'bg-red-600',warning:'bg-amber-600',info:'bg-blue-600'};
+      const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+      const t = document.createElement('div');
+      t.className = `pointer-events-all flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white text-sm font-medium ${colors[type]||colors.info} border border-white/10`;
+      t.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+    }
+
+    function roleBadge(role) {
+      const map = {
+        admin:      ['#a855f7','#2e1065'],
+        supervisor: ['#3b82f6','#1e3a8a'],
+        technician: ['#22c55e','#052e16'],
+        doctor:     ['#14b8a6','#042f2e']
+      };
+      const k = (role||'').toLowerCase();
+      const [fg,bg] = map[k] || ['#64748b','#1e293b'];
+      const lbl = k.charAt(0).toUpperCase()+k.slice(1);
+      return `<span style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${lbl||'—'}</span>`;
+    }
+
+    function activeStatusBadge(isActive) {
+      if (!isActive) {
+        return `<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:#1f2937;color:#6b7280;border:1px solid #6b728044;"><i class="fas fa-circle" style="font-size:.45rem;"></i>Inactive</span>`;
+      }
+      return `<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:#052e16;color:#22c55e;border:1px solid #22c55e44;"><i class="fas fa-circle" style="font-size:.45rem;"></i>Active</span>`;
+    }
+
+    function formatDateTime(d) {
+      if(!d) return '—';
+      try { return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+      catch(e){ return d; }
+    }
+
+    let allUsers = [];
+
+    function handleSearch(val) {
+      const q = val.toLowerCase();
+      renderTable(allUsers.filter(u =>
+        (u.username||'').toLowerCase().includes(q) ||
+        (u.full_name||'').toLowerCase().includes(q) ||
+        (u.email||'').toLowerCase().includes(q) ||
+        (u.role||'').toLowerCase().includes(q)
+      ));
+    }
+
+    function renderTable(list) {
+      document.getElementById('userCount').textContent = `${list.length} user${list.length!==1?'s':''}`;
+      const tbody = document.getElementById('usersBody');
+      if (!list.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="6" class="px-5 py-16 text-center">
+            <i class="fas fa-users text-4xl text-slate-700 mb-3 block"></i>
+            <p class="text-slate-400 font-medium">No users found</p>
+            <p class="text-slate-600 text-sm mt-1">Add the first system user to get started</p>
+            <button onclick="openAddModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <i class="fas fa-user-plus mr-1"></i>Add User
+            </button>
+          </td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(u => {
+        const initials = (u.full_name||u.username||'U').split(' ').map(w=>w[0]||'').join('').substring(0,2).toUpperCase();
+        const avatarColors = {admin:'background:#7c3aed',supervisor:'background:#2563eb',technician:'background:#16a34a',doctor:'background:#0d9488'};
+        const avatarStyle = avatarColors[(u.role||'').toLowerCase()] || 'background:#475569';
+        const isSelf = currentUser && u.id === currentUser.id;
+        const isActive = u.is_active !== false && u.active !== false;
+        return `
+          <tr class="border-b border-slate-700/50 hover:bg-slate-700/20 transition-colors">
+            <td class="px-5 py-3.5">
+              <div class="flex items-center gap-3">
+                <div style="${avatarStyle}" class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initials}</div>
+                <div>
+                  <div class="text-white text-sm font-medium flex items-center gap-1.5">
+                    ${u.full_name||'—'}
+                    ${isSelf ? '<span class="text-blue-400 text-xs font-normal">(you)</span>' : ''}
+                  </div>
+                  <div class="text-slate-500 text-xs font-mono">@${u.username||'—'}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3.5">
+              <div class="text-slate-300 text-sm">${u.email||'—'}</div>
+              <div class="text-slate-500 text-xs">${u.phone||''}</div>
+            </td>
+            <td class="px-4 py-3.5">${roleBadge(u.role)}</td>
+            <td class="px-4 py-3.5">${activeStatusBadge(isActive)}</td>
+            <td class="px-4 py-3.5 text-slate-500 text-xs">${formatDateTime(u.last_login||u.last_active)}</td>
+            <td class="px-4 py-3.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <button onclick='openEditModal(${JSON.stringify(u)})'
+                  class="bg-slate-700 hover:bg-blue-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                ${!isSelf ? `
+                <button onclick="toggleStatus(${u.id}, ${isActive})"
+                  class="${isActive
+                    ? 'bg-amber-900/30 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-700/40 hover:border-amber-600'
+                    : 'bg-green-900/30 hover:bg-green-600 text-green-400 hover:text-white border border-green-700/40 hover:border-green-600'
+                  } px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+                  <i class="fas ${isActive ? 'fa-ban' : 'fa-check-circle'}"></i>
+                  ${isActive ? 'Disable' : 'Enable'}
+                </button>` : ''}
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function loadUsers() {
+      document.getElementById('usersBody').innerHTML = `
+        <tr><td colspan="6" class="px-5 py-12 text-center text-slate-500 text-sm">
+          <i class="fas fa-spinner fa-spin mr-2"></i>Loading users…
+        </td></tr>`;
+      try {
+        const data = await API.getUsers();
+        allUsers = Array.isArray(data) ? data : (data?.items||[]);
+        renderTable(allUsers);
+      } catch(e) {
+        document.getElementById('usersBody').innerHTML = `
+          <tr><td colspan="6" class="px-5 py-12 text-center text-red-400 text-sm">
+            <i class="fas fa-exclamation-circle mr-2"></i>${e.message}
+          </td></tr>`;
+        showToast('Failed to load users', 'error');
+      }
+    }
+
+    async function toggleStatus(id, currentlyActive) {
+      try {
+        await API.updateUser(id, { is_active: !currentlyActive });
+        showToast(`User ${currentlyActive ? 'disabled' : 'enabled'} successfully`);
+        loadUsers();
+      } catch(e) {
+        showToast(e.message || 'Failed to update user status', 'error');
+      }
+    }
+
+    let editMode = false;
+
+    function openAddModal() {
+      editMode = false;
+      document.getElementById('userForm').reset();
+      document.getElementById('uId').value = '';
+      document.getElementById('uUsername').disabled = false;
+      document.getElementById('uPassword').required = true;
+      document.getElementById('pwRequired').classList.remove('hidden');
+      document.getElementById('pwHint').classList.add('hidden');
+      document.getElementById('modalTitle').textContent = 'Add User';
+      document.getElementById('userBtnText').textContent = 'Create User';
+      document.getElementById('userBtnIcon').className = 'fas fa-user-plus';
+      document.getElementById('userError').classList.add('hidden');
+      document.getElementById('userModal').classList.add('open');
+    }
+
+    function openEditModal(u) {
+      editMode = true;
+      document.getElementById('userForm').reset();
+      document.getElementById('uId').value = u.id || '';
+      document.getElementById('uUsername').value = u.username || '';
+      document.getElementById('uUsername').disabled = true;
+      document.getElementById('uFullName').value = u.full_name || '';
+      document.getElementById('uEmail').value = u.email || '';
+      document.getElementById('uPhone').value = u.phone || '';
+      document.getElementById('uRole').value = u.role || '';
+      document.getElementById('uPassword').value = '';
+      document.getElementById('uPassword').required = false;
+      document.getElementById('pwRequired').classList.add('hidden');
+      document.getElementById('pwHint').classList.remove('hidden');
+      document.getElementById('modalTitle').textContent = 'Edit User';
+      document.getElementById('userBtnText').textContent = 'Update User';
+      document.getElementById('userBtnIcon').className = 'fas fa-save';
+      document.getElementById('userError').classList.add('hidden');
+      document.getElementById('userModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('userModal').classList.remove('open');
+      document.getElementById('uUsername').disabled = false;
+    }
+
+    document.getElementById('userForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('userError');
+      errEl.classList.add('hidden');
+
+      const payload = {
+        full_name: document.getElementById('uFullName').value.trim(),
+        email:     document.getElementById('uEmail').value.trim() || null,
+        phone:     document.getElementById('uPhone').value.trim() || null,
+        role:      document.getElementById('uRole').value
+      };
+
+      const pw = document.getElementById('uPassword').value;
+      if (!editMode) {
+        if (!pw) {
+          errEl.textContent = 'Password is required for new users';
+          errEl.classList.remove('hidden');
+          return;
+        }
+        payload.username = document.getElementById('uUsername').value.trim();
+        payload.password = pw;
+      } else if (pw) {
+        payload.password = pw;
+      }
+
+      const btn = document.getElementById('userBtn');
+      const icon = document.getElementById('userBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+
+      try {
+        if (editMode) {
+          const id = document.getElementById('uId').value;
+          await API.updateUser(id, payload);
+          showToast('User updated successfully');
+        } else {
+          await API.createUser(payload);
+          showToast('User created successfully');
+        }
+        closeModal();
+        loadUsers();
+      } catch(err) {
+        errEl.textContent = err.message || 'Operation failed';
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        icon.className = editMode ? 'fas fa-save' : 'fas fa-user-plus';
+      }
+    });
+
+    document.getElementById('userModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>

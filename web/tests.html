@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Catalog - Enigma LIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    .nav-item.active { background-color: #2563eb !important; color: white !important; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    select option { background:#1e293b; color:#f1f5f9; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col flex-shrink-0">
+    <div class="p-5 border-b border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-flask text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="text-white font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+    </nav>
+    <div class="p-4 border-t border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-slate-400 text-xs" id="userRole">Administrator</div>
+        </div>
+        <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout">
+          <i class="fas fa-sign-out-alt text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="bg-slate-800 border-b border-slate-700 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <div>
+        <h1 class="text-white font-bold text-xl">Test Catalog</h1>
+        <p class="text-slate-400 text-xs mt-0.5">Manage laboratory test definitions and reference ranges</p>
+      </div>
+      <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+        <i class="fas fa-plus"></i> Add Test
+      </button>
+    </div>
+
+    <div class="p-6">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="relative flex-1 max-w-md">
+          <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"><i class="fas fa-search text-sm"></i></div>
+          <input type="text" id="searchInput" placeholder="Search tests by name or code..." oninput="filterTests(this.value)"
+            class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none text-sm">
+        </div>
+        <span class="text-slate-500 text-sm" id="testCount"></span>
+      </div>
+
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-700">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Code</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Test Name</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Method</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Reference Range</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Instrument</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="testsBody">
+              <tr><td colspan="7" class="px-5 py-12 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading tests...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- TEST MODAL -->
+  <div id="testModal" class="modal-overlay">
+    <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-xl border border-slate-700 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-white font-bold text-lg" id="modalTitle">Add Test</h3>
+        <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <form id="testForm" class="space-y-4">
+        <input type="hidden" id="editId">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Test Code <span class="text-red-400">*</span></label>
+            <input type="text" id="tCode" placeholder="e.g., CBC, LFT, RFT" required
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Unit</label>
+            <input type="text" id="tUnit" placeholder="e.g., mg/dL, g/L, %"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div class="col-span-2">
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Test Name <span class="text-red-400">*</span></label>
+            <input type="text" id="tName" placeholder="Full test name" required
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div class="col-span-2">
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Description</label>
+            <textarea id="tDesc" placeholder="Test description..." rows="2"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Method</label>
+            <input type="text" id="tMethod" placeholder="e.g., Spectrophotometry"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Instrument</label>
+            <select id="tInstrument" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+              <option value="">None</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Reference Min</label>
+            <input type="number" step="any" id="tRefMin" placeholder="e.g., 3.5"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Reference Max</label>
+            <input type="number" step="any" id="tRefMax" placeholder="e.g., 5.5"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Critical Min</label>
+            <input type="number" step="any" id="tCritMin" placeholder="Critical low"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Critical Max</label>
+            <input type="number" step="any" id="tCritMax" placeholder="Critical high"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+        </div>
+        <div id="formError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+            <i class="fas fa-save" id="saveBtnIcon"></i>
+            <span id="saveBtnText">Save Test</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    if (!Auth.requireAuth()) throw new Error('not logged in');
+
+    document.querySelectorAll('.nav-item').forEach(link => {
+      if (link.getAttribute('href') === 'tests.html') {
+        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-slate-300');
+      }
+    });
+
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('userName').textContent = user.full_name || user.username;
+      document.getElementById('userRole').textContent = (user.role||'').charAt(0).toUpperCase()+(user.role||'').slice(1);
+      document.getElementById('userAvatar').textContent = (user.full_name||user.username||'A').charAt(0).toUpperCase();
+      if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
+    }
+
+    function showToast(msg, type='success') {
+      const colors={success:'bg-green-600',error:'bg-red-600',warning:'bg-amber-600',info:'bg-blue-600'};
+      const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+      const t = document.createElement('div');
+      t.className = `pointer-events-all flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white text-sm font-medium ${colors[type]||colors.info} border border-white/10`;
+      t.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+    }
+
+    let allTests = [], instrumentsList = [];
+
+    async function loadInstruments() {
+      try {
+        const data = await API.getInstruments();
+        instrumentsList = Array.isArray(data) ? data : (data?.items || []);
+        const sel = document.getElementById('tInstrument');
+        while (sel.options.length > 1) sel.remove(1);
+        instrumentsList.forEach(i => {
+          const opt = document.createElement('option');
+          opt.value = i.id;
+          opt.textContent = `${i.name} (${i.code||'—'})`;
+          sel.appendChild(opt);
+        });
+      } catch(e) { console.warn('Instruments not loaded', e); }
+    }
+
+    async function loadTests() {
+      try {
+        const data = await API.getTests();
+        allTests = Array.isArray(data) ? data : (data?.items || []);
+        renderTests(allTests);
+      } catch(e) {
+        document.getElementById('testsBody').innerHTML = `<tr><td colspan="7" class="px-5 py-12 text-center text-red-400 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>${e.message}</td></tr>`;
+        showToast('Failed to load tests', 'error');
+      }
+    }
+
+    function renderTests(tests) {
+      document.getElementById('testCount').textContent = `${tests.length} test${tests.length!==1?'s':''}`;
+      if (!tests.length) {
+        document.getElementById('testsBody').innerHTML = `
+          <tr><td colspan="7" class="px-5 py-16 text-center">
+            <i class="fas fa-microscope text-4xl text-slate-700 mb-3 block"></i>
+            <p class="text-slate-400 font-medium">No tests in catalog</p>
+            <p class="text-slate-600 text-sm mt-1">Add your first test to the catalog</p>
+            <button onclick="openAddModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <i class="fas fa-plus mr-1"></i>Add Test
+            </button>
+          </td></tr>`;
+        return;
+      }
+      document.getElementById('testsBody').innerHTML = tests.map(t => {
+        const refRange = (t.reference_min!=null && t.reference_max!=null) ? `${t.reference_min} – ${t.reference_max}` : (t.reference_range||'—');
+        const instrName = t.instrument_name || (instrumentsList.find(i=>i.id===t.instrument_id)?.name) || '—';
+        return `
+          <tr class="border-b border-slate-700/50 hover:bg-slate-700/20 transition-colors">
+            <td class="px-5 py-3.5">
+              <span class="font-mono text-blue-400 text-xs font-bold bg-blue-900/20 px-2 py-0.5 rounded">${t.test_code||t.code||'—'}</span>
+            </td>
+            <td class="px-4 py-3.5">
+              <div class="text-white font-medium text-sm">${t.test_name||t.name||'—'}</div>
+              <div class="text-slate-500 text-xs mt-0.5 line-clamp-1">${t.description||''}</div>
+            </td>
+            <td class="px-4 py-3.5 text-slate-400 text-sm">${t.method||'—'}</td>
+            <td class="px-4 py-3.5 text-slate-300 text-sm font-mono text-xs">${t.unit||'—'}</td>
+            <td class="px-4 py-3.5 text-slate-300 text-xs font-mono">${refRange} ${t.unit||''}</td>
+            <td class="px-4 py-3.5 text-slate-400 text-sm">${instrName}</td>
+            <td class="px-4 py-3.5">
+              <button onclick='openEditModal(${JSON.stringify(t)})' class="p-1.5 rounded-lg bg-amber-500/15 text-amber-400 hover:bg-amber-500/30 transition-colors" title="Edit">
+                <i class="fas fa-pencil text-xs"></i>
+              </button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function filterTests(q) {
+      const s = q.toLowerCase();
+      renderTests(allTests.filter(t =>
+        (t.test_name||t.name||'').toLowerCase().includes(s) ||
+        (t.test_code||t.code||'').toLowerCase().includes(s)
+      ));
+    }
+
+    function openAddModal() {
+      document.getElementById('modalTitle').textContent = 'Add New Test';
+      document.getElementById('saveBtnText').textContent = 'Save Test';
+      document.getElementById('testForm').reset();
+      document.getElementById('editId').value = '';
+      document.getElementById('formError').classList.add('hidden');
+      document.getElementById('testModal').classList.add('open');
+    }
+
+    function openEditModal(t) {
+      document.getElementById('modalTitle').textContent = 'Edit Test';
+      document.getElementById('saveBtnText').textContent = 'Update Test';
+      document.getElementById('editId').value = t.id;
+      document.getElementById('tCode').value = t.test_code||t.code||'';
+      document.getElementById('tName').value = t.test_name||t.name||'';
+      document.getElementById('tDesc').value = t.description||'';
+      document.getElementById('tMethod').value = t.method||'';
+      document.getElementById('tUnit').value = t.unit||'';
+      document.getElementById('tRefMin').value = t.reference_min??'';
+      document.getElementById('tRefMax').value = t.reference_max??'';
+      document.getElementById('tCritMin').value = t.critical_min??'';
+      document.getElementById('tCritMax').value = t.critical_max??'';
+      document.getElementById('tInstrument').value = t.instrument_id||'';
+      document.getElementById('formError').classList.add('hidden');
+      document.getElementById('testModal').classList.add('open');
+    }
+
+    function closeModal() { document.getElementById('testModal').classList.remove('open'); }
+
+    document.getElementById('testForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const editId = document.getElementById('editId').value;
+      const errEl = document.getElementById('formError');
+      errEl.classList.add('hidden');
+
+      const payload = {
+        test_code: document.getElementById('tCode').value.trim().toUpperCase(),
+        test_name: document.getElementById('tName').value.trim(),
+        description: document.getElementById('tDesc').value.trim()||null,
+        method: document.getElementById('tMethod').value.trim()||null,
+        unit: document.getElementById('tUnit').value.trim()||null,
+        reference_min: document.getElementById('tRefMin').value ? parseFloat(document.getElementById('tRefMin').value) : null,
+        reference_max: document.getElementById('tRefMax').value ? parseFloat(document.getElementById('tRefMax').value) : null,
+        critical_min: document.getElementById('tCritMin').value ? parseFloat(document.getElementById('tCritMin').value) : null,
+        critical_max: document.getElementById('tCritMax').value ? parseFloat(document.getElementById('tCritMax').value) : null,
+        machine_id:   document.getElementById('tInstrument').value ? parseInt(document.getElementById('tInstrument').value) : null
+      };
+
+      const btn = document.getElementById('saveBtn');
+      const icon = document.getElementById('saveBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+
+      try {
+        if (editId) { await API.updateTest(editId, payload); showToast('Test updated'); }
+        else { await API.createTest(payload); showToast('Test added to catalog'); }
+        closeModal(); loadTests();
+      } catch(err) {
+        errEl.textContent = err.message||'Failed to save test';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-save'; }
+    });
+
+    document.getElementById('testModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+    loadInstruments(); loadTests();
+  </script>
+</body>
+</html>

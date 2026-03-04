@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Enigma LIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    .nav-item.active { background-color: #2563eb !important; color: white !important; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(.9)} }
+    .pulse-dot { animation: pulse-dot 2s ease infinite; }
+    @keyframes skelPulse { 0%,100%{opacity:.4} 50%{opacity:.7} }
+    .skel { animation: skelPulse 1.5s ease infinite; background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col flex-shrink-0" style="min-height:100vh">
+    <div class="p-5 border-b border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-flask text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="text-white font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+    </nav>
+    <div class="p-4 border-t border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-slate-400 text-xs" id="userRole">Administrator</div>
+        </div>
+        <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout">
+          <i class="fas fa-sign-out-alt text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="flex-1 overflow-y-auto">
+    <!-- Header -->
+    <div class="bg-slate-800 border-b border-slate-700 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <div>
+        <h1 class="text-white font-bold text-xl">Dashboard</h1>
+        <p class="text-slate-400 text-xs mt-0.5">Welcome back! Here's what's happening in your lab.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-slate-500 text-xs" id="lastUpdated"></span>
+        <button onclick="loadDashboard()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+          <i class="fas fa-sync-alt text-xs"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="p-6 space-y-6">
+
+      <!-- Stats row 1 -->
+      <div class="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 border-l-4 border-l-blue-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Patients</p>
+              <p class="text-3xl font-bold text-white mt-1" id="statPatients"><span class="skel inline-block w-12 h-8">&nbsp;</span></p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-blue-500/15 flex items-center justify-center">
+              <i class="fas fa-users text-blue-400 text-xl"></i>
+            </div>
+          </div>
+          <p class="text-slate-500 text-xs mt-3"><i class="fas fa-database text-slate-600 mr-1"></i>Registered in system</p>
+        </div>
+
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 border-l-4 border-l-green-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Samples Today</p>
+              <p class="text-3xl font-bold text-white mt-1" id="statSamples"><span class="skel inline-block w-10 h-8">&nbsp;</span></p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-green-500/15 flex items-center justify-center">
+              <i class="fas fa-vial text-green-400 text-xl"></i>
+            </div>
+          </div>
+          <p class="text-slate-500 text-xs mt-3"><i class="fas fa-calendar-day text-slate-600 mr-1"></i>Collected today</p>
+        </div>
+
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 border-l-4 border-l-amber-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Pending Results</p>
+              <p class="text-3xl font-bold text-white mt-1" id="statPending"><span class="skel inline-block w-8 h-8">&nbsp;</span></p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-amber-500/15 flex items-center justify-center">
+              <i class="fas fa-clock text-amber-400 text-xl"></i>
+            </div>
+          </div>
+          <p class="text-slate-500 text-xs mt-3 flex items-center gap-1"><span class="pulse-dot w-1.5 h-1.5 bg-amber-400 rounded-full inline-block"></span> Awaiting entry</p>
+        </div>
+
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 border-l-4 border-l-purple-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Completed Today</p>
+              <p class="text-3xl font-bold text-white mt-1" id="statCompleted"><span class="skel inline-block w-10 h-8">&nbsp;</span></p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-purple-500/15 flex items-center justify-center">
+              <i class="fas fa-check-circle text-purple-400 text-xl"></i>
+            </div>
+          </div>
+          <p class="text-slate-500 text-xs mt-3"><i class="fas fa-check text-green-400 mr-1"></i>Approved results</p>
+        </div>
+      </div>
+
+      <!-- Stats row 2 -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 border-l-4 border-l-cyan-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Tests Available</p>
+              <p class="text-3xl font-bold text-white mt-1" id="statTests"><span class="skel inline-block w-10 h-8">&nbsp;</span></p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/15 flex items-center justify-center">
+              <i class="fas fa-microscope text-cyan-400 text-xl"></i>
+            </div>
+          </div>
+          <p class="text-slate-500 text-xs mt-3"><i class="fas fa-list text-slate-600 mr-1"></i>In test catalog</p>
+        </div>
+
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 border-l-4 border-l-rose-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Active Instruments</p>
+              <p class="text-3xl font-bold text-white mt-1" id="statInstruments"><span class="skel inline-block w-8 h-8">&nbsp;</span></p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-rose-500/15 flex items-center justify-center">
+              <i class="fas fa-cogs text-rose-400 text-xl"></i>
+            </div>
+          </div>
+          <p class="text-slate-500 text-xs mt-3 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> Operational</p>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5">
+          <h3 class="text-white font-semibold text-sm mb-0.5">Sample Status Distribution</h3>
+          <p class="text-slate-500 text-xs mb-4">Breakdown of all sample statuses</p>
+          <div style="height:220px;display:flex;align-items:center;justify-content:center;">
+            <canvas id="sampleStatusChart"></canvas>
+          </div>
+        </div>
+
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5">
+          <h3 class="text-white font-semibold text-sm mb-0.5">Results by Status</h3>
+          <p class="text-slate-500 text-xs mb-4">Distribution of result outcomes</p>
+          <div style="height:220px;">
+            <canvas id="resultStatusChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <!-- Recent samples -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-700">
+            <h3 class="text-white font-semibold text-sm flex items-center gap-2">
+              <i class="fas fa-vial text-green-400"></i> Recent Samples
+            </h3>
+            <a href="samples.html" class="text-blue-400 text-xs hover:text-blue-300 transition-colors">
+              View all <i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </a>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-slate-700">
+                  <th class="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Sample ID</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Type</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentSamplesBody">
+                <tr><td colspan="4" class="px-5 py-8 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent results -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-700">
+            <h3 class="text-white font-semibold text-sm flex items-center gap-2">
+              <i class="fas fa-chart-bar text-purple-400"></i> Recent Results
+            </h3>
+            <a href="results.html" class="text-blue-400 text-xs hover:text-blue-300 transition-colors">
+              View all <i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </a>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-slate-700">
+                  <th class="px-5 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Test</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Value</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentResultsBody">
+                <tr><td colspan="4" class="px-5 py-8 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    if (!Auth.requireAuth()) throw new Error('not logged in');
+
+    // Highlight active nav
+    const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+    document.querySelectorAll('.nav-item').forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.classList.add('bg-blue-600', 'text-white');
+        link.classList.remove('text-slate-300');
+      }
+    });
+
+    // Set user info
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('userName').textContent = user.full_name || user.username;
+      document.getElementById('userRole').textContent = (user.role || '').charAt(0).toUpperCase() + (user.role || '').slice(1);
+      document.getElementById('userAvatar').textContent = (user.full_name || user.username || 'A').charAt(0).toUpperCase();
+      if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
+    }
+
+    // Status badge helpers
+    function statusBadge(s) {
+      const map = {
+        pending: ['#f59e0b','#431407'], testing: ['#3b82f6','#1e3a8a'],
+        completed: ['#22c55e','#052e16'], approved: ['#a855f7','#2e1065'],
+        rejected: ['#ef4444','#450a0a']
+      };
+      const k = (s||'').toLowerCase();
+      const [fg, bg] = map[k] || ['#64748b','#1e293b'];
+      const label = k.charAt(0).toUpperCase() + k.slice(1);
+      return `<span style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${label||'—'}</span>`;
+    }
+
+    function resultBadge(s) {
+      const map = {
+        normal: ['#22c55e','#052e16'], abnormal: ['#f59e0b','#431407'], critical: ['#ef4444','#450a0a']
+      };
+      const k = (s||'').toLowerCase();
+      const [fg, bg] = map[k] || ['#64748b','#1e293b'];
+      const label = k === 'critical' ? 'CRITICAL' : k.charAt(0).toUpperCase() + k.slice(1);
+      return `<span style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:700;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${label||'—'}</span>`;
+    }
+
+    let sampleChart = null, resultChart = null;
+
+    function initCharts(stats) {
+      const s = stats || {};
+      Chart.defaults.color = '#94a3b8';
+
+      // Destroy existing
+      if (sampleChart) sampleChart.destroy();
+      if (resultChart) resultChart.destroy();
+
+      // Doughnut - Sample status
+      sampleChart = new Chart(document.getElementById('sampleStatusChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Pending', 'Testing', 'Completed', 'Approved'],
+          datasets: [{
+            data: [s.pending_samples||8, s.testing_samples||5, s.completed_samples||20, s.approved_samples||12],
+            backgroundColor: ['#f59e0b', '#3b82f6', '#22c55e', '#a855f7'],
+            borderColor: '#1e293b',
+            borderWidth: 3,
+            hoverOffset: 6
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '68%',
+          plugins: {
+            legend: { position: 'right', labels: { color: '#94a3b8', padding: 14, font: { size: 12 } } }
+          }
+        }
+      });
+
+      // Bar - Result status
+      resultChart = new Chart(document.getElementById('resultStatusChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: ['Normal', 'Abnormal', 'Critical'],
+          datasets: [{
+            label: 'Results',
+            data: [s.normal_results||42, s.abnormal_results||18, s.critical_results||6],
+            backgroundColor: ['rgba(34,197,94,.75)', 'rgba(245,158,11,.75)', 'rgba(239,68,68,.75)'],
+            borderColor: ['#16a34a', '#d97706', '#dc2626'],
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(71,85,105,.25)' } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(71,85,105,.25)' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    async function loadDashboard() {
+      try {
+        const [stats, samples, results] = await Promise.all([
+          API.getStats().catch(() => null),
+          API.getRecentSamples().catch(() => null),
+          API.getRecentResults().catch(() => null)
+        ]);
+
+        const s = stats || {};
+        document.getElementById('statPatients').textContent    = s.total_patients    ?? '—';
+        document.getElementById('statSamples').textContent     = s.samples_today     ?? '—';
+        document.getElementById('statPending').textContent     = s.pending_results   ?? '—';
+        document.getElementById('statCompleted').textContent   = s.completed_today   ?? '—';
+        document.getElementById('statTests').textContent       = s.total_tests       ?? '—';
+        document.getElementById('statInstruments').textContent = s.active_instruments ?? '—';
+
+        document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+        initCharts(s);
+
+        // Recent samples
+        const sb = document.getElementById('recentSamplesBody');
+        const sarr = Array.isArray(samples) ? samples : (samples?.items || []);
+        if (sarr.length) {
+          sb.innerHTML = sarr.slice(0, 6).map(s => `
+            <tr class="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+              <td class="px-5 py-3 font-mono text-blue-400 text-xs">${s.sample_id || s.id || '—'}</td>
+              <td class="px-4 py-3 text-slate-200 text-xs">${s.patient_name || '—'}</td>
+              <td class="px-4 py-3 text-xs"><span class="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-700 text-slate-300">${s.sample_type || '—'}</span></td>
+              <td class="px-4 py-3">${statusBadge(s.status)}</td>
+            </tr>`).join('');
+        } else {
+          sb.innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center"><div class="text-slate-600"><i class="fas fa-vial text-3xl mb-2 block opacity-40"></i><p class="text-sm text-slate-500">No recent samples</p></div></td></tr>`;
+        }
+
+        // Recent results
+        const rb = document.getElementById('recentResultsBody');
+        const rarr = Array.isArray(results) ? results : (results?.items || []);
+        if (rarr.length) {
+          rb.innerHTML = rarr.slice(0, 6).map(r => `
+            <tr class="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+              <td class="px-5 py-3 text-slate-200 text-xs">${r.test_name || r.test || '—'}</td>
+              <td class="px-4 py-3 font-mono text-white text-xs font-bold">${r.result_value ?? '—'}</td>
+              <td class="px-4 py-3 text-slate-400 text-xs">${r.unit || '—'}</td>
+              <td class="px-4 py-3">${resultBadge(r.status)}</td>
+            </tr>`).join('');
+        } else {
+          rb.innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center"><div class="text-slate-600"><i class="fas fa-chart-bar text-3xl mb-2 block opacity-40"></i><p class="text-sm text-slate-500">No recent results</p></div></td></tr>`;
+        }
+      } catch(err) {
+        console.error('Dashboard load error:', err);
+        initCharts({});
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

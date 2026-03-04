@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: enigma-lims-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python seed_data.py && uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+    disk:
+      name: lims-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

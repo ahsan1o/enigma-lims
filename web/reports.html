@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports - Enigma LIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    .nav-item.active { background-color: #2563eb !important; color: white !important; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    select option { background:#1e293b; color:#f1f5f9; }
+
+    @media print {
+      body > * { display: none !important; }
+      #printArea { display: block !important; position: static !important; background: white !important; color: #1e293b !important; padding: 2rem !important; }
+      #printArea * { color: #1e293b !important; border-color: #cbd5e1 !important; }
+      #printArea table th { background: #f1f5f9 !important; }
+    }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col flex-shrink-0">
+    <div class="p-5 border-b border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-flask text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="text-white font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+    </nav>
+    <div class="p-4 border-t border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-slate-400 text-xs" id="userRole">Administrator</div>
+        </div>
+        <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout">
+          <i class="fas fa-sign-out-alt text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="bg-slate-800 border-b border-slate-700 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <div>
+        <h1 class="text-white font-bold text-xl">Reports</h1>
+        <p class="text-slate-400 text-xs mt-0.5">View and print patient lab reports</p>
+      </div>
+      <span class="text-slate-500 text-sm" id="reportCount"></span>
+    </div>
+
+    <div class="p-6">
+      <!-- Search -->
+      <div class="relative max-w-sm mb-5">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+        <input id="searchInput" type="text" placeholder="Search by patient or sample ID…" oninput="handleSearch(this.value)"
+          class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-4 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+      </div>
+
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-700">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Sample ID</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Tests</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referring Doctor</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Collected</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+              </tr>
+            </thead>
+            <tbody id="reportsBody">
+              <tr><td colspan="7" class="px-5 py-12 text-center text-slate-500 text-sm">
+                <i class="fas fa-spinner fa-spin mr-2"></i>Loading reports…
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- REPORT VIEW MODAL -->
+  <div id="reportModal" class="modal-overlay">
+    <div class="bg-slate-800 rounded-2xl w-full max-w-3xl border border-slate-700 shadow-2xl max-h-[92vh] flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 flex-shrink-0">
+        <h3 class="text-white font-bold text-lg flex items-center gap-2">
+          <i class="fas fa-file-medical text-blue-400"></i>
+          <span>Lab Report</span>
+        </h3>
+        <div class="flex items-center gap-2">
+          <button onclick="printReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+            <i class="fas fa-print"></i> Print
+          </button>
+          <button onclick="closeReportModal()" class="text-slate-500 hover:text-white transition-colors p-1 ml-1">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+      </div>
+      <!-- Modal Body (scrollable) -->
+      <div id="reportContent" class="overflow-y-auto flex-1 p-6 space-y-5">
+        <!-- Dynamically filled -->
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT AREA (hidden except during print) -->
+  <div id="printArea" style="display:none;" class="p-8 bg-white text-gray-900"></div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    if (!Auth.requireAuth()) throw new Error('not logged in');
+
+    document.querySelectorAll('.nav-item').forEach(link => {
+      if (link.getAttribute('href') === 'reports.html') {
+        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-slate-300');
+      }
+    });
+
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('userName').textContent = user.full_name || user.username;
+      document.getElementById('userRole').textContent = (user.role||'').charAt(0).toUpperCase()+(user.role||'').slice(1);
+      document.getElementById('userAvatar').textContent = (user.full_name||user.username||'A').charAt(0).toUpperCase();
+      if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
+    }
+
+    function showToast(msg, type='success') {
+      const colors={success:'bg-green-600',error:'bg-red-600',warning:'bg-amber-600',info:'bg-blue-600'};
+      const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+      const t = document.createElement('div');
+      t.className = `pointer-events-all flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white text-sm font-medium ${colors[type]||colors.info} border border-white/10`;
+      t.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+    }
+
+    function statusBadge(s) {
+      const map = {
+        pending:['#f59e0b','#431407'], testing:['#3b82f6','#1e3a8a'],
+        completed:['#22c55e','#052e16'], approved:['#a855f7','#2e1065']
+      };
+      const k = (s||'').toLowerCase().replace(/\s+/g,'_');
+      const [fg,bg] = map[k] || ['#64748b','#1e293b'];
+      const lbl = k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+      return `<span style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${lbl||'—'}</span>`;
+    }
+
+    function resultStatusBadge(s) {
+      const map = {
+        normal:  ['#22c55e','#052e16'],
+        abnormal:['#f59e0b','#431407'],
+        critical:['#ef4444','#450a0a']
+      };
+      const k = (s||'normal').toLowerCase();
+      const [fg,bg] = map[k] || map.normal;
+      return `<span style="display:inline-flex;align-items:center;padding:.15rem .5rem;font-size:.65rem;font-weight:700;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${k.charAt(0).toUpperCase()+k.slice(1)}</span>`;
+    }
+
+    function formatDateTime(d) {
+      if(!d) return '—';
+      try { return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+      catch(e){ return d; }
+    }
+
+    let allReports = [];
+
+    function handleSearch(val) {
+      const q = val.toLowerCase();
+      renderTable(allReports.filter(r =>
+        (r.patient_name||'').toLowerCase().includes(q) ||
+        (r.sample_id||'').toLowerCase().includes(q) ||
+        (r.patient_phone||'').includes(q)
+      ));
+    }
+
+    function renderTable(list) {
+      document.getElementById('reportCount').textContent = `${list.length} report${list.length!==1?'s':''}`;
+      const tbody = document.getElementById('reportsBody');
+      if (!list.length) {
+        tbody.innerHTML = `
+          <tr><td colspan="7" class="px-5 py-16 text-center">
+            <i class="fas fa-file-medical text-4xl text-slate-700 mb-3 block"></i>
+            <p class="text-slate-400 font-medium">No reports available</p>
+            <p class="text-slate-600 text-sm mt-1">Reports appear once samples are completed or approved</p>
+          </td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(r => {
+        const testCount = r.test_count != null ? r.test_count : (Array.isArray(r.tests) ? r.tests.length : null);
+        return `
+          <tr class="border-b border-slate-700/50 hover:bg-slate-700/20 transition-colors">
+            <td class="px-5 py-3.5 font-mono text-blue-400 text-xs font-bold">${r.sample_id||r.id||'—'}</td>
+            <td class="px-4 py-3.5">
+              <div class="text-white text-sm font-medium">${r.patient_name||'—'}</div>
+              <div class="text-slate-500 text-xs">${r.patient_phone||''}</div>
+            </td>
+            <td class="px-4 py-3.5 text-slate-400 text-sm">
+              ${testCount != null ? `<span class="text-white font-medium">${testCount}</span> test${testCount!==1?'s':''}` : '—'}
+            </td>
+            <td class="px-4 py-3.5 text-slate-400 text-sm">${r.doctor_name||r.referring_doctor||'—'}</td>
+            <td class="px-4 py-3.5 text-slate-500 text-xs">${formatDateTime(r.collected_at||r.created_at)}</td>
+            <td class="px-4 py-3.5">${statusBadge(r.status)}</td>
+            <td class="px-4 py-3.5">
+              <button onclick="openReport(${r.id})"
+                class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-600/40 hover:border-blue-600 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5">
+                <i class="fas fa-eye"></i> View
+              </button>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function loadReports() {
+      document.getElementById('reportsBody').innerHTML = `
+        <tr><td colspan="7" class="px-5 py-12 text-center text-slate-500 text-sm">
+          <i class="fas fa-spinner fa-spin mr-2"></i>Loading reports…
+        </td></tr>`;
+      try {
+        const data = await API.getReports();
+        allReports = Array.isArray(data) ? data : (data?.items||[]);
+        renderTable(allReports);
+      } catch(e) {
+        document.getElementById('reportsBody').innerHTML = `
+          <tr><td colspan="7" class="px-5 py-12 text-center text-red-400 text-sm">
+            <i class="fas fa-exclamation-circle mr-2"></i>${e.message}
+          </td></tr>`;
+        showToast('Failed to load reports', 'error');
+      }
+    }
+
+    let currentReport = null;
+
+    async function openReport(id) {
+      document.getElementById('reportContent').innerHTML = `
+        <div class="flex items-center justify-center py-16 text-slate-500">
+          <i class="fas fa-spinner fa-spin mr-2 text-lg"></i><span>Loading report…</span>
+        </div>`;
+      document.getElementById('reportModal').classList.add('open');
+      try {
+        const data = await API.getSampleReport(id);
+        currentReport = data;
+        renderReport(data);
+      } catch(e) {
+        document.getElementById('reportContent').innerHTML = `
+          <div class="flex items-center justify-center py-16 text-red-400">
+            <i class="fas fa-exclamation-circle mr-2"></i>${e.message}
+          </div>`;
+        showToast('Failed to load report', 'error');
+      }
+    }
+
+    function renderReport(d) {
+      const results = Array.isArray(d.results) ? d.results : (d.results?.items||[]);
+      const labName = 'Enigma Diagnostics Lab';
+      const reportDate = formatDateTime(d.generated_at || d.approved_at || new Date().toISOString());
+
+      const html = `
+        <div class="flex items-center justify-between pb-4 border-b border-slate-700">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center">
+              <i class="fas fa-flask text-white text-xl"></i>
+            </div>
+            <div>
+              <div class="text-white font-bold text-lg">${labName}</div>
+              <div class="text-blue-400 text-xs font-semibold tracking-wider">LABORATORY REPORT</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-slate-400 text-xs">Report Date</div>
+            <div class="text-white text-sm font-medium">${reportDate}</div>
+            <div class="font-mono text-blue-400 text-xs mt-1">${d.sample_id||d.id||'—'}</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-700/40 rounded-xl p-4">
+          <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">Patient Information</div>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Full Name:</span><span class="text-white font-medium">${d.patient_name||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Age / Gender:</span><span class="text-slate-300">${d.patient_age ? d.patient_age+' yrs' : '—'}${d.patient_gender ? ' / '+d.patient_gender : ''}</span></div>
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Phone:</span><span class="text-slate-300">${d.patient_phone||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Doctor:</span><span class="text-slate-300">${d.doctor_name||d.referring_doctor||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Sample ID:</span><span class="font-mono text-blue-400 text-xs">${d.sample_id||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Sample Type:</span><span class="text-slate-300 capitalize">${d.sample_type||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Collected:</span><span class="text-slate-300">${formatDateTime(d.collected_at||d.created_at)}</span></div>
+            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Status:</span>${statusBadge(d.status)}</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">Test Results</div>
+          ${results.length ? `
+          <div class="rounded-xl overflow-hidden border border-slate-700">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-slate-700/60 border-b border-slate-700">
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Test</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Result</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Unit</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Ref Range</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Approved By</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${results.map(r => {
+                  const interp = (r.interpretation||r.status||'').toLowerCase();
+                  const isCritical = interp === 'critical';
+                  const isAbnormal = interp === 'abnormal';
+                  const rowBg = isCritical ? 'background:rgba(127,0,0,.18);' : isAbnormal ? 'background:rgba(120,80,0,.12);' : '';
+                  const valColor = isCritical ? '#f87171' : isAbnormal ? '#fbbf24' : '#4ade80';
+                  const refRange = r.reference_range || (r.reference_min!=null && r.reference_max!=null ? `${r.reference_min} – ${r.reference_max}` : '—');
+                  return `<tr style="${rowBg}" class="border-b border-slate-700/50">
+                    <td class="px-4 py-3">
+                      <div class="text-white font-medium">${r.test_name||'—'}</div>
+                      <div class="text-slate-500 text-xs font-mono">${r.test_code||''}</div>
+                    </td>
+                    <td class="px-4 py-3 font-mono font-bold" style="color:${valColor}">${r.value||r.result_value||'—'}</td>
+                    <td class="px-4 py-3 text-slate-400 text-xs">${r.unit||'—'}</td>
+                    <td class="px-4 py-3 text-slate-500 text-xs">${refRange}</td>
+                    <td class="px-4 py-3">${resultStatusBadge(r.interpretation||r.status)}</td>
+                    <td class="px-4 py-3 text-slate-400 text-xs">${r.approved_by_name||r.approved_by||'—'}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>` : `
+          <div class="flex flex-col items-center justify-center py-10 text-slate-500 bg-slate-700/20 rounded-xl border border-slate-700">
+            <i class="fas fa-vial text-3xl mb-2 opacity-30"></i>
+            <p class="text-sm">No results found for this sample</p>
+          </div>`}
+        </div>
+
+        ${d.approved_by_name||d.approved_at ? `
+        <div class="flex justify-end pt-2">
+          <div class="text-right border-t border-slate-600 pt-3 min-w-48">
+            <div class="text-white text-sm font-medium">${d.approved_by_name||'—'}</div>
+            <div class="text-slate-500 text-xs">Authorized Signatory</div>
+            <div class="text-slate-600 text-xs mt-0.5">${formatDateTime(d.approved_at)}</div>
+          </div>
+        </div>` : ''}
+
+        <div class="border-t border-slate-700 pt-3 text-center">
+          <p class="text-slate-600 text-xs">This report is generated by ${labName}. For queries, contact the laboratory.</p>
+        </div>`;
+
+      document.getElementById('reportContent').innerHTML = html;
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').classList.remove('open');
+    }
+
+    function printReport() {
+      if (!currentReport) return;
+      const printArea = document.getElementById('printArea');
+      printArea.innerHTML = document.getElementById('reportContent').innerHTML;
+      printArea.style.display = 'block';
+      window.print();
+      setTimeout(() => {
+        printArea.style.display = 'none';
+        printArea.innerHTML = '';
+      }, 500);
+    }
+
+    document.getElementById('reportModal').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeReportModal();
+    });
+
+    loadReports();
+  </script>
+</body>
+</html>

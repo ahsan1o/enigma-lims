@@ -1,0 +1,260 @@
+from pydantic import BaseModel, EmailStr
+from typing import Optional, List
+from datetime import datetime
+
+# Auth
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
+
+# User schemas
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    full_name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    role: str  # admin, technician, supervisor, doctor
+
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    full_name: str
+    email: Optional[str]
+    phone: Optional[str]
+    role: str
+    is_active: bool
+    last_login: Optional[datetime]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Patient schemas
+class PatientCreate(BaseModel):
+    name: str
+    age: int
+    gender: str  # Male, Female, Other
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    doctor_id: Optional[int] = None
+
+class PatientUpdate(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    doctor_id: Optional[int] = None
+
+class PatientResponse(BaseModel):
+    id: int
+    name: str
+    age: int
+    gender: str
+    phone: Optional[str]
+    email: Optional[str]
+    doctor_id: Optional[int]
+    doctor_name: Optional[str] = None
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Doctor schemas
+class DoctorCreate(BaseModel):
+    name: str
+    registration_number: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    clinic_name: Optional[str] = None
+    address: Optional[str] = None
+
+class DoctorUpdate(BaseModel):
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    clinic_name: Optional[str] = None
+    address: Optional[str] = None
+
+class DoctorResponse(BaseModel):
+    id: int
+    name: str
+    registration_number: str
+    phone: Optional[str]
+    email: Optional[str]
+    clinic_name: Optional[str]
+    address: Optional[str]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Sample schemas
+class SampleCreate(BaseModel):
+    patient_id: int
+    sample_type: str  # Blood, Urine, Stool, etc.
+    collection_date: datetime
+    collection_time: Optional[str] = None
+    notes: Optional[str] = None
+
+class SampleStatusUpdate(BaseModel):
+    status: str  # pending, testing, completed, approved
+
+class SampleResponse(BaseModel):
+    id: int
+    sample_id: str
+    patient_id: int
+    patient_name: Optional[str] = None
+    sample_type: str
+    collection_date: datetime
+    collection_time: Optional[str]
+    received_date: Optional[datetime]
+    status: str
+    notes: Optional[str]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Test schemas
+class TestCreate(BaseModel):
+    test_code: str
+    test_name: str
+    description: Optional[str] = None
+    unit: Optional[str] = None
+    reference_min: Optional[float] = None
+    reference_max: Optional[float] = None
+    critical_min: Optional[float] = None
+    critical_max: Optional[float] = None
+    method: Optional[str] = None
+    machine_id: Optional[int] = None
+
+class TestUpdate(BaseModel):
+    test_name: Optional[str] = None
+    description: Optional[str] = None
+    unit: Optional[str] = None
+    reference_min: Optional[float] = None
+    reference_max: Optional[float] = None
+    critical_min: Optional[float] = None
+    critical_max: Optional[float] = None
+    method: Optional[str] = None
+
+class TestResponse(BaseModel):
+    id: int
+    test_code: str
+    test_name: str
+    description: Optional[str]
+    unit: Optional[str]
+    reference_min: Optional[float]
+    reference_max: Optional[float]
+    critical_min: Optional[float]
+    critical_max: Optional[float]
+    method: Optional[str]
+    machine_id: Optional[int]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Order schemas
+class OrderCreate(BaseModel):
+    sample_id: int
+    test_id: int
+    doctor_id: int
+    priority: str = "normal"  # normal, urgent, stat
+
+class OrderResponse(BaseModel):
+    id: int
+    sample_id: int
+    test_id: int
+    doctor_id: int
+    patient_name: Optional[str] = None
+    test_name: Optional[str] = None
+    doctor_name: Optional[str] = None
+    priority: str
+    status: str
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Result schemas
+class ResultCreate(BaseModel):
+    order_id: int
+    sample_id: int
+    test_id: int
+    result_value: str
+    unit: Optional[str] = None
+    interpretation: Optional[str] = None
+
+class ResultApprove(BaseModel):
+    comments: Optional[str] = None
+
+class ResultResponse(BaseModel):
+    id: int
+    order_id: int
+    sample_id: int
+    test_id: int
+    test_name: Optional[str] = None
+    result_value: str
+    unit: Optional[str]
+    status: str
+    qc_passed: bool
+    interpretation: Optional[str]
+    entered_by: Optional[int]
+    entered_by_name: Optional[str] = None
+    entered_date: Optional[datetime]
+    approved_by: Optional[int]
+    approved_by_name: Optional[str] = None
+    approved_date: Optional[datetime]
+    machine_generated: bool
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Instrument schemas
+class InstrumentCreate(BaseModel):
+    instrument_code: str
+    instrument_name: str
+    manufacturer: Optional[str] = None
+    model: Optional[str] = None
+    location: Optional[str] = None
+    serial_number: Optional[str] = None
+
+class InstrumentUpdate(BaseModel):
+    instrument_name: Optional[str] = None
+    manufacturer: Optional[str] = None
+    model: Optional[str] = None
+    location: Optional[str] = None
+    status: Optional[str] = None
+
+class InstrumentResponse(BaseModel):
+    id: int
+    instrument_code: str
+    instrument_name: str
+    manufacturer: Optional[str]
+    model: Optional[str]
+    location: Optional[str]
+    serial_number: Optional[str]
+    status: str
+    last_calibration: Optional[datetime]
+    next_calibration: Optional[datetime]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Dashboard
+class DashboardStats(BaseModel):
+    total_patients: int
+    total_samples_today: int
+    pending_results: int
+    completed_today: int
+    total_tests: int
+    total_instruments: int

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results - Enigma LIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <style>
+    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    .nav-item.active { background-color: #2563eb !important; color: white !important; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    .tab-btn { padding:.4rem .9rem; border-radius:.5rem; font-size:.8rem; font-weight:500; cursor:pointer; border:1px solid #334155; background:transparent; color:#64748b; transition:all .2s; }
+    .tab-btn.active { background:#2563eb; color:#fff; border-color:#2563eb; }
+    .tab-btn:hover:not(.active) { background:#334155; color:#cbd5e1; }
+    @keyframes critPulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+    .critical-badge { animation: critPulse 1.3s ease infinite; }
+    select option { background:#1e293b; color:#f1f5f9; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col flex-shrink-0">
+    <div class="p-5 border-b border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-flask text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="text-white font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+    </nav>
+    <div class="p-4 border-t border-slate-700">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-white text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-slate-400 text-xs" id="userRole">Administrator</div>
+        </div>
+        <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout">
+          <i class="fas fa-sign-out-alt text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="bg-slate-800 border-b border-slate-700 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <div>
+        <h1 class="text-white font-bold text-xl">Results</h1>
+        <p class="text-slate-400 text-xs mt-0.5">Enter and approve laboratory test results</p>
+      </div>
+      <button onclick="openEnterModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+        <i class="fas fa-plus"></i> Enter Result
+      </button>
+    </div>
+
+    <div class="p-6">
+      <div class="flex items-center gap-2 mb-5 flex-wrap">
+        <button class="tab-btn active" onclick="setFilter('',this)">All</button>
+        <button class="tab-btn" onclick="setFilter('normal',this)">
+          <span class="w-2 h-2 rounded-full bg-green-400 inline-block mr-1.5"></span>Normal
+        </button>
+        <button class="tab-btn" onclick="setFilter('abnormal',this)">
+          <span class="w-2 h-2 rounded-full bg-amber-400 inline-block mr-1.5"></span>Abnormal
+        </button>
+        <button class="tab-btn" onclick="setFilter('critical',this)">
+          <span class="w-2 h-2 rounded-full bg-red-400 inline-block mr-1.5"></span>Critical
+        </button>
+        <button class="tab-btn" onclick="setPendingApproval(this)">
+          <span class="w-2 h-2 rounded-full bg-purple-400 inline-block mr-1.5"></span>Pending Approval
+        </button>
+        <span class="ml-auto text-slate-500 text-sm" id="resultCount"></span>
+      </div>
+
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-700">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Test</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Value</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Entered By</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Approved By</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <tr><td colspan="8" class="px-5 py-12 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading results...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ENTER RESULT MODAL -->
+  <div id="enterModal" class="modal-overlay">
+    <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-lg border border-slate-700 shadow-2xl">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-white font-bold text-lg">Enter Result</h3>
+        <button onclick="closeEnterModal()" class="text-slate-500 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <form id="enterForm" class="space-y-4">
+        <div>
+          <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Order <span class="text-red-400">*</span></label>
+          <select id="rOrder" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+            <option value="">Select order...</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Result Value <span class="text-red-400">*</span></label>
+            <input type="text" id="rValue" placeholder="e.g., 5.2, Positive" required
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Unit</label>
+            <input type="text" id="rUnit" placeholder="e.g., mg/dL"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Interpretation / Notes</label>
+          <textarea id="rNotes" placeholder="Clinical interpretation or additional notes..." rows="3"
+            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
+        </div>
+        <div id="enterError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closeEnterModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button type="submit" id="enterBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+            <i class="fas fa-save" id="enterBtnIcon"></i>
+            <span>Save Result</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPROVE MODAL -->
+  <div id="approveModal" class="modal-overlay">
+    <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-md border border-slate-700 shadow-2xl">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-white font-bold text-lg">Approve Result</h3>
+        <button onclick="closeApproveModal()" class="text-slate-500 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div class="bg-slate-700/50 rounded-xl p-4 mb-4 space-y-2">
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-500">Test:</span>
+          <span class="text-white font-medium" id="approveTestName">—</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-500">Patient:</span>
+          <span class="text-white" id="approvePatient">—</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-500">Result:</span>
+          <span class="text-white font-mono font-bold" id="approveValue">—</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-slate-500">Status:</span>
+          <span id="approveStatus">—</span>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Approval Comments (Optional)</label>
+        <textarea id="approveComment" placeholder="Add comments..." rows="2"
+          class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
+      </div>
+      <input type="hidden" id="approveResultId">
+      <div class="flex justify-end gap-3">
+        <button onclick="closeApproveModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+        <button onclick="approveResult()" id="approveBtn" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+          <i class="fas fa-check-circle" id="approveBtnIcon"></i> Approve
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    if (!Auth.requireAuth()) throw new Error('not logged in');
+
+    document.querySelectorAll('.nav-item').forEach(link => {
+      if (link.getAttribute('href') === 'results.html') {
+        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-slate-300');
+      }
+    });
+
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('userName').textContent = user.full_name || user.username;
+      document.getElementById('userRole').textContent = (user.role||'').charAt(0).toUpperCase()+(user.role||'').slice(1);
+      document.getElementById('userAvatar').textContent = (user.full_name||user.username||'A').charAt(0).toUpperCase();
+      if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
+    }
+
+    function showToast(msg, type='success') {
+      const colors={success:'bg-green-600',error:'bg-red-600',warning:'bg-amber-600',info:'bg-blue-600'};
+      const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
+      const t = document.createElement('div');
+      t.className = `pointer-events-all flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white text-sm font-medium ${colors[type]||colors.info} border border-white/10`;
+      t.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+    }
+
+    function resultBadge(s) {
+      const map={normal:['#22c55e','#052e16'],abnormal:['#f59e0b','#431407'],critical:['#ef4444','#450a0a']};
+      const k=(s||'').toLowerCase();
+      const [fg,bg]=map[k]||['#64748b','#1e293b'];
+      const lbl=k==='critical'?'CRITICAL':k.charAt(0).toUpperCase()+k.slice(1);
+      const cls=k==='critical'?' critical-badge':'';
+      return `<span class="${cls}" style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:700;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${lbl||'—'}</span>`;
+    }
+
+    function formatDateTime(d) {
+      if(!d) return '—';
+      try { return new Date(d).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+      catch(e){ return d; }
+    }
+
+    let allResults = [], currentFilter = '', showPendingApproval = false;
+
+    async function loadOrdersForDropdown() {
+      try {
+        const data = await API.getOrders();
+        const orders = Array.isArray(data) ? data : (data?.items||[]);
+        const sel = document.getElementById('rOrder');
+        while(sel.options.length>1) sel.remove(1);
+        orders.forEach(o => {
+          const opt = document.createElement('option');
+          opt.value = o.id;
+          opt.textContent = `${o.patient_name||'Patient'} – ${o.test_name||'Test'} (${o.order_id||o.id})`;
+          sel.appendChild(opt);
+        });
+      } catch(e) { console.warn('Orders not loaded for dropdown', e); }
+    }
+
+    async function loadResults(filter='') {
+      currentFilter = filter;
+      showPendingApproval = false;
+      document.getElementById('resultsBody').innerHTML = `<tr><td colspan="8" class="px-5 py-12 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>`;
+      try {
+        const data = await API.getResults();
+        allResults = Array.isArray(data) ? data : (data?.items||[]);
+        let filtered = filter ? allResults.filter(r=>(r.status||'').toLowerCase()===filter) : allResults;
+        renderResults(filtered);
+      } catch(e) {
+        document.getElementById('resultsBody').innerHTML = `<tr><td colspan="8" class="px-5 py-12 text-center text-red-400 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>${e.message}</td></tr>`;
+        showToast('Failed to load results', 'error');
+      }
+    }
+
+    function setPendingApproval(btn) {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      showPendingApproval = true;
+      const filtered = allResults.filter(r => !r.approved_date && !r.approved_by);
+      renderResults(filtered);
+    }
+
+    function renderResults(results) {
+      document.getElementById('resultCount').textContent = `${results.length} result${results.length!==1?'s':''}`;
+      if (!results.length) {
+        document.getElementById('resultsBody').innerHTML = `
+          <tr><td colspan="8" class="px-5 py-16 text-center">
+            <i class="fas fa-chart-bar text-4xl text-slate-700 mb-3 block"></i>
+            <p class="text-slate-400 font-medium">No results found</p>
+            <p class="text-slate-600 text-sm mt-1">Enter test results to get started</p>
+            <button onclick="openEnterModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <i class="fas fa-plus mr-1"></i>Enter Result
+            </button>
+          </td></tr>`;
+        return;
+      }
+      document.getElementById('resultsBody').innerHTML = results.map(r => `
+        <tr class="border-b border-slate-700/50 hover:bg-slate-700/20 transition-colors ${r.status==='critical'?'bg-red-950/20':''}">
+          <td class="px-5 py-3.5">
+            <div class="text-white text-sm font-medium">${r.test_name||'—'}</div>
+            <div class="text-slate-500 text-xs font-mono">${r.test_code||''}</div>
+          </td>
+          <td class="px-4 py-3.5 text-slate-300 text-sm">${r.patient_name||'—'}</td>
+          <td class="px-4 py-3.5 font-mono text-white font-bold text-sm">${r.result_value??'—'}</td>
+          <td class="px-4 py-3.5 text-slate-400 text-xs">${r.unit||'—'}</td>
+          <td class="px-4 py-3.5">${resultBadge(r.status)}</td>
+          <td class="px-4 py-3.5 text-slate-500 text-xs">${r.entered_by||'—'}</td>
+          <td class="px-4 py-3.5">
+            ${r.approved_by || r.approved_date
+              ? `<span class="text-green-400 text-xs flex items-center gap-1"><i class="fas fa-check-circle"></i>${r.approved_by||'Approved'}</span>`
+              : '<span class="text-slate-600 text-xs">Pending</span>'}
+          </td>
+          <td class="px-4 py-3.5">
+            <div class="flex items-center gap-2">
+              ${!r.approved_by && !r.approved_date ? `
+                <button onclick='openApproveModal(${JSON.stringify(r)})' class="px-2.5 py-1.5 rounded-lg bg-green-500/15 text-green-400 hover:bg-green-500/30 transition-colors text-xs font-medium flex items-center gap-1.5" title="Approve">
+                  <i class="fas fa-check"></i> Approve
+                </button>` : ''}
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    function setFilter(filter, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      showPendingApproval = false;
+      const filtered = filter ? allResults.filter(r=>(r.status||'').toLowerCase()===filter) : allResults;
+      renderResults(filtered);
+    }
+
+    function openEnterModal() {
+      document.getElementById('enterForm').reset();
+      document.getElementById('enterError').classList.add('hidden');
+      document.getElementById('enterModal').classList.add('open');
+    }
+    function closeEnterModal() { document.getElementById('enterModal').classList.remove('open'); }
+
+    function openApproveModal(r) {
+      document.getElementById('approveTestName').textContent = r.test_name || '—';
+      document.getElementById('approvePatient').textContent = r.patient_name || '—';
+      document.getElementById('approveValue').textContent = `${r.result_value??'—'} ${r.unit||''}`.trim();
+      document.getElementById('approveStatus').innerHTML = resultBadge(r.status);
+      document.getElementById('approveResultId').value = r.id;
+      document.getElementById('approveComment').value = '';
+      document.getElementById('approveModal').classList.add('open');
+    }
+    function closeApproveModal() { document.getElementById('approveModal').classList.remove('open'); }
+
+    document.getElementById('enterForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('enterError');
+      errEl.classList.add('hidden');
+
+      const payload = {
+        order_id: document.getElementById('rOrder').value,
+        result_value: document.getElementById('rValue').value.trim(),
+        unit: document.getElementById('rUnit').value.trim()||null,
+        interpretation: document.getElementById('rNotes').value.trim()||null
+      };
+
+      const btn = document.getElementById('enterBtn');
+      const icon = document.getElementById('enterBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+
+      try {
+        await API.createResult(payload);
+        showToast('Result saved successfully');
+        closeEnterModal(); loadResults(currentFilter);
+      } catch(err) {
+        errEl.textContent = err.message||'Failed to save result';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-save'; }
+    });
+
+    async function approveResult() {
+      const id = document.getElementById('approveResultId').value;
+      const btn = document.getElementById('approveBtn');
+      const icon = document.getElementById('approveBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+      try {
+        await API.approveResult(id);
+        showToast('Result approved');
+        closeApproveModal(); loadResults(currentFilter);
+      } catch(e) { showToast(e.message||'Approval failed', 'error'); }
+      finally { btn.disabled = false; icon.className = 'fas fa-check-circle'; }
+    }
+
+    document.getElementById('enterModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEnterModal(); });
+    document.getElementById('approveModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeApproveModal(); });
+
+    loadOrdersForDropdown();
+    loadResults();
+  </script>
+</body>
+</html>
