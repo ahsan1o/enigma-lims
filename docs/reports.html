@@ -10,10 +10,10 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <style>
-    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #1e293b; }
-    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
     .nav-item.active { background-color: #2563eb !important; color: white !important; }
     .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
@@ -30,8 +30,8 @@
 <body class="flex h-screen overflow-hidden">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col flex-shrink-0">
-    <div class="p-5 border-b border-slate-700">
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+    <div class="p-5 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
           <i class="fas fa-flask text-white text-lg"></i>
@@ -43,24 +43,24 @@
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
-      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
-      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
-      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
-      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
     </nav>
-    <div class="p-4 border-t border-slate-700">
+    <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
         <div class="flex-1 min-w-0">
-          <div class="text-white text-sm font-medium truncate" id="userName">Admin</div>
-          <div class="text-slate-400 text-xs" id="userRole">Administrator</div>
+          <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
         </div>
-        <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout">
+        <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition-colors p-1" title="Logout">
           <i class="fas fa-sign-out-alt text-sm"></i>
         </button>
       </div>
@@ -69,38 +69,38 @@
 
   <!-- MAIN -->
   <main class="flex-1 overflow-y-auto">
-    <div class="bg-slate-800 border-b border-slate-700 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+    <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
       <div>
         <h1 class="text-white font-bold text-xl">Reports</h1>
-        <p class="text-slate-400 text-xs mt-0.5">View and print patient lab reports</p>
+        <p class="text-gray-500 text-xs mt-0.5">View and print patient lab reports</p>
       </div>
-      <span class="text-slate-500 text-sm" id="reportCount"></span>
+      <span class="text-gray-400 text-sm" id="reportCount"></span>
     </div>
 
     <div class="p-6">
       <!-- Search -->
       <div class="relative max-w-sm mb-5">
-        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
         <input id="searchInput" type="text" placeholder="Search by patient or sample ID…" oninput="handleSearch(this.value)"
-          class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-4 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+          class="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
       </div>
 
-      <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-slate-700">
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Sample ID</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Patient</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Tests</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Referring Doctor</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Collected</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+              <tr class="border-b border-gray-200">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Sample ID</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Patient</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Tests</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Referring Doctor</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Collected</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody id="reportsBody">
-              <tr><td colspan="7" class="px-5 py-12 text-center text-slate-500 text-sm">
+              <tr><td colspan="7" class="px-5 py-12 text-center text-gray-400 text-sm">
                 <i class="fas fa-spinner fa-spin mr-2"></i>Loading reports…
               </td></tr>
             </tbody>
@@ -112,9 +112,9 @@
 
   <!-- REPORT VIEW MODAL -->
   <div id="reportModal" class="modal-overlay">
-    <div class="bg-slate-800 rounded-2xl w-full max-w-3xl border border-slate-700 shadow-2xl max-h-[92vh] flex flex-col">
+    <div class="bg-white rounded-2xl w-full max-w-3xl border border-gray-200 shadow-2xl max-h-[92vh] flex flex-col">
       <!-- Modal Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-700 flex-shrink-0">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
         <h3 class="text-white font-bold text-lg flex items-center gap-2">
           <i class="fas fa-file-medical text-blue-400"></i>
           <span>Lab Report</span>
@@ -123,7 +123,7 @@
           <button onclick="printReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
             <i class="fas fa-print"></i> Print
           </button>
-          <button onclick="closeReportModal()" class="text-slate-500 hover:text-white transition-colors p-1 ml-1">
+          <button onclick="closeReportModal()" class="text-gray-400 hover:text-white transition-colors p-1 ml-1">
             <i class="fas fa-times text-lg"></i>
           </button>
         </div>
@@ -145,7 +145,7 @@
 
     document.querySelectorAll('.nav-item').forEach(link => {
       if (link.getAttribute('href') === 'reports.html') {
-        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-slate-300');
+        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-gray-600');
       }
     });
 
@@ -213,7 +213,7 @@
         tbody.innerHTML = `
           <tr><td colspan="7" class="px-5 py-16 text-center">
             <i class="fas fa-file-medical text-4xl text-slate-700 mb-3 block"></i>
-            <p class="text-slate-400 font-medium">No reports available</p>
+            <p class="text-gray-500 font-medium">No reports available</p>
             <p class="text-slate-600 text-sm mt-1">Reports appear once samples are completed or approved</p>
           </td></tr>`;
         return;
@@ -221,17 +221,17 @@
       tbody.innerHTML = list.map(r => {
         const testCount = r.test_count != null ? r.test_count : (Array.isArray(r.tests) ? r.tests.length : null);
         return `
-          <tr class="border-b border-slate-700/50 hover:bg-slate-700/20 transition-colors">
+          <tr class="border-b border-gray-200/50 hover:bg-gray-100/20 transition-colors">
             <td class="px-5 py-3.5 font-mono text-blue-400 text-xs font-bold">${r.sample_id||r.id||'—'}</td>
             <td class="px-4 py-3.5">
               <div class="text-white text-sm font-medium">${r.patient_name||'—'}</div>
-              <div class="text-slate-500 text-xs">${r.patient_phone||''}</div>
+              <div class="text-gray-400 text-xs">${r.patient_phone||''}</div>
             </td>
-            <td class="px-4 py-3.5 text-slate-400 text-sm">
+            <td class="px-4 py-3.5 text-gray-500 text-sm">
               ${testCount != null ? `<span class="text-white font-medium">${testCount}</span> test${testCount!==1?'s':''}` : '—'}
             </td>
-            <td class="px-4 py-3.5 text-slate-400 text-sm">${r.doctor_name||r.referring_doctor||'—'}</td>
-            <td class="px-4 py-3.5 text-slate-500 text-xs">${formatDateTime(r.collected_at||r.created_at)}</td>
+            <td class="px-4 py-3.5 text-gray-500 text-sm">${r.doctor_name||r.referring_doctor||'—'}</td>
+            <td class="px-4 py-3.5 text-gray-400 text-xs">${formatDateTime(r.collected_at||r.created_at)}</td>
             <td class="px-4 py-3.5">${statusBadge(r.status)}</td>
             <td class="px-4 py-3.5">
               <button onclick="openReport(${r.id})"
@@ -245,7 +245,7 @@
 
     async function loadReports() {
       document.getElementById('reportsBody').innerHTML = `
-        <tr><td colspan="7" class="px-5 py-12 text-center text-slate-500 text-sm">
+        <tr><td colspan="7" class="px-5 py-12 text-center text-gray-400 text-sm">
           <i class="fas fa-spinner fa-spin mr-2"></i>Loading reports…
         </td></tr>`;
       try {
@@ -265,7 +265,7 @@
 
     async function openReport(id) {
       document.getElementById('reportContent').innerHTML = `
-        <div class="flex items-center justify-center py-16 text-slate-500">
+        <div class="flex items-center justify-center py-16 text-gray-400">
           <i class="fas fa-spinner fa-spin mr-2 text-lg"></i><span>Loading report…</span>
         </div>`;
       document.getElementById('reportModal').classList.add('open');
@@ -288,7 +288,7 @@
       const reportDate = formatDateTime(d.generated_at || d.approved_at || new Date().toISOString());
 
       const html = `
-        <div class="flex items-center justify-between pb-4 border-b border-slate-700">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-200">
           <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center">
               <i class="fas fa-flask text-white text-xl"></i>
@@ -299,39 +299,39 @@
             </div>
           </div>
           <div class="text-right">
-            <div class="text-slate-400 text-xs">Report Date</div>
+            <div class="text-gray-500 text-xs">Report Date</div>
             <div class="text-white text-sm font-medium">${reportDate}</div>
             <div class="font-mono text-blue-400 text-xs mt-1">${d.sample_id||d.id||'—'}</div>
           </div>
         </div>
 
-        <div class="bg-slate-700/40 rounded-xl p-4">
-          <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">Patient Information</div>
+        <div class="bg-gray-100/40 rounded-xl p-4">
+          <div class="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Patient Information</div>
           <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Full Name:</span><span class="text-white font-medium">${d.patient_name||'—'}</span></div>
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Age / Gender:</span><span class="text-slate-300">${d.patient_age ? d.patient_age+' yrs' : '—'}${d.patient_gender ? ' / '+d.patient_gender : ''}</span></div>
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Phone:</span><span class="text-slate-300">${d.patient_phone||'—'}</span></div>
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Doctor:</span><span class="text-slate-300">${d.doctor_name||d.referring_doctor||'—'}</span></div>
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Sample ID:</span><span class="font-mono text-blue-400 text-xs">${d.sample_id||'—'}</span></div>
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Sample Type:</span><span class="text-slate-300 capitalize">${d.sample_type||'—'}</span></div>
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Collected:</span><span class="text-slate-300">${formatDateTime(d.collected_at||d.created_at)}</span></div>
-            <div class="flex gap-2"><span class="text-slate-500 w-28 flex-shrink-0">Status:</span>${statusBadge(d.status)}</div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Full Name:</span><span class="text-white font-medium">${d.patient_name||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Age / Gender:</span><span class="text-gray-600">${d.patient_age ? d.patient_age+' yrs' : '—'}${d.patient_gender ? ' / '+d.patient_gender : ''}</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Phone:</span><span class="text-gray-600">${d.patient_phone||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Doctor:</span><span class="text-gray-600">${d.doctor_name||d.referring_doctor||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Sample ID:</span><span class="font-mono text-blue-400 text-xs">${d.sample_id||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Sample Type:</span><span class="text-gray-600 capitalize">${d.sample_type||'—'}</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Collected:</span><span class="text-gray-600">${formatDateTime(d.collected_at||d.created_at)}</span></div>
+            <div class="flex gap-2"><span class="text-gray-400 w-28 flex-shrink-0">Status:</span>${statusBadge(d.status)}</div>
           </div>
         </div>
 
         <div>
-          <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-3">Test Results</div>
+          <div class="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Test Results</div>
           ${results.length ? `
-          <div class="rounded-xl overflow-hidden border border-slate-700">
+          <div class="rounded-xl overflow-hidden border border-gray-200">
             <table class="w-full text-sm">
               <thead>
-                <tr class="bg-slate-700/60 border-b border-slate-700">
-                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Test</th>
-                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Result</th>
-                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Unit</th>
-                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Ref Range</th>
-                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
-                  <th class="px-4 py-3 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Approved By</th>
+                <tr class="bg-gray-100/60 border-b border-gray-200">
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Test</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Result</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Unit</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ref Range</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Approved By</th>
                 </tr>
               </thead>
               <tbody>
@@ -342,22 +342,22 @@
                   const rowBg = isCritical ? 'background:rgba(127,0,0,.18);' : isAbnormal ? 'background:rgba(120,80,0,.12);' : '';
                   const valColor = isCritical ? '#f87171' : isAbnormal ? '#fbbf24' : '#4ade80';
                   const refRange = r.reference_range || (r.reference_min!=null && r.reference_max!=null ? `${r.reference_min} – ${r.reference_max}` : '—');
-                  return `<tr style="${rowBg}" class="border-b border-slate-700/50">
+                  return `<tr style="${rowBg}" class="border-b border-gray-200/50">
                     <td class="px-4 py-3">
                       <div class="text-white font-medium">${r.test_name||'—'}</div>
-                      <div class="text-slate-500 text-xs font-mono">${r.test_code||''}</div>
+                      <div class="text-gray-400 text-xs font-mono">${r.test_code||''}</div>
                     </td>
                     <td class="px-4 py-3 font-mono font-bold" style="color:${valColor}">${r.value||r.result_value||'—'}</td>
-                    <td class="px-4 py-3 text-slate-400 text-xs">${r.unit||'—'}</td>
-                    <td class="px-4 py-3 text-slate-500 text-xs">${refRange}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">${r.unit||'—'}</td>
+                    <td class="px-4 py-3 text-gray-400 text-xs">${refRange}</td>
                     <td class="px-4 py-3">${resultStatusBadge(r.interpretation||r.status)}</td>
-                    <td class="px-4 py-3 text-slate-400 text-xs">${r.approved_by_name||r.approved_by||'—'}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">${r.approved_by_name||r.approved_by||'—'}</td>
                   </tr>`;
                 }).join('')}
               </tbody>
             </table>
           </div>` : `
-          <div class="flex flex-col items-center justify-center py-10 text-slate-500 bg-slate-700/20 rounded-xl border border-slate-700">
+          <div class="flex flex-col items-center justify-center py-10 text-gray-400 bg-gray-100/20 rounded-xl border border-gray-200">
             <i class="fas fa-vial text-3xl mb-2 opacity-30"></i>
             <p class="text-sm">No results found for this sample</p>
           </div>`}
@@ -365,14 +365,14 @@
 
         ${d.approved_by_name||d.approved_at ? `
         <div class="flex justify-end pt-2">
-          <div class="text-right border-t border-slate-600 pt-3 min-w-48">
+          <div class="text-right border-t border-gray-300 pt-3 min-w-48">
             <div class="text-white text-sm font-medium">${d.approved_by_name||'—'}</div>
-            <div class="text-slate-500 text-xs">Authorized Signatory</div>
+            <div class="text-gray-400 text-xs">Authorized Signatory</div>
             <div class="text-slate-600 text-xs mt-0.5">${formatDateTime(d.approved_at)}</div>
           </div>
         </div>` : ''}
 
-        <div class="border-t border-slate-700 pt-3 text-center">
+        <div class="border-t border-gray-200 pt-3 text-center">
           <p class="text-slate-600 text-xs">This report is generated by ${labName}. For queries, contact the laboratory.</p>
         </div>`;
 

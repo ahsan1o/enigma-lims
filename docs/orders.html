@@ -10,24 +10,24 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <style>
-    body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', system-ui, sans-serif; }
+    body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #1e293b; }
-    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
     .nav-item.active { background-color: #2563eb !important; color: white !important; }
     .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
-    .tab-btn { padding:.4rem .9rem; border-radius:.5rem; font-size:.8rem; font-weight:500; cursor:pointer; border:1px solid #334155; background:transparent; color:#64748b; transition:all .2s; }
+    .tab-btn { padding:.4rem .9rem; border-radius:.5rem; font-size:.8rem; font-weight:500; cursor:pointer; border:1px solid #e2e8f0; background:transparent; color:#64748b; transition:all .2s; }
     .tab-btn.active { background:#2563eb; color:#fff; border-color:#2563eb; }
-    .tab-btn:hover:not(.active) { background:#334155; color:#cbd5e1; }
+    .tab-btn:hover:not(.active) { background:#e2e8f0; color:#cbd5e1; }
     select option { background:#1e293b; color:#f1f5f9; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col flex-shrink-0">
-    <div class="p-5 border-b border-slate-700">
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+    <div class="p-5 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
           <i class="fas fa-flask text-white text-lg"></i>
@@ -39,24 +39,24 @@
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
-      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
-      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
-      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
-      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
     </nav>
-    <div class="p-4 border-t border-slate-700">
+    <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
         <div class="flex-1 min-w-0">
-          <div class="text-white text-sm font-medium truncate" id="userName">Admin</div>
-          <div class="text-slate-400 text-xs" id="userRole">Administrator</div>
+          <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
         </div>
-        <button onclick="Auth.logout()" class="text-slate-400 hover:text-red-400 transition-colors p-1" title="Logout">
+        <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition-colors p-1" title="Logout">
           <i class="fas fa-sign-out-alt text-sm"></i>
         </button>
       </div>
@@ -65,10 +65,10 @@
 
   <!-- MAIN -->
   <main class="flex-1 overflow-y-auto">
-    <div class="bg-slate-800 border-b border-slate-700 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+    <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
       <div>
         <h1 class="text-white font-bold text-xl">Test Orders</h1>
-        <p class="text-slate-400 text-xs mt-0.5">Manage and track test orders for samples</p>
+        <p class="text-gray-500 text-xs mt-0.5">Manage and track test orders for samples</p>
       </div>
       <button onclick="openNewOrderModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
         <i class="fas fa-plus"></i> New Order
@@ -88,25 +88,25 @@
         <button class="tab-btn" onclick="setFilter('completed',this)">
           <span class="w-2 h-2 rounded-full bg-green-400 inline-block mr-1.5"></span>Completed
         </button>
-        <span class="ml-auto text-slate-500 text-sm" id="orderCount"></span>
+        <span class="ml-auto text-gray-400 text-sm" id="orderCount"></span>
       </div>
 
-      <div class="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-slate-700">
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Order ID</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Sample / Patient</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Test</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Doctor</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Priority</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Created</th>
+              <tr class="border-b border-gray-200">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Order ID</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Sample / Patient</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Test</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Doctor</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Priority</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Created</th>
               </tr>
             </thead>
             <tbody id="ordersBody">
-              <tr><td colspan="7" class="px-5 py-12 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading orders...</td></tr>
+              <tr><td colspan="7" class="px-5 py-12 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading orders...</td></tr>
             </tbody>
           </table>
         </div>
@@ -116,33 +116,33 @@
 
   <!-- NEW ORDER MODAL -->
   <div id="orderModal" class="modal-overlay">
-    <div class="bg-slate-800 rounded-2xl p-6 w-full max-w-lg border border-slate-700 shadow-2xl">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-lg border border-gray-200 shadow-2xl">
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-white font-bold text-lg">New Test Order</h3>
-        <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
       <form id="orderForm" class="space-y-4">
         <div>
-          <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Sample <span class="text-red-400">*</span></label>
-          <select id="oSample" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Sample <span class="text-red-400">*</span></label>
+          <select id="oSample" required class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
             <option value="">Select sample...</option>
           </select>
         </div>
         <div>
-          <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Test <span class="text-red-400">*</span></label>
-          <select id="oTest" required class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Test <span class="text-red-400">*</span></label>
+          <select id="oTest" required class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
             <option value="">Select test...</option>
           </select>
         </div>
         <div>
-          <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Referring Doctor</label>
-          <select id="oDoctor" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Referring Doctor</label>
+          <select id="oDoctor" class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
             <option value="">None</option>
           </select>
         </div>
         <div>
-          <label class="block text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1.5">Priority</label>
-          <select id="oPriority" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Priority</label>
+          <select id="oPriority" class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
             <option value="normal">Normal</option>
             <option value="urgent">Urgent</option>
             <option value="stat">STAT (Immediate)</option>
@@ -150,7 +150,7 @@
         </div>
         <div id="orderError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
         <div class="flex justify-end gap-3 pt-2">
-          <button type="button" onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button type="button" onclick="closeModal()" class="bg-gray-100 hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
           <button type="submit" id="orderBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
             <i class="fas fa-plus" id="orderBtnIcon"></i>
             <span>Create Order</span>
@@ -167,7 +167,7 @@
 
     document.querySelectorAll('.nav-item').forEach(link => {
       if (link.getAttribute('href') === 'orders.html') {
-        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-slate-300');
+        link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-gray-600');
       }
     });
 
@@ -256,7 +256,7 @@
 
     async function loadOrders(filter='') {
       currentFilter = filter;
-      document.getElementById('ordersBody').innerHTML = `<tr><td colspan="7" class="px-5 py-12 text-center text-slate-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>`;
+      document.getElementById('ordersBody').innerHTML = `<tr><td colspan="7" class="px-5 py-12 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>`;
       try {
         const data = await API.getOrders(filter);
         const orders = Array.isArray(data) ? data : (data?.items||[]);
@@ -265,7 +265,7 @@
           document.getElementById('ordersBody').innerHTML = `
             <tr><td colspan="7" class="px-5 py-16 text-center">
               <i class="fas fa-clipboard-list text-4xl text-slate-700 mb-3 block"></i>
-              <p class="text-slate-400 font-medium">No orders found</p>
+              <p class="text-gray-500 font-medium">No orders found</p>
               <p class="text-slate-600 text-sm mt-1">Create a new test order to get started</p>
               <button onclick="openNewOrderModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 <i class="fas fa-plus mr-1"></i>New Order
@@ -274,20 +274,20 @@
           return;
         }
         document.getElementById('ordersBody').innerHTML = orders.map(o => `
-          <tr class="border-b border-slate-700/50 hover:bg-slate-700/20 transition-colors">
+          <tr class="border-b border-gray-200/50 hover:bg-gray-100/20 transition-colors">
             <td class="px-5 py-3.5 font-mono text-blue-400 text-xs font-bold">${o.order_id||o.id||'—'}</td>
             <td class="px-4 py-3.5">
               <div class="text-white text-sm font-medium">${o.patient_name||'—'}</div>
-              <div class="text-slate-500 text-xs font-mono">${o.sample_id||''}</div>
+              <div class="text-gray-400 text-xs font-mono">${o.sample_id||''}</div>
             </td>
             <td class="px-4 py-3.5">
-              <div class="text-slate-300 text-sm">${o.test_name||'—'}</div>
-              <div class="text-slate-500 text-xs font-mono">${o.test_code||''}</div>
+              <div class="text-gray-600 text-sm">${o.test_name||'—'}</div>
+              <div class="text-gray-400 text-xs font-mono">${o.test_code||''}</div>
             </td>
-            <td class="px-4 py-3.5 text-slate-400 text-sm">${o.doctor_name||'—'}</td>
+            <td class="px-4 py-3.5 text-gray-500 text-sm">${o.doctor_name||'—'}</td>
             <td class="px-4 py-3.5">${priorityBadge(o.priority)}</td>
             <td class="px-4 py-3.5">${statusBadge(o.status)}</td>
-            <td class="px-4 py-3.5 text-slate-500 text-xs">${formatDateTime(o.created_at)}</td>
+            <td class="px-4 py-3.5 text-gray-400 text-xs">${formatDateTime(o.created_at)}</td>
           </tr>`).join('');
       } catch(e) {
         document.getElementById('ordersBody').innerHTML = `<tr><td colspan="7" class="px-5 py-12 text-center text-red-400 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>${e.message}</td></tr>`;
