@@ -187,10 +187,15 @@ async def http_exception_handler(request, exc):
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
-    logger.error(f"Unhandled exception: {str(exc)}")
+    logger.error(f"Unhandled exception: {type(exc).__name__}: {str(exc)}")
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error", "status": "error"},
+        content={
+            "detail": "Internal server error",
+            "error": type(exc).__name__,
+            "message": str(exc),
+            "status": "error"
+        },
         headers=CORS_HEADERS
     )
 
