@@ -87,9 +87,14 @@
         <button onclick="exportSamplesCSV()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
           <i class="fas fa-download"></i> Export CSV
         </button>
-        <button onclick="openRegisterModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
-          <i class="fas fa-plus"></i> Register Sample
+      <div class="flex items-center gap-2">
+        <button onclick="exportSamplesCSV()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+          <i class="fas fa-download"></i> Export CSV
         </button>
+        <button onclick="openRegisterModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+          <i class="fas fa-plus"></i> Register &amp; Print Label
+        </button>
+      </div>
       </div>
     </div>
 
@@ -155,6 +160,9 @@
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-gray-200">
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-gray-900 font-bold text-lg">Register New Sample</h3>
+        <div class="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-2.5 py-1 rounded-full border border-green-200 font-semibold">
+          <i class="fas fa-barcode"></i> Label prints on save
+        </div>
         <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
       <form id="registerForm" class="space-y-4">
@@ -400,9 +408,9 @@
           <td class="px-4 py-3.5">${statusBadge(s.status)}</td>
           <td class="px-4 py-3.5">
             <div class="flex items-center gap-1.5 flex-wrap">
-              <button onclick='printLabel(${JSON.stringify(s)})' title="Print Label"
-                class="bg-white border border-gray-300 hover:bg-green-50 hover:border-green-400 text-gray-500 hover:text-green-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
-                <i class="fas fa-print"></i> Label
+              <button onclick='printLabel(${JSON.stringify(s)})' title="Print tube label"
+                class="bg-green-600 hover:bg-green-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
+                <i class="fas fa-barcode"></i> Label
               </button>
               <button onclick='openStatusModal(${JSON.stringify(s)})' title="Update Status"
                 class="bg-white border border-gray-300 hover:bg-blue-50 hover:border-blue-400 text-gray-600 hover:text-blue-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
@@ -459,10 +467,20 @@
       btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
 
       try {
-        await API.createSample(payload);
+        const newSample = await API.createSample(payload);
         showToast('Sample registered successfully');
         closeRegisterModal();
-        loadSamples(currentFilter);
+        await loadSamples(currentFilter);
+        // Offer to print label immediately
+        if (newSample && (newSample.sample_id || newSample.id)) {
+          const patName = document.getElementById('rPatient').options[document.getElementById('rPatient').selectedIndex]?.textContent?.split(' (')[0] || '—';
+          printLabel({
+            sample_id: newSample.sample_id || newSample.id,
+            patient_name: patName,
+            sample_type: payload.sample_type,
+            collection_date: payload.collection_date
+          });
+        }
       } catch(err) {
         errEl.textContent = err.message || 'Failed to register sample';
         errEl.classList.remove('hidden');
