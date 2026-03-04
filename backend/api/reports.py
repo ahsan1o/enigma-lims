@@ -82,7 +82,8 @@ def generate_report(sample_id: int, db: Session = Depends(get_db)):
 def list_reports(db: Session = Depends(get_db)):
     """List all samples that have at least one result entered."""
     samples = db.query(Sample).options(
-        joinedload(Sample.patient)
+        joinedload(Sample.patient),
+        joinedload(Sample.results)
     ).filter(
         exists().where(Result.sample_id == Sample.id)
     ).order_by(Sample.created_at.desc()).limit(200).all()
