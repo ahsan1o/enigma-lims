@@ -568,14 +568,14 @@
       btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
       try {
         const payload = {
-          full_name: document.getElementById('jName').value.trim(),
+          name: document.getElementById('jName').value.trim(),
           age: parseInt(document.getElementById('jAge').value),
           gender: document.getElementById('jGender').value,
           phone: document.getElementById('jPhone').value.trim() || null
         };
         const patient = await API.createPatient(payload);
         const pid = patient.id;
-        const pname = patient.full_name || patient.name || payload.full_name;
+        const pname = patient.name || patient.full_name || payload.name;
         closeJourneyModal();
         window.location.href = `samples.html?patient_id=${pid}&patient_name=${encodeURIComponent(pname)}`;
       } catch(err) {

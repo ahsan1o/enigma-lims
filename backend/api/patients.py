@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from database import get_db
 from models import Patient, Doctor, Sample, Order, Result
@@ -14,7 +14,7 @@ def list_patients(
     search: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Patient)
+    query = db.query(Patient).options(joinedload(Patient.doctor))
     if search:
         query = query.filter(Patient.name.ilike(f"%{search}%"))
     patients = query.offset(skip).limit(limit).all()

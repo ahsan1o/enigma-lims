@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from datetime import datetime
 from database import get_db
@@ -31,7 +31,10 @@ def list_invoices(
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    query = db.query(Invoice)
+    query = db.query(Invoice).options(
+        joinedload(Invoice.patient),
+        joinedload(Invoice.items)
+    )
     if status:
         query = query.filter(Invoice.status == status)
     invoices = query.order_by(Invoice.created_at.desc()).offset(skip).limit(limit).all()

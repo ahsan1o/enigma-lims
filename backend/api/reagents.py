@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from database import get_db
 from models import Reagent, Instrument
@@ -22,7 +22,7 @@ def list_reagents(
     active_only: bool = Query(True),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Reagent)
+    query = db.query(Reagent).options(joinedload(Reagent.instrument))
     if active_only:
         query = query.filter(Reagent.is_active == True)
     reagents = query.order_by(Reagent.name).all()

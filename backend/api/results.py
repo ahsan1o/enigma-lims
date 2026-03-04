@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from datetime import datetime
 from database import get_db
@@ -32,7 +32,11 @@ def list_results(
     limit: int = 100,
     db: Session = Depends(get_db)
 ):
-    query = db.query(Result)
+    query = db.query(Result).options(
+        joinedload(Result.test),
+        joinedload(Result.entered_by_user),
+        joinedload(Result.approved_by_user)
+    )
     if sample_id:
         query = query.filter(Result.sample_id == sample_id)
     if status:

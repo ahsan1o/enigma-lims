@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from datetime import datetime
 from database import get_db
@@ -17,7 +17,7 @@ def list_samples(
     search: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Sample)
+    query = db.query(Sample).options(joinedload(Sample.patient))
     if status:
         query = query.filter(Sample.status == status)
     if search:

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 from database import get_db
 from models import Order, Sample, Test, Doctor, Patient
@@ -14,7 +14,11 @@ def list_orders(
     status: Optional[str] = Query(None),
     db: Session = Depends(get_db)
 ):
-    query = db.query(Order)
+    query = db.query(Order).options(
+        joinedload(Order.sample).joinedload(Sample.patient),
+        joinedload(Order.test),
+        joinedload(Order.doctor)
+    )
     if status:
         query = query.filter(Order.status == status)
     orders = query.order_by(Order.created_at.desc()).offset(skip).limit(limit).all()
