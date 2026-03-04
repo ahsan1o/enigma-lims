@@ -451,11 +451,60 @@ const Help = {
 
 // ─── Onboarding Tour ───────────────────────────────────────────────────────────
 (function() {
-  const STORAGE_KEY = 'enigma_tour_done';
+  const TECH_KEY  = 'enigma_tour_done';
+  const ADMIN_KEY = 'enigma_admin_tour_done';
+
+  const ADMIN_TOUR_STEPS = [
+    {
+      icon: 'fa-shield-alt', iconBg: 'bg-blue-700', step: null,
+      title: 'Welcome, Super Admin',
+      body: 'You have full access to Enigma LIMS. Before your technicians can start working, you need to set up a few things. This tour walks you through the <strong>admin setup checklist</strong>.',
+      sub: 'Your sidebar has a core section (visible to all staff) and an <strong>Admin section</strong> below a divider — only you can see those.',
+      link: null
+    },
+    {
+      icon: 'fa-microscope', iconBg: 'bg-cyan-600', step: 1,
+      title: 'Step 1 — Add Tests & Prices',
+      body: 'Go to <strong>Admin → Tests & Prices</strong>. Add every test your lab offers (e.g. CBC, Blood Sugar, Urine R/E). Set the price for each test.',
+      sub: 'Prices flow automatically to Orders and appear on patient Reports in the Bill Summary. Technicians cannot add or edit tests.',
+      link: { href: 'tests.html', label: 'Go to Tests & Prices →' }
+    },
+    {
+      icon: 'fa-layer-group', iconBg: 'bg-indigo-600', step: 2,
+      title: 'Step 2 — Create Test Panels (Optional)',
+      body: 'Go to <strong>Admin → Test Panels</strong>. Bundle related tests into a panel (e.g. "Liver Function Tests" = ALT + AST + ALP + Bilirubin).',
+      sub: 'Technicians can then order an entire panel in one click instead of ordering each test individually. Skip this if you don\'t need bundles.',
+      link: { href: 'panels.html', label: 'Go to Test Panels →' }
+    },
+    {
+      icon: 'fa-user-shield', iconBg: 'bg-violet-600', step: 3,
+      title: 'Step 3 — Create Staff Accounts',
+      body: 'Go to <strong>Admin → Users</strong>. Create a named account for each lab technician. Set their role to <em>Technician</em>. They will only see the core 5-step workflow.',
+      sub: 'The default <code>tech / tech123</code> account is a placeholder — create real named accounts and deactivate or delete the defaults.',
+      link: { href: 'users.html', label: 'Go to Users →' }
+    },
+    {
+      icon: 'fa-cogs', iconBg: 'bg-gray-600', step: 4,
+      title: 'Step 4 — Register Instruments (Optional)',
+      body: 'Go to <strong>Admin → Instruments</strong>. Register your lab equipment (analyzers, centrifuges, etc.) with serial numbers, calibration dates, and maintenance schedules.',
+      sub: 'Instruments can be linked to tests and reagents for full traceability. Skip for now if you just need to get started.',
+      link: { href: 'instruments.html', label: 'Go to Instruments →' }
+    },
+    {
+      icon: 'fa-check-circle', iconBg: 'bg-green-600', step: null,
+      title: 'Setup Complete — You\'re Ready',
+      body: 'Your lab is configured. Technicians can now log in and follow the 5-step patient workflow: <strong>Patient → Sample → Order → Results → Report</strong>.',
+      sub: 'Use the Audit Log to review all activity. Use Billing for financial reports. The ? button on every page explains what it does and what comes next.',
+      link: null
+    }
+  ];
+
   let currentStep = 0;
+  let activeSteps = [];
   let tourEl = null;
 
-  function buildTour() {
+  function buildTour(steps) {
+    activeSteps = steps;
     const el = document.createElement('div');
     el.id = 'tourOverlay';
     el.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.75);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;';
@@ -465,17 +514,21 @@ const Help = {
   }
 
   function renderStep(step) {
-    const s = TOUR_STEPS[step];
-    const total = TOUR_STEPS.length;
+    const s = activeSteps[step];
+    const total = activeSteps.length;
     const isLast = step === total - 1;
 
-    const dots = TOUR_STEPS.map((_, i) =>
+    const dots = activeSteps.map((_, i) =>
       `<span class="w-2 h-2 rounded-full transition-all ${i === step ? 'bg-blue-500 scale-125' : 'bg-gray-300'}"></span>`
     ).join('');
 
     const linkBtn = s.link
       ? `<a href="${s.link.href}" class="text-xs text-blue-600 hover:text-blue-700 underline underline-offset-2">${s.link.label}</a>`
       : '';
+
+    const stepLabel = s.step
+      ? `<div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Step ${s.step} of ${total - 2}</div>`
+      : `<div class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-0.5">${step === 0 ? 'Welcome' : 'Done'}</div>`;
 
     tourEl.innerHTML = `
       <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl border border-gray-200 overflow-hidden">
@@ -491,7 +544,7 @@ const Help = {
               <i class="fas ${s.icon} text-white text-2xl"></i>
             </div>
             <div>
-              ${s.step ? `<div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Step ${s.step} of 5</div>` : '<div class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-0.5">Welcome</div>'}
+              ${stepLabel}
               <h2 class="text-gray-900 font-bold text-base leading-tight">${s.title}</h2>
             </div>
           </div>
@@ -512,17 +565,26 @@ const Help = {
     `;
   }
 
+  function getStorageKey() {
+    const user = (typeof Auth !== 'undefined') ? Auth.getUser() : null;
+    return (user && user.role === 'admin') ? ADMIN_KEY : TECH_KEY;
+  }
+
   window.Tour = {
-    next() { currentStep = Math.min(currentStep + 1, TOUR_STEPS.length - 1); renderStep(currentStep); },
+    next() { currentStep = Math.min(currentStep + 1, activeSteps.length - 1); renderStep(currentStep); },
     prev() { currentStep = Math.max(currentStep - 1, 0); renderStep(currentStep); },
-    skip() { localStorage.setItem(STORAGE_KEY, '1'); tourEl?.remove(); tourEl = null; },
-    done() { localStorage.setItem(STORAGE_KEY, '1'); tourEl?.remove(); tourEl = null; }
+    skip() { localStorage.setItem(getStorageKey(), '1'); tourEl?.remove(); tourEl = null; },
+    done() { localStorage.setItem(getStorageKey(), '1'); tourEl?.remove(); tourEl = null; }
   };
 
   Help.startTour = function() {
-    if (localStorage.getItem(STORAGE_KEY)) return;
     document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(buildTour, 600);
+      const user = (typeof Auth !== 'undefined') ? Auth.getUser() : null;
+      const isAdmin = user && user.role === 'admin';
+      const key = isAdmin ? ADMIN_KEY : TECH_KEY;
+      if (localStorage.getItem(key)) return;
+      setTimeout(() => buildTour(isAdmin ? ADMIN_TOUR_STEPS : TOUR_STEPS), 600);
     });
   };
 })();
+
