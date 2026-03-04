@@ -11,6 +11,7 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <script src="js/help.js"></script>
+  <script src="js/palette.js"></script>
   <style>
     body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
     ::-webkit-scrollbar { width: 6px; }
@@ -142,7 +143,7 @@
       </div>
 
       <!-- Stats row 2 -->
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 xl:grid-cols-3 gap-4">
         <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm border-l-4 border-l-cyan-500">
           <div class="flex items-center justify-between">
             <div>
@@ -168,6 +169,36 @@
           </div>
           <p class="text-gray-400 text-xs mt-3 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> Operational</p>
         </div>
+
+        <div id="revCard" class="hidden bg-white border border-gray-200 rounded-2xl p-5 shadow-sm border-l-4 border-l-emerald-500">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Today's Revenue</p>
+              <p class="text-2xl font-bold text-gray-900 mt-1" id="statRevenue"><span class="skel inline-block w-16 h-8">&nbsp;</span></p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <i class="fas fa-coins text-emerald-500 text-xl"></i>
+            </div>
+          </div>
+          <p class="text-gray-400 text-xs mt-3" id="statRevenueDetail"><i class="fas fa-receipt text-gray-400 mr-1"></i>Today's payments</p>
+        </div>
+      </div>
+
+      <!-- Calibration & Alerts row -->
+      <div id="calibrationDashWidget" class="hidden bg-white border border-amber-200 rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-wrench text-white text-sm"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-gray-900 font-semibold text-sm">Calibration Alerts</p>
+            <p class="text-gray-400 text-xs">Instruments requiring attention</p>
+          </div>
+          <a href="instruments.html" class="text-amber-600 text-xs font-medium hover:text-amber-700">
+            View Instruments <i class="fas fa-arrow-right ml-0.5 text-xs"></i>
+          </a>
+        </div>
+        <div id="calibrationDashList" class="space-y-2"></div>
       </div>
 
       <!-- Lab Workflow Guide -->
@@ -399,12 +430,23 @@
     }
 
     async function loadDashboard() {
+      const user = Auth.getUser();
+      const isAdmin = user && user.role === 'admin';
+
+      // Show revenue card for admins
+      if (isAdmin) document.getElementById('revCard').classList.remove('hidden');
+
       try {
-        const [stats, samples, results] = await Promise.all([
+        const fetchList = [
           API.getStats().catch(() => null),
           API.getRecentSamples().catch(() => null),
-          API.getRecentResults().catch(() => null)
-        ]);
+          API.getRecentResults().catch(() => null),
+          API.getInstruments().catch(() => null)
+        ];
+        if (isAdmin) fetchList.push(API.getInvoices().catch(() => null));
+
+        const results = await Promise.all(fetchList);
+        const [stats, samples, recentResults, instrumentsData, invoicesData] = results;
 
         const s = stats || {};
         document.getElementById('statPatients').textContent    = s.total_patients    ?? '—';
@@ -417,7 +459,54 @@
         document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
         initCharts(s);
 
-        // Recent samples
+        // ─── Calibration alerts ──────────────────────────────────────
+        const instruments = Array.isArray(instrumentsData) ? instrumentsData : (instrumentsData?.items || []);
+        const today = new Date(); today.setHours(0,0,0,0);
+        const alertInstruments = instruments.filter(inst => {
+          if (!inst.next_calibration) return false;
+          const next = new Date(inst.next_calibration); next.setHours(0,0,0,0);
+          return Math.ceil((next - today) / 86400000) <= 7;
+        });
+        const calWidget = document.getElementById('calibrationDashWidget');
+        const calList   = document.getElementById('calibrationDashList');
+        if (alertInstruments.length > 0) {
+          calList.innerHTML = alertInstruments.map(inst => {
+            const next  = new Date(inst.next_calibration); next.setHours(0,0,0,0);
+            const days  = Math.ceil((next - today) / 86400000);
+            const label = days < 0
+              ? `<span class="text-red-600 font-bold text-xs">Overdue by ${Math.abs(days)}d</span>`
+              : `<span class="text-amber-600 font-semibold text-xs">Due in ${days}d</span>`;
+            const bg = days < 0 ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200';
+            return `<div class="flex items-center justify-between p-2.5 ${bg} border rounded-lg">
+              <div class="flex items-center gap-2.5">
+                <i class="fas fa-cogs text-gray-400 text-sm"></i>
+                <div>
+                  <p class="text-gray-900 text-xs font-semibold">${inst.instrument_name||inst.name||'Instrument'}</p>
+                  <p class="text-gray-400 text-xs">${inst.instrument_code||inst.code||''} · ${inst.location||'—'}</p>
+                </div>
+              </div>
+              ${label}
+            </div>`;
+          }).join('');
+          calWidget.classList.remove('hidden');
+        } else {
+          calWidget.classList.add('hidden');
+        }
+
+        // ─── Today's Revenue (admin only) ────────────────────────────
+        if (isAdmin && invoicesData) {
+          const invoices = Array.isArray(invoicesData) ? invoicesData : (invoicesData?.items || []);
+          const todayStr = new Date().toDateString();
+          const todayInvoices = invoices.filter(inv => {
+            const d = inv.created_at || inv.updated_at;
+            return d && new Date(d).toDateString() === todayStr;
+          });
+          const todayRevenue = todayInvoices.reduce((sum, inv) => sum + (parseFloat(inv.paid_amount) || 0), 0);
+          document.getElementById('statRevenue').textContent = `PKR ${todayRevenue.toLocaleString('en-PK',{minimumFractionDigits:0})}`;
+          document.getElementById('statRevenueDetail').innerHTML = `<i class="fas fa-receipt text-gray-400 mr-1"></i>${todayInvoices.length} invoice${todayInvoices.length!==1?'s':''} today`;
+        }
+
+        // ─── Recent samples ──────────────────────────────────────────
         const sb = document.getElementById('recentSamplesBody');
         const sarr = Array.isArray(samples) ? samples : (samples?.items || []);
         if (sarr.length) {
@@ -432,9 +521,9 @@
           sb.innerHTML = `<tr><td colspan="4" class="px-5 py-10 text-center"><div><i class="fas fa-vial text-3xl mb-2 block text-gray-300"></i><p class="text-sm text-gray-400">No recent samples</p></div></td></tr>`;
         }
 
-        // Recent results
+        // ─── Recent results ──────────────────────────────────────────
         const rb = document.getElementById('recentResultsBody');
-        const rarr = Array.isArray(results) ? results : (results?.items || []);
+        const rarr = Array.isArray(recentResults) ? recentResults : (recentResults?.items || []);
         if (rarr.length) {
           rb.innerHTML = rarr.slice(0, 6).map(r => `
             <tr class="border-b border-gray-100 hover:bg-blue-50/30 transition-colors">

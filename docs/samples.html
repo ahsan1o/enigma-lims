@@ -10,6 +10,7 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <script src="js/help.js"></script>
+  <script src="js/palette.js"></script>
   <style>
     body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
     ::-webkit-scrollbar { width: 6px; }
@@ -24,6 +25,10 @@
     .tab-btn.active { background:#2563eb; color:#fff; border-color:#2563eb; }
     .tab-btn:hover:not(.active) { background:#f1f5f9; color:#1e293b; }
     select option { background:#ffffff; color:#1e293b; }
+    @media print {
+      body > * { display: none !important; }
+      #labelPrintArea { display: block !important; position: static !important; }
+    }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -241,6 +246,55 @@
     </div>
   </div>
 
+  <!-- REJECT SAMPLE MODAL -->
+  <div id="rejectModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-200">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-gray-900 font-bold text-lg flex items-center gap-2">
+          <i class="fas fa-ban text-red-500"></i> Reject Sample
+        </h3>
+        <button onclick="closeRejectModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+        <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Sample</div>
+        <div class="font-mono text-red-600 font-bold" id="rejectSampleIdDisplay">—</div>
+        <div class="text-gray-600 text-sm mt-1" id="rejectPatientName">—</div>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Rejection Reason <span class="text-red-500">*</span></label>
+          <select id="rejectReason" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400">
+            <option value="">Select reason...</option>
+            <option value="Hemolyzed">Hemolyzed</option>
+            <option value="Clotted">Clotted</option>
+            <option value="Insufficient Volume">Insufficient Volume</option>
+            <option value="Wrong Container">Wrong Container</option>
+            <option value="Mislabeled">Mislabeled / No Label</option>
+            <option value="Lipemic">Lipemic</option>
+            <option value="Contaminated">Contaminated</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Notes <span class="text-gray-400 font-normal normal-case">(optional)</span></label>
+          <textarea id="rejectNotes" rows="2" placeholder="Additional details..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-red-400 placeholder-gray-400 resize-none"></textarea>
+        </div>
+      </div>
+      <input type="hidden" id="rejectSampleDbId">
+      <div id="rejectError" class="hidden mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
+      <div class="flex justify-end gap-3 mt-5">
+        <button onclick="closeRejectModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Cancel</button>
+        <button onclick="submitRejection()" id="rejectBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+          <i class="fas fa-ban" id="rejectBtnIcon"></i> Reject Sample
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LABEL PRINT AREA (hidden, shown only on print) -->
+  <div id="labelPrintArea" style="display:none;"></div>
+
   <!-- TOAST -->
   <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
@@ -345,9 +399,20 @@
           <td class="px-4 py-3.5 text-gray-500 text-xs">${formatDateTime(s.collection_date||s.created_at)}</td>
           <td class="px-4 py-3.5">${statusBadge(s.status)}</td>
           <td class="px-4 py-3.5">
-            <button onclick='openStatusModal(${JSON.stringify(s)})' class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5">
-              <i class="fas fa-edit"></i> Update Status
-            </button>
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <button onclick='printLabel(${JSON.stringify(s)})' title="Print Label"
+                class="bg-white border border-gray-300 hover:bg-green-50 hover:border-green-400 text-gray-500 hover:text-green-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+                <i class="fas fa-print"></i> Label
+              </button>
+              <button onclick='openStatusModal(${JSON.stringify(s)})' title="Update Status"
+                class="bg-white border border-gray-300 hover:bg-blue-50 hover:border-blue-400 text-gray-600 hover:text-blue-700 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+                <i class="fas fa-edit"></i> Status
+              </button>
+              ${s.status !== 'rejected' && s.status !== 'approved' ? `<button onclick='openRejectModal(${JSON.stringify(s)})' title="Reject Sample"
+                class="bg-white border border-gray-300 hover:bg-red-50 hover:border-red-400 text-gray-400 hover:text-red-600 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
+                <i class="fas fa-ban"></i>
+              </button>` : ''}
+            </div>
           </td>
         </tr>`).join('');
     }
@@ -421,6 +486,75 @@
 
     document.getElementById('registerModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeRegisterModal(); });
     document.getElementById('statusModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeStatusModal(); });
+    document.getElementById('rejectModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeRejectModal(); });
+
+    // ─── Sample Label Printing ────────────────────────────────────────
+    function printLabel(s) {
+      const sampleId = s.sample_id || s.id || '—';
+      const patient  = s.patient_name || s.patient?.full_name || '—';
+      const type     = (s.sample_type || '—').toUpperCase();
+      const collected = s.collection_date || s.created_at;
+      const dateStr  = collected ? new Date(collected).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+
+      const labelHtml = `
+        <div style="width:3.5in;border:2px solid #1e293b;padding:14px 16px;border-radius:8px;font-family:system-ui,sans-serif;background:#fff;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:10px;font-weight:800;color:#1e40af;letter-spacing:2px;">ENIGMA LIMS</div>
+            <div style="font-size:9px;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:999px;font-weight:600;">${type}</div>
+          </div>
+          <div style="height:44px;background:repeating-linear-gradient(to right,#000 0,#000 2px,transparent 2px,transparent 4px,#000 4px,#000 5px,transparent 5px,transparent 7px,#000 7px,#000 9px,transparent 9px,transparent 13px,#000 13px,#000 15px,transparent 15px,transparent 18px,#000 18px,#000 21px,transparent 21px,transparent 24px);border-radius:2px;margin-bottom:6px;"></div>
+          <div style="font-family:'Courier New',monospace;font-size:13px;font-weight:800;text-align:center;letter-spacing:3px;color:#1e293b;margin-bottom:10px;">${sampleId}</div>
+          <div style="border-top:1px solid #e2e8f0;padding-top:8px;">
+            <div style="font-size:12px;font-weight:700;color:#1e293b;">${patient}</div>
+            <div style="font-size:10px;color:#64748b;margin-top:3px;">${dateStr}</div>
+          </div>
+        </div>`;
+
+      const printArea = document.getElementById('labelPrintArea');
+      printArea.innerHTML = `<div style="display:flex;justify-content:center;align-items:center;padding:24px;">${labelHtml}</div>`;
+      printArea.style.display = 'block';
+      window.print();
+      setTimeout(() => { printArea.style.display = 'none'; printArea.innerHTML = ''; }, 600);
+    }
+
+    // ─── Sample Rejection ─────────────────────────────────────────────
+    function openRejectModal(s) {
+      document.getElementById('rejectSampleDbId').value = s.id;
+      document.getElementById('rejectSampleIdDisplay').textContent = s.sample_id || s.id || '—';
+      document.getElementById('rejectPatientName').textContent = s.patient_name || s.patient?.full_name || '—';
+      document.getElementById('rejectReason').value = '';
+      document.getElementById('rejectNotes').value = '';
+      document.getElementById('rejectError').classList.add('hidden');
+      document.getElementById('rejectModal').classList.add('open');
+    }
+    function closeRejectModal() { document.getElementById('rejectModal').classList.remove('open'); }
+
+    async function submitRejection() {
+      const id     = document.getElementById('rejectSampleDbId').value;
+      const reason = document.getElementById('rejectReason').value;
+      const notes  = document.getElementById('rejectNotes').value.trim();
+      const errEl  = document.getElementById('rejectError');
+      errEl.classList.add('hidden');
+
+      if (!reason) {
+        errEl.textContent = 'Please select a rejection reason';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      const fullReason = notes ? `${reason} — ${notes}` : reason;
+      const btn  = document.getElementById('rejectBtn');
+      const icon = document.getElementById('rejectBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+      try {
+        await API.rejectSample(id, fullReason);
+        showToast('Sample rejected: ' + reason, 'warning');
+        closeRejectModal();
+        loadSamples(currentFilter);
+      } catch(e) {
+        errEl.textContent = e.message || 'Failed to reject sample';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-ban'; }
+    }
 
     // Barcode scanner — quick scan handler (Enter key triggers search)
     document.getElementById('barcodeQuickScan').addEventListener('keydown', function(e) {

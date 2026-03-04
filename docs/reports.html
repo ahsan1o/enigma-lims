@@ -10,6 +10,7 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <script src="js/help.js"></script>
+  <script src="js/palette.js"></script>
   <style>
     body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
     ::-webkit-scrollbar { width: 6px; }
@@ -126,6 +127,9 @@
           <span>Lab Report</span>
         </h3>
         <div class="flex items-center gap-2">
+          <button onclick="shareViaWhatsApp()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+            <i class="fab fa-whatsapp"></i> Share
+          </button>
           <button onclick="printReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
             <i class="fas fa-print"></i> Print
           </button>
@@ -412,6 +416,35 @@
 
     function closeReportModal() {
       document.getElementById('reportModal').classList.remove('open');
+    }
+
+    function shareViaWhatsApp() {
+      if (!currentReport) return;
+      const pat = currentReport.patient || {};
+      const smp = currentReport.sample || {};
+      const patName  = pat.name  || currentReport.patient_name  || 'Patient';
+      const patPhone = pat.phone || currentReport.patient_phone || '';
+      const sampleId = smp.id   || currentReport.sample_id     || currentReport.id || '—';
+      const results  = Array.isArray(currentReport.results) ? currentReport.results : [];
+      const total    = results.reduce((s, r) => s + (r.price || 0), 0);
+
+      let text = `*Lab Report — Enigma Diagnostics*\n\n`;
+      text += `Patient: *${patName}*\n`;
+      text += `Sample ID: ${sampleId}\n`;
+      text += `Tests Done: ${results.length}\n`;
+      if (total > 0) text += `Total: PKR ${total.toLocaleString('en-PK')}\n`;
+
+      const criticals = results.filter(r => (r.status || r.interpretation || '').toLowerCase() === 'critical');
+      if (criticals.length > 0) {
+        text += `\n⚠️ *Critical Values Noted:*\n`;
+        criticals.forEach(r => { text += `• ${r.test_name}: ${r.result_value || r.value} ${r.unit || ''}\n`; });
+        text += `Please contact the lab immediately.\n`;
+      }
+      text += `\nFor the full printed report, contact Enigma Diagnostics Lab.`;
+
+      const target = patPhone ? `https://wa.me/${patPhone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`
+                               : `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.open(target, '_blank');
     }
 
     function printReport() {

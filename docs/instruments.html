@@ -10,6 +10,7 @@
   <script src="js/auth.js"></script>
   <script src="js/api.js"></script>
   <script src="js/help.js"></script>
+  <script src="js/palette.js"></script>
   <style>
     body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
     ::-webkit-scrollbar { width: 6px; }
@@ -79,6 +80,20 @@
     </div>
 
     <div class="p-6">
+      <!-- Calibration alert banner -->
+      <div id="calibrationAlert" class="hidden mb-5 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+        <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-amber-800 font-semibold text-sm">Calibration Required</p>
+          <p id="calibrationAlertText" class="text-amber-600 text-xs mt-0.5"></p>
+        </div>
+        <button onclick="this.closest('#calibrationAlert').classList.add('hidden')" class="text-amber-400 hover:text-amber-600 flex-shrink-0">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+
       <!-- Search + count -->
       <div class="flex items-center gap-3 mb-6">
         <div class="relative flex-1 max-w-sm">
@@ -213,11 +228,48 @@
       catch(e){ return d; }
     }
 
+    function getCalibrationInfo(nextCal) {
+      if (!nextCal) return { status: null, label: null, cardStyle: '', chipHtml: '' };
+      const today = new Date(); today.setHours(0,0,0,0);
+      const next  = new Date(nextCal); next.setHours(0,0,0,0);
+      const days  = Math.ceil((next - today) / 86400000);
+      if (days < 0) return {
+        status: 'overdue', days: Math.abs(days),
+        cardStyle: 'border-red-300 bg-red-50/30',
+        chipHtml: `<span class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-200"><i class="fas fa-exclamation-circle"></i> Calibration Overdue (${Math.abs(days)}d)</span>`
+      };
+      if (days <= 7) return {
+        status: 'soon', days,
+        cardStyle: 'border-amber-300 bg-amber-50/30',
+        chipHtml: `<span class="mt-2 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full border border-amber-200"><i class="fas fa-clock"></i> Due in ${days} day${days!==1?'s':''}</span>`
+      };
+      return { status: 'ok', days, cardStyle: '', chipHtml: '' };
+    }
+
     let allInstruments = [];
 
     function renderGrid(list) {
       document.getElementById('instCount').textContent = list.length;
       const grid = document.getElementById('instGrid');
+
+      // Show/hide calibration banner
+      const alertItems = list.filter(i => {
+        const info = getCalibrationInfo(i.next_calibration);
+        return info.status === 'overdue' || info.status === 'soon';
+      });
+      const alertDiv = document.getElementById('calibrationAlert');
+      if (alertItems.length > 0) {
+        const overdue = alertItems.filter(i => getCalibrationInfo(i.next_calibration).status === 'overdue');
+        const soon    = alertItems.filter(i => getCalibrationInfo(i.next_calibration).status === 'soon');
+        let msg = '';
+        if (overdue.length) msg += `${overdue.length} instrument${overdue.length!==1?'s':''} overdue: ${overdue.map(i=>i.instrument_name||i.name).join(', ')}. `;
+        if (soon.length)   msg += `${soon.length} instrument${soon.length!==1?'s':''} due within 7 days.`;
+        document.getElementById('calibrationAlertText').textContent = msg;
+        alertDiv.classList.remove('hidden');
+      } else {
+        alertDiv.classList.add('hidden');
+      }
+
       if (!list.length) {
         grid.innerHTML = `
           <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
@@ -231,21 +283,23 @@
         return;
       }
       grid.innerHTML = list.map(inst => {
-        const code = inst.code || inst.instrument_code || '—';
-        const name = inst.name || inst.instrument_name || '—';
-        const mfr  = inst.manufacturer || '';
-        const model= inst.model || '';
-        const loc  = inst.location || '—';
-        const sn   = inst.serial_number || inst.serial || '—';
-        const cal  = formatDate(inst.last_calibration);
+        const code    = inst.code || inst.instrument_code || '—';
+        const name    = inst.name || inst.instrument_name || '—';
+        const mfr     = inst.manufacturer || '';
+        const model   = inst.model || '';
+        const loc     = inst.location || '—';
+        const sn      = inst.serial_number || inst.serial || '—';
+        const cal     = formatDate(inst.last_calibration);
         const nextCal = formatDate(inst.next_calibration);
+        const calInfo = getCalibrationInfo(inst.next_calibration);
         return `
-          <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-400 transition-all flex flex-col gap-4">
+          <div class="bg-white border ${calInfo.cardStyle || 'border-gray-200'} rounded-2xl p-5 hover:shadow-md transition-all flex flex-col gap-4">
             <div class="flex items-start justify-between">
               <div class="min-w-0 flex-1 mr-3">
                 <span class="font-mono text-blue-600 text-xs font-bold bg-blue-50 px-2 py-0.5 rounded">${code}</span>
                 <h4 class="text-gray-900 font-semibold text-base mt-2 leading-snug">${name}</h4>
-                ${mfr||model ? `<p class="text-gray-400 text-xs mt-0.5">${[mfr,model].filter(Boolean).join(' \u00b7 ')}</p>` : ''}
+                ${mfr||model ? `<p class="text-gray-400 text-xs mt-0.5">${[mfr,model].filter(Boolean).join(' · ')}</p>` : ''}
+                ${calInfo.chipHtml}
               </div>
               ${statusBadge(inst.status)}
             </div>
@@ -262,7 +316,7 @@
             <div class="pt-3 border-t border-gray-200 flex items-center justify-between">
               <div class="text-xs text-gray-400 space-y-0.5">
                 <div><i class="fas fa-calendar-check mr-1 text-green-500/70"></i>Last cal: <span class="text-gray-500">${cal||'Not recorded'}</span></div>
-                ${nextCal ? `<div><i class="fas fa-calendar-alt mr-1 text-amber-500/70"></i>Next cal: <span class="text-gray-500">${nextCal}</span></div>` : ''}
+                ${nextCal ? `<div><i class="fas fa-calendar-alt mr-1 text-amber-500/70"></i>Next cal: <span class="${calInfo.status==='overdue'?'text-red-600 font-semibold':calInfo.status==='soon'?'text-amber-600 font-semibold':'text-gray-500'}">${nextCal}</span></div>` : ''}
               </div>
               <button onclick='openEditModal(${JSON.stringify(inst)})'
                 class="bg-gray-100 hover:bg-blue-600 text-gray-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5">
