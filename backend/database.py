@@ -31,6 +31,7 @@ def _migrate_schema():
     migrations = [
         "ALTER TABLE tests ADD COLUMN price FLOAT DEFAULT 0.0",
         "ALTER TABLE orders ADD COLUMN doctor_name VARCHAR(255)",
+        "ALTER TABLE patients ADD COLUMN referring_doctor_name VARCHAR(255)",
         """CREATE TABLE IF NOT EXISTS test_reference_ranges (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             test_id INTEGER NOT NULL REFERENCES tests(id) ON DELETE CASCADE,

@@ -49,6 +49,7 @@ class PatientCreate(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     doctor_id: Optional[int] = None
+    referring_doctor_name: Optional[str] = None
 
     @field_validator('gender', mode='before')
     @classmethod
@@ -64,6 +65,7 @@ class PatientUpdate(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     doctor_id: Optional[int] = None
+    referring_doctor_name: Optional[str] = None
 
     @field_validator('gender', mode='before')
     @classmethod
@@ -81,6 +83,7 @@ class PatientResponse(BaseModel):
     email: Optional[str]
     doctor_id: Optional[int]
     doctor_name: Optional[str] = None
+    referring_doctor_name: Optional[str] = None
     created_at: datetime
 
     @field_validator('gender', mode='before')

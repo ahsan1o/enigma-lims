@@ -23,6 +23,7 @@ class Patient(Base):
     phone = Column(String(20))
     email = Column(String(255))
     doctor_id = Column(Integer, ForeignKey("doctors.id"))
+    referring_doctor_name = Column(String(255), nullable=True)  # Free-text referring doctor
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

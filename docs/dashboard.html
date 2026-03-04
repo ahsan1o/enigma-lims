@@ -619,6 +619,12 @@
                 class="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
             </div>
           </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Referring Doctor</label>
+            <input type="text" id="jPatientDoctor" list="jDoctorDatalist" placeholder="Dr. Name (optional)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+            <datalist id="jDoctorDatalist"></datalist>
+          </div>
         </div>
 
         <!-- STEP 1 (Existing Patient): Search & Select -->
@@ -730,6 +736,18 @@
             <div class="flex items-center justify-between border-t border-green-300 pt-2">
               <span class="text-sm font-semibold text-gray-800">Total Amount</span>
               <span class="text-base font-bold text-green-700">PKR <span id="jBillingTotal">0</span></span>
+            </div>
+            <!-- Payment received -->
+            <div class="mt-2 pt-2 border-t border-green-200">
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input type="checkbox" id="jPayReceived" class="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  onchange="document.getElementById('jPayAmountRow').classList.toggle('hidden',!this.checked)">
+                <span class="text-sm font-medium text-gray-700">Payment received now</span>
+              </label>
+              <div id="jPayAmountRow" class="hidden mt-2">
+                <input type="number" id="jPaidAmount" min="0" step="1" placeholder="Amount (PKR)"
+                  class="w-full px-3 py-1.5 border border-green-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500">
+              </div>
             </div>
           </div>
         </div>
@@ -878,11 +896,14 @@
 
     async function _loadJourneyData() {
       try {
-        const [tests, panels] = await Promise.all([
-          API.getTests(), API.getPanels(true)
+        const [tests, panels, doctors] = await Promise.all([
+          API.getTests(), API.getPanels(true), API.getDoctors()
         ]);
         _journeyTests  = Array.isArray(tests)  ? tests  : (tests?.items  || []);
         _journeyPanels = Array.isArray(panels) ? panels : (panels?.items || []);
+        const docList  = Array.isArray(doctors) ? doctors : (doctors?.items || []);
+        const dl = document.getElementById('jDoctorDatalist');
+        if (dl) dl.innerHTML = docList.map(d => `<option value="Dr. ${d.name||d.full_name||''}"></option>`).join('');
         _renderTestList('');
         _renderPanelList();
       } catch(e) {
@@ -1125,6 +1146,12 @@
           if (!age || parseInt(age)<0 || parseInt(age)>150) { errEl.textContent='Please enter a valid age.'; errEl.classList.remove('hidden'); return; }
           if (!gender){ errEl.textContent='Please select gender.';       errEl.classList.remove('hidden'); return; }
         }
+        // Auto-populate order doctor from patient's referring doctor
+        const patDoc = document.getElementById('jPatientDoctor');
+        const ordDoc = document.getElementById('jDoctor');
+        if (patDoc && ordDoc && !ordDoc.value && patDoc.value.trim()) {
+          ordDoc.value = patDoc.value.trim();
+        }
         _showJourneyStep(2);
       } else if (_journeyStep === 2) {
         if (!_selectedTests.size) { errEl.textContent='Please select at least one test.'; errEl.classList.remove('hidden'); return; }
@@ -1137,7 +1164,7 @@
       if (_journeyStep > 1) _showJourneyStep(_journeyStep - 1);
     }
 
-    function _showReceipt({patient, samples, totalAmount}) {
+    function _showReceipt({patient, samples, totalAmount, payReceived, paidAmount}) {
       const total = totalAmount || 0;
       const now   = new Date().toLocaleString('en-GB', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
       const selected = [..._selectedTests.values()];
@@ -1152,6 +1179,14 @@
         `<tr><td class="py-0.5">${t.name}</td>
           <td class="py-0.5 text-right font-medium">${(t.price||0)>0?'PKR '+(t.price||0).toFixed(0):'-'}</td></tr>`
       ).join('');
+
+      const payLine = payReceived
+        ? `<div style="margin-top:8px;padding:6px 10px;background:#dcfce7;border:1px solid #bbf7d0;border-radius:6px;font-size:13px;font-weight:600;color:#15803d;text-align:center">
+             <i class="fas fa-check-circle mr-1"></i>PAID: PKR ${(paidAmount||total).toFixed(0)}
+           </div>`
+        : `<div style="margin-top:8px;padding:6px 10px;background:#fefce8;border:1px solid #fde68a;border-radius:6px;font-size:13px;font-weight:600;color:#92400e;text-align:center">
+             <i class="fas fa-clock mr-1"></i>Payment Pending: PKR ${total.toFixed(0)}
+           </div>`;
 
       document.getElementById('receiptContent').innerHTML = `
         <div style="text-align:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #d1d5db">
@@ -1175,6 +1210,7 @@
             <tr><td style="font-weight:700">Total Amount</td><td style="text-align:right;font-weight:700;color:#15803d">PKR ${total.toFixed(0)}</td></tr>
           </table>
         </div>
+        ${payLine}
         <div style="font-size:11px;color:#9ca3af;text-align:center;margin-top:10px;padding-top:10px;border-top:1px dashed #d1d5db">
           Registered: ${now}<br>Present this token to collect your test report.
         </div>`;
@@ -1222,10 +1258,11 @@
         } else {
           const phoneRaw = document.getElementById('jPhone').value.trim();
           patient = await API.createPatient({
-            name:   document.getElementById('jName').value.trim(),
-            age:    parseInt(document.getElementById('jAge').value),
-            gender: document.getElementById('jGender').value,
-            phone:  phoneRaw ? ('+92' + phoneRaw.replace(/^\+92/, '')) : null
+            name:                  document.getElementById('jName').value.trim(),
+            age:                   parseInt(document.getElementById('jAge').value),
+            gender:                document.getElementById('jGender').value,
+            phone:                 phoneRaw ? ('+92' + phoneRaw.replace(/^\+92/, '')) : null,
+            referring_doctor_name: document.getElementById('jPatientDoctor')?.value.trim() || null
           });
         }
 
@@ -1259,9 +1296,13 @@
         // 5. Calculate total (no invoice creation — just show total)
         const selected = [..._selectedTests.values()];
         const totalAmount = selected.reduce((s, t) => s + (t.price||0), 0);
+        const payReceived = document.getElementById('jPayReceived')?.checked || false;
+        const paidAmount  = payReceived
+          ? (parseFloat(document.getElementById('jPaidAmount')?.value) || totalAmount)
+          : null;
 
         closeJourneyModal();
-        _showReceipt({ patient, samples: createdSamples, totalAmount });
+        _showReceipt({ patient, samples: createdSamples, totalAmount, payReceived, paidAmount });
       } catch(err) {
         errEl.textContent = err.message || 'Failed to register visit. Please try again.';
         errEl.classList.remove('hidden');

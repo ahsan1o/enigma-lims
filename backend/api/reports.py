@@ -8,6 +8,55 @@ from models import Sample, Result, Order, TestReferenceRange
 router = APIRouter(prefix="/api/reports", tags=["reports"])
 
 
+def _fmt_range(r):
+    """Format a single TestReferenceRange or test object into a range string."""
+    rmin = getattr(r, 'ref_min', None) or getattr(r, 'reference_min', None)
+    rmax = getattr(r, 'ref_max', None) or getattr(r, 'reference_max', None)
+    if rmin is not None and rmax is not None:
+        return f"{rmin}–{rmax}"
+    if rmin is not None:
+        return f"≥{rmin}"
+    if rmax is not None:
+        return f"≤{rmax}"
+    return None
+
+
+def _build_range_display(test, patient_age, db):
+    """Build comprehensive M/F reference range string for the printed report."""
+    all_ranges = db.query(TestReferenceRange).filter(TestReferenceRange.test_id == test.id).all()
+
+    if not all_ranges:
+        # Fall back to flat test values
+        s = _fmt_range(test)
+        return s if s else "N/A"
+
+    def best_for_gender(gender):
+        """Pick the most specific range for a given gender, considering patient age."""
+        candidates = [r for r in all_ranges if r.gender in (gender, 'Any')]
+        if not candidates:
+            return None
+        age_matched = [r for r in candidates if patient_age is None or r.min_age <= patient_age <= r.max_age]
+        pool = age_matched if age_matched else candidates
+        specific = [r for r in pool if r.gender == gender]
+        return specific[0] if specific else pool[0]
+
+    m_range = best_for_gender('M')
+    f_range = best_for_gender('F')
+    m_str = _fmt_range(m_range) if m_range else None
+    f_str = _fmt_range(f_range) if f_range else None
+
+    if m_str and f_str:
+        return m_str if m_str == f_str else f"M: {m_str} | F: {f_str}"
+    if m_str:
+        return f"M: {m_str}"
+    if f_str:
+        return f"F: {f_str}"
+    # Fall back to Any range
+    any_r = next((r for r in all_ranges if r.gender == 'Any'), None)
+    s = _fmt_range(any_r) if any_r else None
+    return s or "N/A"
+
+
 def _get_ref_range(test_id, age, gender, db):
     """Look up age/gender-specific reference range, fall back to Any if needed."""
     ranges = db.query(TestReferenceRange).filter(TestReferenceRange.test_id == test_id).all()
@@ -94,15 +143,8 @@ def generate_report(sample_id: int, db: Session = Depends(get_db)):
         cmin = ref_range.critical_min if ref_range else (test.critical_min if test else None)
         cmax = ref_range.critical_max if ref_range else (test.critical_max if test else None)
 
-        # Build reference range display string
-        if rmin is not None and rmax is not None:
-            ref_range_str = f"{rmin} – {rmax}"
-        elif rmin is not None:
-            ref_range_str = f"≥ {rmin}"
-        elif rmax is not None:
-            ref_range_str = f"≤ {rmax}"
-        else:
-            ref_range_str = "N/A"
+        # Build reference range display — comprehensive M/F labels when available
+        ref_range_str = _build_range_display(test, patient_age, db) if test else "N/A"
 
         flag = _flag(r.result_value, ref_range, test) if test else ""
 
