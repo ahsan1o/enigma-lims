@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Samples - Enigma LIMS</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/barcodes/JsBarcode.code128.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="js/config.js"></script>
   <script src="js/auth.js"></script>
@@ -551,6 +552,17 @@
     document.getElementById('rejectModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeRejectModal(); });
 
     // ─── Sample Label Printing ────────────────────────────────────────
+    function _jsBarcodeToSvg(code) {
+      // Render a real Code128 barcode into a detached SVG and return as HTML string
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      JsBarcode(svg, code, {
+        format: 'CODE128', width: 1.8, height: 50,
+        displayValue: true, fontSize: 12, margin: 2,
+        background: '#ffffff', lineColor: '#000000'
+      });
+      return new XMLSerializer().serializeToString(svg);
+    }
+
     async function printLabel(s) {
       const sampleId = s.sample_id || s.id || '—';
       const patient  = s.patient_name || s.patient?.full_name || '—';
@@ -572,14 +584,15 @@
         } catch(e) { /* silently skip */ }
       }
 
+      const barcodeSvg = _jsBarcodeToSvg(sampleId);
+
       const labelHtml = `
         <div style="width:3.5in;border:2px solid #1e293b;padding:14px 16px;border-radius:8px;font-family:system-ui,sans-serif;background:#fff;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div style="font-size:10px;font-weight:800;color:#1e40af;letter-spacing:2px;">ENIGMA LIMS</div>
             <div style="font-size:9px;color:#64748b;background:#f1f5f9;padding:2px 8px;border-radius:999px;font-weight:600;">${type}</div>
           </div>
-          <div style="height:44px;background:repeating-linear-gradient(to right,#000 0,#000 2px,transparent 2px,transparent 4px,#000 4px,#000 5px,transparent 5px,transparent 7px,#000 7px,#000 9px,transparent 9px,transparent 13px,#000 13px,#000 15px,transparent 15px,transparent 18px,#000 18px,#000 21px,transparent 21px,transparent 24px);border-radius:2px;margin-bottom:6px;"></div>
-          <div style="font-family:'Courier New',monospace;font-size:13px;font-weight:800;text-align:center;letter-spacing:3px;color:#1e293b;margin-bottom:10px;">${sampleId}</div>
+          <div style="margin:0 -4px 6px;">${barcodeSvg}</div>
           <div style="border-top:1px solid #e2e8f0;padding-top:8px;">
             <div style="font-size:12px;font-weight:700;color:#1e293b;">${patient}</div>
             <div style="font-size:10px;color:#64748b;margin-top:3px;">${dateStr}</div>

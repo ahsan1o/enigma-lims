@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Enigma LIMS</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/barcodes/JsBarcode.code128.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="js/config.js"></script>
@@ -882,8 +883,6 @@
       }
     }
 
-    const _BARCODE_CSS = 'repeating-linear-gradient(to right,#000 0,#000 2px,transparent 2px,transparent 4px,#000 4px,#000 5px,transparent 5px,transparent 7px,#000 7px,#000 9px,transparent 9px,transparent 13px,#000 13px,#000 15px,transparent 15px,transparent 18px,#000 18px,#000 21px,transparent 21px,transparent 24px)';
-
     function _buildLabelHtml(s, patientName, dateStr) {
       const sampleId = s.sampleBarcode || '—';
       const type = (s.type || '—').toUpperCase();
@@ -894,9 +893,8 @@
             <div style="font-size:9px;font-weight:800;color:#1e40af;letter-spacing:2px;">ENIGMA LIMS</div>
             <div style="font-size:8px;color:#64748b;background:#f1f5f9;padding:2px 7px;border-radius:999px;font-weight:600;">${type}</div>
           </div>
-          <div style="height:38px;background:${_BARCODE_CSS};border-radius:2px;margin-bottom:5px;"></div>
-          <div style="font-family:'Courier New',monospace;font-size:11px;font-weight:800;text-align:center;letter-spacing:2px;color:#1e293b;margin-bottom:8px;">${sampleId}</div>
-          <div style="border-top:1px solid #e2e8f0;padding-top:6px;">
+          <svg class="jbc-svg" data-bc="${sampleId}" style="width:100%;display:block;"></svg>
+          <div style="border-top:1px solid #e2e8f0;padding-top:6px;margin-top:4px;">
             <div style="font-size:11px;font-weight:700;color:#1e293b;">${patientName}</div>
             <div style="font-size:9px;color:#64748b;margin-top:2px;">${dateStr}</div>
             ${tests ? `<div style="font-size:8px;font-weight:700;color:#1e40af;margin-top:4px;letter-spacing:.5px;text-transform:uppercase;border-top:1px dashed #bfdbfe;padding-top:4px;">${tests}</div>` : ''}
@@ -912,6 +910,14 @@
         `${samples.length} tube label${samples.length !== 1 ? 's' : ''} — print and stick on tubes before sending to lab`;
       document.getElementById('tubeLabelContent').innerHTML =
         samples.map(s => _buildLabelHtml(s, patient.name, dateStr)).join('');
+      // Render real Code128 barcodes into each SVG element
+      document.querySelectorAll('#tubeLabelContent .jbc-svg').forEach(svg => {
+        JsBarcode(svg, svg.dataset.bc, {
+          format: 'CODE128', width: 1.5, height: 42,
+          displayValue: true, fontSize: 10, margin: 2,
+          background: '#ffffff', lineColor: '#000000'
+        });
+      });
       _pendingReceiptArgs = receiptArgs;
       openTubeLabelModal();
     }
