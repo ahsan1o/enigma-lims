@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List
 from datetime import datetime
 
@@ -50,6 +50,13 @@ class PatientCreate(BaseModel):
     email: Optional[str] = None
     doctor_id: Optional[int] = None
 
+    @field_validator('gender', mode='before')
+    @classmethod
+    def normalize_gender(cls, v):
+        if v:
+            return v.capitalize()
+        return v
+
 class PatientUpdate(BaseModel):
     name: Optional[str] = None
     age: Optional[int] = None
@@ -57,6 +64,13 @@ class PatientUpdate(BaseModel):
     phone: Optional[str] = None
     email: Optional[str] = None
     doctor_id: Optional[int] = None
+
+    @field_validator('gender', mode='before')
+    @classmethod
+    def normalize_gender(cls, v):
+        if v:
+            return v.capitalize()
+        return v
 
 class PatientResponse(BaseModel):
     id: int
@@ -68,6 +82,14 @@ class PatientResponse(BaseModel):
     doctor_id: Optional[int]
     doctor_name: Optional[str] = None
     created_at: datetime
+
+    @field_validator('gender', mode='before')
+    @classmethod
+    def normalize_gender(cls, v):
+        if v:
+            return v.capitalize()
+        return v
+
     class Config:
         from_attributes = True
 
