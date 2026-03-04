@@ -15,7 +15,7 @@
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
     .nav-item.active { background-color: #2563eb !important; color: white !important; }
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
     select option { background:#ffffff; color:#1e293b; }
   </style>
@@ -23,7 +23,7 @@
 <body class="flex h-screen overflow-hidden">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0" style="min-height:100vh">
     <div class="p-5 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
@@ -31,20 +31,20 @@
         </div>
         <div>
           <div class="text-gray-900 font-bold text-base leading-tight">Enigma</div>
-          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+          <div class="text-blue-600 text-xs font-semibold tracking-widest">LIMS</div>
         </div>
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
-      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
-      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
-      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
-      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
     </nav>
     <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
@@ -53,7 +53,7 @@
           <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
           <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
         </div>
-        <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition-colors p-1" title="Logout">
+        <button onclick="Auth.logout()" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Logout">
           <i class="fas fa-sign-out-alt text-sm"></i>
         </button>
       </div>
@@ -78,7 +78,7 @@
         <div class="relative flex-1 max-w-sm">
           <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
           <input id="searchInput" type="text" placeholder="Search instruments…" oninput="handleSearch(this.value)"
-            class="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+            class="w-full bg-white border border-gray-300 rounded-lg pl-9 pr-4 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
         </div>
         <div class="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-500 text-sm">
           <i class="fas fa-cogs text-gray-400"></i>
@@ -101,51 +101,51 @@
     <div class="bg-white rounded-2xl p-6 w-full max-w-lg border border-gray-200 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-gray-900 font-bold text-lg" id="modalTitle">Add Instrument</h3>
-        <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
       <form id="instForm" class="space-y-4">
         <input type="hidden" id="iId">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Instrument Code <span class="text-red-400">*</span></label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Instrument Code <span class="text-red-400">*</span></label>
             <input id="iCode" type="text" required placeholder="e.g. HEMA-001"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Instrument Name <span class="text-red-400">*</span></label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Instrument Name <span class="text-red-400">*</span></label>
             <input id="iName" type="text" required placeholder="Hematology Analyzer"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Manufacturer</label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Manufacturer</label>
             <input id="iMfr" type="text" placeholder="Sysmex, Mindray…"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Model</label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Model</label>
             <input id="iModel" type="text" placeholder="XN-550, BC-5180"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Location</label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Location</label>
             <input id="iLocation" type="text" placeholder="Room 2, Lab A…"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Serial Number</label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Serial Number</label>
             <input id="iSerial" type="text" placeholder="SN-XXXX-YYYY"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div class="col-span-2">
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Status</label>
-            <select id="iStatus" class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none">
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Status</label>
+            <select id="iStatus" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none">
               <option value="active">Active</option>
               <option value="maintenance">Under Maintenance</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
         </div>
-        <div id="instError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div id="instError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
         <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-3">
           <i class="fas fa-plug text-amber-500 mt-0.5"></i>
           <div>
@@ -243,7 +243,7 @@
           <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-400 transition-all flex flex-col gap-4">
             <div class="flex items-start justify-between">
               <div class="min-w-0 flex-1 mr-3">
-                <span class="font-mono text-blue-400 text-xs font-bold bg-blue-400/10 px-2 py-0.5 rounded">${code}</span>
+                <span class="font-mono text-blue-600 text-xs font-bold bg-blue-50 px-2 py-0.5 rounded">${code}</span>
                 <h4 class="text-gray-900 font-semibold text-base mt-2 leading-snug">${name}</h4>
                 ${mfr||model ? `<p class="text-gray-400 text-xs mt-0.5">${[mfr,model].filter(Boolean).join(' \u00b7 ')}</p>` : ''}
               </div>
@@ -251,11 +251,11 @@
             </div>
             <div class="space-y-1.5 text-sm">
               <div class="flex items-center gap-2 text-gray-500">
-                <i class="fas fa-map-marker-alt w-4 text-center text-slate-600 text-xs flex-shrink-0"></i>
+                <i class="fas fa-map-marker-alt w-4 text-center text-gray-400 text-xs flex-shrink-0"></i>
                 <span>${loc}</span>
               </div>
               <div class="flex items-center gap-2 text-gray-500">
-                <i class="fas fa-barcode w-4 text-center text-slate-600 text-xs flex-shrink-0"></i>
+                <i class="fas fa-barcode w-4 text-center text-gray-400 text-xs flex-shrink-0"></i>
                 <span class="font-mono text-xs">${sn}</span>
               </div>
             </div>

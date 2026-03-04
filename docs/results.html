@@ -344,7 +344,7 @@
           <td class="px-4 py-3.5">
             <div class="flex items-center gap-2">
               ${!r.approved_by && !r.approved_date ? `
-                <button onclick='openApproveModal(${JSON.stringify(r)})' class="px-2.5 py-1.5 rounded-lg bg-green-500/15 text-green-400 hover:bg-green-500/30 transition-colors text-xs font-medium flex items-center gap-1.5" title="Approve">
+                <button onclick='openApproveModal(${JSON.stringify(r)})' class="px-2.5 py-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors text-xs font-medium flex items-center gap-1.5" title="Approve">
                   <i class="fas fa-check"></i> Approve
                 </button>` : ''}
             </div>
@@ -419,6 +419,18 @@
 
     document.getElementById('enterModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEnterModal(); });
     document.getElementById('approveModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeApproveModal(); });
+
+    document.getElementById('resultBarcodeScan')?.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && this.value.trim()) {
+        const val = this.value.trim();
+        openEnterModal();
+        const sel = document.getElementById('rOrder');
+        for (let opt of sel.options) {
+          if (opt.text.includes(val) || opt.value === val) { sel.value = opt.value; break; }
+        }
+        this.value = '';
+      }
+    });
 
     loadOrdersForDropdown();
     loadResults();

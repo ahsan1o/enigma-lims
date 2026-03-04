@@ -15,7 +15,7 @@
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
     .nav-item.active { background-color: #2563eb !important; color: white !important; }
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
     select option { background:#ffffff; color:#1e293b; }
   </style>
@@ -23,7 +23,7 @@
 <body class="flex h-screen overflow-hidden">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0" style="min-height:100vh">
     <div class="p-5 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
@@ -31,20 +31,20 @@
         </div>
         <div>
           <div class="text-gray-900 font-bold text-base leading-tight">Enigma</div>
-          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+          <div class="text-blue-600 text-xs font-semibold tracking-widest">LIMS</div>
         </div>
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
-      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
-      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
-      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
-      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
     </nav>
     <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
@@ -53,7 +53,7 @@
           <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
           <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
         </div>
-        <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition-colors p-1" title="Logout">
+        <button onclick="Auth.logout()" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Logout">
           <i class="fas fa-sign-out-alt text-sm"></i>
         </button>
       </div>
@@ -78,7 +78,7 @@
         <div class="relative flex-1 max-w-sm">
           <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
           <input id="searchInput" type="text" placeholder="Search users…" oninput="handleSearch(this.value)"
-            class="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+            class="w-full bg-white border border-gray-300 rounded-lg pl-9 pr-4 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
         </div>
         <span class="text-gray-400 text-sm ml-auto" id="userCount"></span>
       </div>
@@ -87,13 +87,13 @@
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-gray-200">
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">User</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Role</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Last Login</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Contact</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Last Login</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody id="usersBody">
@@ -112,42 +112,42 @@
     <div class="bg-white rounded-2xl p-6 w-full max-w-lg border border-gray-200 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-gray-900 font-bold text-lg" id="modalTitle">Add User</h3>
-        <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
       <form id="userForm" class="space-y-4">
         <input type="hidden" id="uId">
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Username <span class="text-red-400">*</span></label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Username <span class="text-red-400">*</span></label>
             <input id="uUsername" type="text" required placeholder="johnsmith"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500 disabled:opacity-60 disabled:cursor-not-allowed">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400 disabled:opacity-60 disabled:cursor-not-allowed">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">
               Password <span class="text-red-400" id="pwRequired">*</span>
             </label>
             <input id="uPassword" type="password" placeholder="••••••••"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
-            <p id="pwHint" class="text-slate-600 text-xs mt-1 hidden">Leave blank to keep current</p>
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
+            <p id="pwHint" class="text-gray-400 text-xs mt-1 hidden">Leave blank to keep current</p>
           </div>
           <div class="col-span-2">
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Full Name <span class="text-red-400">*</span></label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Full Name <span class="text-red-400">*</span></label>
             <input id="uFullName" type="text" required placeholder="John Smith"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Email</label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Email</label>
             <input id="uEmail" type="email" placeholder="john@lab.com"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Phone</label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Phone</label>
             <input id="uPhone" type="tel" placeholder="+92-300-0000000"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
           </div>
           <div class="col-span-2">
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Role <span class="text-red-400">*</span></label>
-            <select id="uRole" required class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none">
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Role <span class="text-red-400">*</span></label>
+            <select id="uRole" required class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none">
               <option value="">Select role…</option>
               <option value="admin">Administrator</option>
               <option value="supervisor">Supervisor</option>
@@ -156,7 +156,7 @@
             </select>
           </div>
         </div>
-        <div id="userError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div id="userError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
         <div class="flex justify-end gap-3 pt-2">
           <button type="button" onclick="closeModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
           <button type="submit" id="userBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
@@ -245,9 +245,9 @@
       if (!list.length) {
         tbody.innerHTML = `
           <tr><td colspan="6" class="px-5 py-16 text-center">
-            <i class="fas fa-users text-4xl text-slate-700 mb-3 block"></i>
+            <i class="fas fa-users text-4xl text-gray-300 mb-3 block"></i>
             <p class="text-gray-500 font-medium">No users found</p>
-            <p class="text-slate-600 text-sm mt-1">Add the first system user to get started</p>
+            <p class="text-gray-400 text-sm mt-1">Add the first system user to get started</p>
             <button onclick="openAddModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
               <i class="fas fa-user-plus mr-1"></i>Add User
             </button>
@@ -261,14 +261,14 @@
         const isSelf = currentUser && u.id === currentUser.id;
         const isActive = u.is_active !== false && u.active !== false;
         return `
-          <tr class="border-b border-gray-200/50 hover:bg-gray-100/20 transition-colors">
+          <tr class="border-b border-gray-100 hover:bg-blue-50/30 transition-colors">
             <td class="px-5 py-3.5">
               <div class="flex items-center gap-3">
                 <div style="${avatarStyle}" class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">${initials}</div>
                 <div>
                   <div class="text-gray-900 text-sm font-medium flex items-center gap-1.5">
                     ${u.full_name||'—'}
-                    ${isSelf ? '<span class="text-blue-400 text-xs font-normal">(you)</span>' : ''}
+                    ${isSelf ? '<span class="text-blue-600 text-xs font-normal">(you)</span>' : ''}
                   </div>
                   <div class="text-gray-400 text-xs font-mono">@${u.username||'—'}</div>
                 </div>
@@ -290,8 +290,8 @@
                 ${!isSelf ? `
                 <button onclick="toggleStatus(${u.id}, ${isActive})"
                   class="${isActive
-                    ? 'bg-amber-900/30 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-700/40 hover:border-amber-600'
-                    : 'bg-green-900/30 hover:bg-green-600 text-green-400 hover:text-white border border-green-700/40 hover:border-green-600'
+                    ? 'bg-amber-50 hover:bg-amber-500 text-amber-600 hover:text-white border border-amber-200 hover:border-amber-500'
+                    : 'bg-green-50 hover:bg-green-600 text-green-600 hover:text-white border border-green-200 hover:border-green-600'
                   } px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1">
                   <i class="fas ${isActive ? 'fa-ban' : 'fa-check-circle'}"></i>
                   ${isActive ? 'Disable' : 'Enable'}
