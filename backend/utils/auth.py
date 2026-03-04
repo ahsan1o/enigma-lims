@@ -8,8 +8,10 @@ from jose import JWTError, jwt
 from bcrypt import hashpw, checkpw, gensalt
 from functools import lru_cache
 
-# Security settings
-SECRET_KEY = "kotli-lims-secret-key-change-in-production"
+import os
+
+# Security settings - reads from environment variable on production (Render.com)
+SECRET_KEY = os.getenv("SECRET_KEY", "kotli-lims-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 480  # 8 hours
 
