@@ -510,7 +510,7 @@
       try {
         const created = await API.createResult(payload);
         showToast('Result saved successfully');
-        if (created && created.is_critical) {
+        if (created && (created.is_critical || created.status === 'critical')) {
           showCriticalBanner(created.patient_name, created.test_name);
         }
         closeEnterModal(); loadResults(currentFilter);
@@ -740,8 +740,8 @@
 
       try {
         const res = await API.machineInput({ sample_barcode: barcode, results });
-        const inserted = res?.inserted ?? results.length;
-        const notFound = res?.not_found ?? 0;
+        const inserted = res?.total_inserted ?? results.length;
+        const notFound = Array.isArray(res?.not_found) ? res.not_found.length : (res?.not_found ?? 0);
         showToast(`Machine input: ${inserted} inserted${notFound ? ', ' + notFound + ' not matched' : ''}`);
         closeBulkModal();
         loadResults(currentFilter);
