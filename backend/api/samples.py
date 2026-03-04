@@ -4,7 +4,7 @@ from typing import List, Optional
 from datetime import datetime
 from database import get_db
 from models import Sample, Patient
-from api.schemas import SampleCreate, SampleStatusUpdate, SampleResponse
+from api.schemas import SampleCreate, SampleStatusUpdate, SampleReject, SampleResponse
 from services.barcode_service import generate_sample_id
 
 router = APIRouter(prefix="/api/samples", tags=["samples"])
@@ -22,7 +22,7 @@ def list_samples(
         query = query.filter(Sample.status == status)
     if search:
         query = query.join(Patient).filter(Patient.name.ilike(f"%{search}%"))
-    samples = query.order_by(Sample.created_at.desc()).offset(skip).limit(limit).all()
+    samples = query.order_by(Sample.priority.desc(), Sample.created_at.desc()).offset(skip).limit(limit).all()
     result = []
     for s in samples:
         data = SampleResponse.model_validate(s)
@@ -73,6 +73,21 @@ def update_sample_status(sample_id: int, data: SampleStatusUpdate, db: Session =
     if sample.patient:
         resp.patient_name = sample.patient.name
     return resp
+
+@router.put("/{sample_id}/reject", response_model=SampleResponse)
+def reject_sample(sample_id: int, data: SampleReject, db: Session = Depends(get_db)):
+    sample = db.query(Sample).filter(Sample.id == sample_id).first()
+    if not sample:
+        raise HTTPException(status_code=404, detail="Sample not found")
+    sample.status = "rejected"
+    sample.rejection_reason = data.rejection_reason
+    db.commit()
+    db.refresh(sample)
+    resp = SampleResponse.model_validate(sample)
+    if sample.patient:
+        resp.patient_name = sample.patient.name
+    return resp
+
 
 @router.delete("/{sample_id}")
 def delete_sample(sample_id: int, db: Session = Depends(get_db)):

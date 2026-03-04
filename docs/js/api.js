@@ -76,5 +76,32 @@ const API = {
 
   // Reports
   getReports: () => API.get('/api/reports'),
-  getSampleReport: (id) => API.get(`/api/reports/${id}`)
+  getSampleReport: (id) => API.get(`/api/reports/${id}`),
+
+  // Panels
+  getPanels: (activeOnly = false) => API.get(`/api/panels?active_only=${activeOnly}`),
+  createPanel: (data) => API.post('/api/panels', data),
+  updatePanel: (id, data) => API.put(`/api/panels/${id}`, data),
+  deletePanel: (id) => API.delete(`/api/panels/${id}`),
+
+  // Billing
+  getInvoices: (status = '') => API.get(`/api/billing?limit=200${status ? '&status=' + status : ''}`),
+  createInvoice: (data) => API.post('/api/billing', data),
+  payInvoice: (id, data) => API.post(`/api/billing/${id}/pay`, data),
+  deleteInvoice: (id) => API.delete(`/api/billing/${id}`),
+
+  // Reagents
+  getReagents: (activeOnly = false) => API.get(`/api/reagents?active_only=${activeOnly}`),
+  createReagent: (data) => API.post('/api/reagents', data),
+  updateReagent: (id, data) => API.put(`/api/reagents/${id}`, data),
+  deleteReagent: (id) => API.delete(`/api/reagents/${id}`),
+
+  // Audit
+  getAuditLogs: (tableName = '') => API.get(`/api/audit?limit=200${tableName ? '&table_name=' + tableName : ''}`),
+
+  // Patient history
+  getPatientHistory: (id) => API.get(`/api/patients/${id}/history`),
+
+  // Sample reject
+  rejectSample: (id, reason) => API.put(`/api/samples/${id}/reject`, { rejection_reason: reason }),
 };

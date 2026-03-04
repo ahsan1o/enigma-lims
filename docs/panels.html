@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Panels - Enigma LIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/help.js"></script>
+  <style>
+    body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+    .nav-item.active { background-color: #2563eb !important; color: white !important; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    select option { background:#ffffff; color:#1e293b; }
+    .panel-row-expanded { background-color: #f0f7ff; }
+    .test-chip { display:inline-flex; align-items:center; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; margin: 0.15rem; }
+    .test-checkbox-item:hover { background-color: #f0f7ff; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0" style="min-height:100vh">
+    <div class="p-5 border-b border-gray-200">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-flask text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="text-gray-900 font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-600 text-xs font-semibold tracking-widest">LIMS</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="panels.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-layer-group w-5 text-center"></i><span>Test Panels</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="billing.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-receipt w-5 text-center"></i><span>Billing</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="reagents.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-flask-vial w-5 text-center"></i><span>Reagents</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="audit.html" id="auditNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-history w-5 text-center"></i><span>Audit Log</span></a>
+    </nav>
+    <div class="p-4 border-t border-gray-200">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
+        </div>
+        <button onclick="Auth.logout()" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Logout">
+          <i class="fas fa-sign-out-alt text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 overflow-y-auto">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <div>
+        <h1 class="text-gray-900 font-bold text-xl">Test Panels</h1>
+        <p class="text-gray-500 text-xs mt-0.5">Create and manage grouped test panels for streamlined ordering</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openPanelModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+          <i class="fas fa-plus"></i> New Panel
+        </button>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 flex items-center gap-4">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-layer-group text-blue-600 text-lg"></i>
+          </div>
+          <div>
+            <div class="text-gray-500 text-xs font-medium uppercase tracking-wider">Total Panels</div>
+            <div class="text-gray-900 text-2xl font-bold mt-0.5" id="cardTotal">—</div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 flex items-center gap-4">
+          <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-check-circle text-green-600 text-lg"></i>
+          </div>
+          <div>
+            <div class="text-gray-500 text-xs font-medium uppercase tracking-wider">Active Panels</div>
+            <div class="text-gray-900 text-2xl font-bold mt-0.5" id="cardActive">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="flex items-center gap-3 mb-4">
+        <div class="relative max-w-sm flex-1">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+          <input type="text" id="searchInput" placeholder="Search panels..." oninput="filterPanels(this.value)"
+            class="w-full bg-white border border-gray-300 rounded-lg pl-9 pr-4 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
+        </div>
+        <span class="text-gray-500 text-sm" id="panelCount"></span>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-8"></th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Panel Name</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tests</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="panelsBody">
+              <tr><td colspan="6" class="px-5 py-12 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading panels...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- PANEL MODAL -->
+  <div id="panelModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 border border-gray-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="text-gray-900 font-bold text-lg" id="panelModalTitle">New Panel</h3>
+        <button onclick="closePanelModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <form id="panelForm" class="space-y-4">
+        <input type="hidden" id="pId">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Panel Name <span class="text-red-500">*</span></label>
+          <input type="text" id="pName" required placeholder="e.g., Complete Blood Count, Liver Function Tests"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Description</label>
+          <textarea id="pDesc" rows="2" placeholder="Brief description of this test panel..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 resize-none"></textarea>
+        </div>
+
+        <!-- Active Toggle (edit only) -->
+        <div id="activeToggleRow" class="hidden flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <div>
+            <div class="text-sm font-medium text-gray-700">Active</div>
+            <div class="text-xs text-gray-500">Inactive panels cannot be added to new orders</div>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="pActive" class="sr-only peer" checked>
+            <div class="w-10 h-6 bg-gray-300 peer-checked:bg-blue-600 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-4"></div>
+          </label>
+        </div>
+
+        <!-- Test Selection -->
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Select Tests</label>
+          <div class="relative mb-2">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input type="text" id="testSearch" placeholder="Search tests..." oninput="filterTestList(this.value)"
+              class="w-full bg-white border border-gray-300 rounded-lg pl-8 pr-4 py-2 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
+          </div>
+          <div id="testCheckList" class="border border-gray-200 rounded-lg max-h-52 overflow-y-auto bg-white divide-y divide-gray-100">
+            <div class="px-4 py-8 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Loading tests...</div>
+          </div>
+          <div class="text-xs text-gray-500 mt-1.5"><span id="selectedTestCount">0</span> tests selected</div>
+        </div>
+
+        <div id="panelFormError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="closePanelModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Cancel</button>
+          <button type="submit" id="panelSaveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+            <i class="fas fa-save" id="panelSaveBtnIcon"></i>
+            <span id="panelSaveBtnText">Save Panel</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    if (!Auth.requireAuth()) throw new Error('not logged in');
+
+    const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+    document.querySelectorAll('.nav-item').forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.classList.add('bg-blue-600', 'text-white');
+        link.classList.remove('text-gray-600');
+      }
+    });
+
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('userName').textContent = user.full_name || user.username;
+      document.getElementById('userRole').textContent = (user.role || '').charAt(0).toUpperCase() + (user.role || '').slice(1);
+      document.getElementById('userAvatar').textContent = (user.full_name || user.username || 'A').charAt(0).toUpperCase();
+      if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
+      if (user.role !== 'admin') document.getElementById('auditNav')?.classList.add('hidden');
+    }
+
+    function showToast(msg, type = 'success') {
+      const colors = { success: 'bg-green-600', error: 'bg-red-600', warning: 'bg-amber-600', info: 'bg-blue-600' };
+      const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+      const t = document.createElement('div');
+      t.className = `pointer-events-all flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white text-sm font-medium ${colors[type] || colors.info} border border-white/10`;
+      t.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    let allPanels = [];
+    let allTests = [];
+    let expandedRows = new Set();
+
+    function renderPanels(panels) {
+      document.getElementById('panelCount').textContent = `${panels.length} panel${panels.length !== 1 ? 's' : ''}`;
+      document.getElementById('cardTotal').textContent = allPanels.length;
+      document.getElementById('cardActive').textContent = allPanels.filter(p => p.is_active !== false).length;
+
+      if (!panels.length) {
+        document.getElementById('panelsBody').innerHTML = `
+          <tr><td colspan="6" class="px-5 py-16 text-center">
+            <i class="fas fa-layer-group text-4xl text-gray-300 mb-3 block"></i>
+            <p class="text-gray-500 font-medium">No panels found</p>
+            <p class="text-gray-400 text-sm mt-1">Create your first test panel to group related tests</p>
+            <button onclick="openPanelModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <i class="fas fa-plus mr-1"></i>New Panel
+            </button>
+          </td></tr>`;
+        return;
+      }
+
+      let html = '';
+      panels.forEach(p => {
+        const isActive = p.is_active !== false;
+        const testIds = p.test_ids || p.tests || [];
+        const testCount = Array.isArray(testIds) ? testIds.length : 0;
+        const isExpanded = expandedRows.has(p.id);
+
+        html += `
+          <tr class="border-b border-gray-100 hover:bg-blue-50/30 transition-colors cursor-pointer ${isExpanded ? 'panel-row-expanded' : ''}" onclick="toggleExpand(${p.id})">
+            <td class="px-5 py-3.5 text-center">
+              <i class="fas fa-chevron-${isExpanded ? 'down' : 'right'} text-gray-400 text-xs transition-transform" id="chevron-${p.id}"></i>
+            </td>
+            <td class="px-4 py-3.5">
+              <div class="text-gray-900 font-semibold text-sm">${p.name || p.panel_name || '—'}</div>
+            </td>
+            <td class="px-4 py-3.5 text-gray-500 text-sm max-w-xs">
+              <div class="truncate">${p.description || '—'}</div>
+            </td>
+            <td class="px-4 py-3.5">
+              <span class="inline-flex items-center gap-1 text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full text-xs font-semibold">
+                <i class="fas fa-microscope text-xs"></i> ${testCount}
+              </span>
+            </td>
+            <td class="px-4 py-3.5">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${isActive ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500 border border-gray-200'}">
+                <i class="fas fa-circle text-[0.45rem] mr-1"></i>${isActive ? 'Active' : 'Inactive'}
+              </span>
+            </td>
+            <td class="px-4 py-3.5" onclick="event.stopPropagation()">
+              <div class="flex items-center gap-1.5">
+                <button onclick="openEditModal(${JSON.stringify(p).replace(/'/g, '&#39;')})" class="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors" title="Edit">
+                  <i class="fas fa-pencil text-xs"></i>
+                </button>
+                <button onclick="deletePanel(${p.id})" class="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors" title="Delete">
+                  <i class="fas fa-trash text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>`;
+
+        if (isExpanded) {
+          const panelTestIds = Array.isArray(testIds) ? testIds : [];
+          const chips = panelTestIds.map(tid => {
+            const t = allTests.find(x => x.id === tid || x.id === parseInt(tid));
+            if (!t) return `<span class="test-chip">#${tid}</span>`;
+            return `<span class="test-chip"><i class="fas fa-microscope mr-1 text-[0.55rem]"></i>${t.test_name || t.name || tid}</span>`;
+          }).join('');
+
+          html += `
+            <tr class="border-b border-blue-100 ${isExpanded ? 'panel-row-expanded' : ''}">
+              <td></td>
+              <td colspan="5" class="px-4 py-3">
+                ${panelTestIds.length ? `<div class="flex flex-wrap gap-0.5">${chips}</div>` : '<span class="text-gray-400 text-sm italic">No tests in this panel</span>'}
+              </td>
+            </tr>`;
+        }
+      });
+
+      document.getElementById('panelsBody').innerHTML = html;
+    }
+
+    function toggleExpand(id) {
+      if (expandedRows.has(id)) expandedRows.delete(id);
+      else expandedRows.add(id);
+      renderPanels(getFilteredPanels());
+    }
+
+    function getFilteredPanels() {
+      const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+      if (!q) return allPanels;
+      return allPanels.filter(p => (p.name || p.panel_name || '').toLowerCase().includes(q) || (p.description || '').toLowerCase().includes(q));
+    }
+
+    function filterPanels(q) { renderPanels(getFilteredPanels()); }
+
+    async function loadPanels() {
+      try {
+        const data = await API.get('/api/panels?active_only=false');
+        allPanels = Array.isArray(data) ? data : (data?.items || data?.panels || []);
+        renderPanels(allPanels);
+      } catch (e) {
+        document.getElementById('panelsBody').innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>${e.message}</td></tr>`;
+        showToast('Failed to load panels', 'error');
+      }
+    }
+
+    async function loadTests() {
+      try {
+        const data = await API.getTests();
+        allTests = Array.isArray(data) ? data : (data?.items || []);
+      } catch (e) { console.warn('tests', e); }
+    }
+
+    async function deletePanel(id) {
+      if (!confirm('Delete this panel? This cannot be undone.')) return;
+      try {
+        await API.delete(`/api/panels/${id}`);
+        showToast('Panel deleted');
+        loadPanels();
+      } catch (e) {
+        showToast(e.message || 'Failed to delete', 'error');
+      }
+    }
+
+    // Modal
+    let editingPanel = null;
+
+    function renderTestCheckList(filter = '', selectedIds = []) {
+      const q = filter.toLowerCase();
+      const tests = q ? allTests.filter(t => (t.test_name || t.name || '').toLowerCase().includes(q) || (t.test_code || t.code || '').toLowerCase().includes(q)) : allTests;
+      const container = document.getElementById('testCheckList');
+
+      if (!tests.length) {
+        container.innerHTML = `<div class="px-4 py-8 text-center text-gray-400 text-sm">${q ? 'No tests match your search' : 'No tests available'}</div>`;
+        return;
+      }
+
+      container.innerHTML = tests.map(t => {
+        const checked = selectedIds.includes(t.id) ? 'checked' : '';
+        const name = t.test_name || t.name || '—';
+        const code = t.test_code || t.code || '';
+        return `
+          <label class="test-checkbox-item flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors">
+            <input type="checkbox" value="${t.id}" ${checked} class="test-check w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" onchange="updateTestCount()">
+            <div class="flex-1 min-w-0">
+              <span class="text-gray-900 text-sm font-medium">${name}</span>
+              ${code ? `<span class="ml-2 font-mono text-blue-600 text-xs bg-blue-50 px-1.5 py-0.5 rounded">${code}</span>` : ''}
+            </div>
+          </label>`;
+      }).join('');
+      updateTestCount();
+    }
+
+    function filterTestList(q) {
+      const selected = getSelectedTestIds();
+      renderTestCheckList(q, selected);
+    }
+
+    function getSelectedTestIds() {
+      return Array.from(document.querySelectorAll('.test-check:checked')).map(c => parseInt(c.value));
+    }
+
+    function updateTestCount() {
+      document.getElementById('selectedTestCount').textContent = getSelectedTestIds().length;
+    }
+
+    function openPanelModal() {
+      editingPanel = null;
+      document.getElementById('panelForm').reset();
+      document.getElementById('pId').value = '';
+      document.getElementById('panelModalTitle').textContent = 'New Panel';
+      document.getElementById('panelSaveBtnText').textContent = 'Save Panel';
+      document.getElementById('panelFormError').classList.add('hidden');
+      document.getElementById('activeToggleRow').classList.add('hidden');
+      document.getElementById('testSearch').value = '';
+      renderTestCheckList('', []);
+      document.getElementById('panelModal').classList.add('open');
+    }
+
+    function openEditModal(panel) {
+      editingPanel = panel;
+      document.getElementById('pId').value = panel.id;
+      document.getElementById('pName').value = panel.name || panel.panel_name || '';
+      document.getElementById('pDesc').value = panel.description || '';
+      document.getElementById('pActive').checked = panel.is_active !== false;
+      document.getElementById('panelModalTitle').textContent = 'Edit Panel';
+      document.getElementById('panelSaveBtnText').textContent = 'Update Panel';
+      document.getElementById('panelFormError').classList.add('hidden');
+      document.getElementById('activeToggleRow').classList.remove('hidden');
+      document.getElementById('testSearch').value = '';
+      const selectedIds = (panel.test_ids || panel.tests || []).map(id => parseInt(id));
+      renderTestCheckList('', selectedIds);
+      document.getElementById('panelModal').classList.add('open');
+    }
+
+    function closePanelModal() { document.getElementById('panelModal').classList.remove('open'); }
+
+    document.getElementById('panelForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('panelFormError');
+      errEl.classList.add('hidden');
+      const pId = document.getElementById('pId').value;
+      const testIds = getSelectedTestIds();
+
+      const payload = {
+        name: document.getElementById('pName').value.trim(),
+        description: document.getElementById('pDesc').value.trim() || null,
+        test_ids: testIds,
+        is_active: pId ? document.getElementById('pActive').checked : true
+      };
+
+      const btn = document.getElementById('panelSaveBtn');
+      const icon = document.getElementById('panelSaveBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+
+      try {
+        if (pId) {
+          await API.put(`/api/panels/${pId}`, payload);
+          showToast('Panel updated successfully');
+        } else {
+          await API.post('/api/panels', payload);
+          showToast('Panel created successfully');
+        }
+        closePanelModal();
+        loadPanels();
+      } catch (err) {
+        errEl.textContent = err.message || 'Failed to save panel';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-save'; }
+    });
+
+    document.getElementById('panelModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePanelModal(); });
+
+    loadTests().then(() => loadPanels());
+    Help.init('panels');
+  </script>
+</body>
+</html>

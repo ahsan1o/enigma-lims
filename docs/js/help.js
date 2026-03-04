@@ -159,7 +159,77 @@ const HELP_CONTENT = {
     ],
     linked: [],
     next: null
-  }
+  },
+
+  billing: {
+    icon: 'fa-receipt',
+    color: 'green',
+    title: 'Billing',
+    description: 'Patient invoicing and payment tracking. Generate bills for lab services, record payments, and track outstanding balances.',
+    actions: [
+      'Click "New Invoice" to create a bill for a patient visit',
+      'Add line items (each test or service with amount)',
+      'Click "Pay" on any invoice to record a payment',
+      'Filter by status: Unpaid, Partial, Paid',
+      'Export to CSV for accounting records'
+    ],
+    linked: [
+      { label: 'Patients', href: 'patients.html', icon: 'fa-users', note: 'Invoice is linked to a patient' },
+      { label: 'Samples', href: 'samples.html', icon: 'fa-vial', note: 'Optionally linked to a sample' }
+    ],
+    next: null
+  },
+
+  panels: {
+    icon: 'fa-layer-group',
+    color: 'indigo',
+    title: 'Test Panels',
+    description: 'Predefined test bundles for quick ordering. A CBC Panel might include Hemoglobin, WBC, Platelets and RBC — order all at once instead of individually.',
+    actions: [
+      'Click "New Panel" to create a test bundle',
+      'Give it a name (e.g. "Liver Function Tests")',
+      'Select all tests that belong in this panel',
+      'Use panels in Orders for faster test selection'
+    ],
+    linked: [
+      { label: 'Tests', href: 'tests.html', icon: 'fa-microscope', note: 'Tests come from the catalog' },
+      { label: 'Orders', href: 'orders.html', icon: 'fa-clipboard-list', note: 'Order an entire panel at once' }
+    ],
+    next: null
+  },
+
+  reagents: {
+    icon: 'fa-flask-vial',
+    color: 'amber',
+    title: 'Reagents',
+    description: 'Reagent and consumable inventory management. Track stock levels, expiry dates, and get alerts when items run low.',
+    actions: [
+      'Click "Add Reagent" to register a new reagent or consumable',
+      'Set minimum stock level to trigger low-stock alerts',
+      'Update current stock when new supplies arrive',
+      'Check the alert banner for items needing attention',
+      'Link reagents to instruments for organized tracking'
+    ],
+    linked: [
+      { label: 'Instruments', href: 'instruments.html', icon: 'fa-cogs', note: 'Reagents can be linked to instruments' }
+    ],
+    next: null
+  },
+
+  audit: {
+    icon: 'fa-history',
+    color: 'indigo',
+    title: 'Audit Log',
+    description: 'Complete activity trail for compliance and security. Every action in the system is recorded — who did what, when, and what changed.',
+    actions: [
+      'Filter by entity type (patients, samples, results, etc.)',
+      'Search for specific actions',
+      'View old and new values for any change',
+      'Enable auto-refresh to monitor activity in real-time'
+    ],
+    linked: [],
+    next: null
+  },
 };
 
 // ─── Tour Steps ────────────────────────────────────────────────────────────────

@@ -106,9 +106,13 @@ class SampleCreate(BaseModel):
     collection_date: datetime
     collection_time: Optional[str] = None
     notes: Optional[str] = None
+    priority: str = "routine"  # routine, urgent, stat
 
 class SampleStatusUpdate(BaseModel):
     status: str  # pending, testing, completed, approved
+
+class SampleReject(BaseModel):
+    rejection_reason: str
 
 class SampleResponse(BaseModel):
     id: int
@@ -120,6 +124,8 @@ class SampleResponse(BaseModel):
     collection_time: Optional[str]
     received_date: Optional[datetime]
     status: str
+    priority: Optional[str] = "routine"
+    rejection_reason: Optional[str] = None
     notes: Optional[str]
     created_at: datetime
     class Config:
@@ -258,3 +264,147 @@ class DashboardStats(BaseModel):
     completed_today: int
     total_tests: int
     total_instruments: int
+
+
+# Test Panel schemas
+class TestPanelItemResponse(BaseModel):
+    id: int
+    test_id: int
+    test_name: Optional[str] = None
+    test_code: Optional[str] = None
+    unit: Optional[str] = None
+    class Config:
+        from_attributes = True
+
+class TestPanelCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    test_ids: List[int] = []
+
+class TestPanelUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+    test_ids: Optional[List[int]] = None
+
+class TestPanelResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    is_active: bool
+    test_count: Optional[int] = 0
+    items: Optional[List[TestPanelItemResponse]] = []
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Invoice schemas
+class InvoiceItemCreate(BaseModel):
+    description: str
+    test_id: Optional[int] = None
+    amount: float
+
+class InvoiceCreate(BaseModel):
+    patient_id: int
+    sample_id: Optional[int] = None
+    items: List[InvoiceItemCreate]
+    notes: Optional[str] = None
+
+class InvoicePayment(BaseModel):
+    amount: float
+    notes: Optional[str] = None
+
+class InvoiceItemResponse(BaseModel):
+    id: int
+    description: str
+    test_id: Optional[int]
+    amount: float
+    class Config:
+        from_attributes = True
+
+class InvoiceResponse(BaseModel):
+    id: int
+    invoice_number: str
+    patient_id: int
+    patient_name: Optional[str] = None
+    sample_id: Optional[int]
+    total_amount: float
+    paid_amount: float
+    balance: Optional[float] = None
+    status: str
+    notes: Optional[str]
+    items: Optional[List[InvoiceItemResponse]] = []
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Reagent schemas
+class ReagentCreate(BaseModel):
+    name: str
+    catalog_number: Optional[str] = None
+    current_stock: float = 0.0
+    min_stock_level: float = 0.0
+    unit: Optional[str] = None
+    expiry_date: Optional[datetime] = None
+    supplier: Optional[str] = None
+    instrument_id: Optional[int] = None
+    notes: Optional[str] = None
+
+class ReagentUpdate(BaseModel):
+    name: Optional[str] = None
+    catalog_number: Optional[str] = None
+    current_stock: Optional[float] = None
+    min_stock_level: Optional[float] = None
+    unit: Optional[str] = None
+    expiry_date: Optional[datetime] = None
+    supplier: Optional[str] = None
+    instrument_id: Optional[int] = None
+    notes: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class ReagentResponse(BaseModel):
+    id: int
+    name: str
+    catalog_number: Optional[str]
+    current_stock: float
+    min_stock_level: float
+    unit: Optional[str]
+    expiry_date: Optional[datetime]
+    supplier: Optional[str]
+    instrument_id: Optional[int]
+    instrument_name: Optional[str] = None
+    notes: Optional[str]
+    is_active: bool
+    low_stock: Optional[bool] = None
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Audit Log schemas
+class AuditLogResponse(BaseModel):
+    id: int
+    user_id: Optional[int]
+    username: Optional[str] = None
+    action: str
+    table_name: Optional[str]
+    record_id: Optional[int]
+    old_value: Optional[str]
+    new_value: Optional[str]
+    ip_address: Optional[str]
+    created_at: datetime
+    class Config:
+        from_attributes = True
+
+# Patient history
+class PatientHistoryEntry(BaseModel):
+    id: int
+    sample_id: str
+    sample_type: str
+    collection_date: datetime
+    status: str
+    priority: Optional[str] = "routine"
+    test_count: int = 0
+    result_count: int = 0
+    has_critical: bool = False
+    class Config:
+        from_attributes = True

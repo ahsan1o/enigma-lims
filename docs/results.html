@@ -46,11 +46,15 @@
       <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
       <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
       <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="panels.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-layer-group w-5 text-center"></i><span>Test Panels</span></a>
       <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
       <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
       <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="billing.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-receipt w-5 text-center"></i><span>Billing</span></a>
       <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="reagents.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-flask-vial w-5 text-center"></i><span>Reagents</span></a>
       <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="audit.html" id="auditNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-history w-5 text-center"></i><span>Audit Log</span></a>
     </nav>
     <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
@@ -68,6 +72,20 @@
 
   <!-- MAIN -->
   <main class="flex-1 overflow-y-auto">
+
+    <!-- CRITICAL VALUE ALERT BANNER -->
+    <div id="criticalBanner" class="hidden bg-red-600 text-white px-5 py-3 flex items-center gap-3 z-40 sticky top-0">
+      <div class="flex-shrink-0 w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+        <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <span class="font-bold text-sm uppercase tracking-wide mr-2">CRITICAL VALUE ALERT</span>
+        <span class="text-red-100 text-sm" id="criticalBannerMsg"></span>
+      </div>
+      <button onclick="dismissCriticalBanner()" class="flex-shrink-0 p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors" title="Dismiss">
+        <i class="fas fa-times text-white text-sm"></i>
+      </button>
+    </div>
     <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
       <div>
         <h1 class="text-gray-900 font-bold text-xl">Results</h1>
@@ -245,6 +263,7 @@
       document.getElementById('userRole').textContent = (user.role||'').charAt(0).toUpperCase()+(user.role||'').slice(1);
       document.getElementById('userAvatar').textContent = (user.full_name||user.username||'A').charAt(0).toUpperCase();
       if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
+      if (user.role !== 'admin') document.getElementById('auditNav')?.classList.add('hidden');
     }
 
     function showToast(msg, type='success') {
@@ -379,6 +398,16 @@
     }
     function closeApproveModal() { document.getElementById('approveModal').classList.remove('open'); }
 
+    function showCriticalBanner(patientName, testName) {
+      const msg = `Patient: ${patientName || 'Unknown'} — Test: ${testName || 'Unknown'}`;
+      document.getElementById('criticalBannerMsg').textContent = msg;
+      document.getElementById('criticalBanner').classList.remove('hidden');
+    }
+
+    function dismissCriticalBanner() {
+      document.getElementById('criticalBanner').classList.add('hidden');
+    }
+
     document.getElementById('enterForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const errEl = document.getElementById('enterError');
@@ -396,8 +425,11 @@
       btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
 
       try {
-        await API.createResult(payload);
+        const created = await API.createResult(payload);
         showToast('Result saved successfully');
+        if (created && created.is_critical) {
+          showCriticalBanner(created.patient_name, created.test_name);
+        }
         closeEnterModal(); loadResults(currentFilter);
       } catch(err) {
         errEl.textContent = err.message||'Failed to save result';
@@ -411,8 +443,17 @@
       const icon = document.getElementById('approveBtnIcon');
       btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
       try {
-        await API.approveResult(id);
+        const approved = await API.approveResult(id);
         showToast('Result approved');
+        if (approved && approved.is_critical) {
+          showCriticalBanner(approved.patient_name, approved.test_name);
+        } else {
+          // Also check in the local allResults array for the approved result
+          const localResult = allResults.find(r => String(r.id) === String(id));
+          if (localResult && localResult.status === 'critical') {
+            showCriticalBanner(localResult.patient_name, localResult.test_name);
+          }
+        }
         closeApproveModal(); loadResults(currentFilter);
       } catch(e) { showToast(e.message||'Approval failed', 'error'); }
       finally { btn.disabled = false; icon.className = 'fas fa-check-circle'; }

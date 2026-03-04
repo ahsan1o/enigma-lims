@@ -26,6 +26,10 @@ from api.instruments import router as instruments_router
 from api.users import router as users_router
 from api.dashboard import router as dashboard_router
 from api.reports import router as reports_router
+from api.panels import router as panels_router
+from api.billing import router as billing_router
+from api.reagents import router as reagents_router
+from api.audit import router as audit_router
 
 # Configure logging
 logging.basicConfig(
@@ -64,6 +68,10 @@ app.include_router(instruments_router)
 app.include_router(users_router)
 app.include_router(dashboard_router)
 app.include_router(reports_router)
+app.include_router(panels_router)
+app.include_router(billing_router)
+app.include_router(reagents_router)
+app.include_router(audit_router)
 
 
 # ============================================================================

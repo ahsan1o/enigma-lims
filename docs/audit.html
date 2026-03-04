@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Log - Enigma LIMS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/help.js"></script>
+  <style>
+    body { background-color: #f8fafc; color: #1e293b; font-family: 'Inter', system-ui, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+    .nav-item.active { background-color: #2563eb !important; color: white !important; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay.open { display:flex; }
+    select option { background:#ffffff; color:#1e293b; }
+    @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 1; } 70% { transform: scale(1.1); opacity: 0; } 100% { transform: scale(0.95); opacity: 0; } }
+    .live-dot { position: relative; }
+    .live-dot::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: #22c55e; animation: pulse-ring 2s ease infinite; }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0" style="min-height:100vh">
+    <div class="p-5 border-b border-gray-200">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+          <i class="fas fa-flask text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="text-gray-900 font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-600 text-xs font-semibold tracking-widest">LIMS</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="panels.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-layer-group w-5 text-center"></i><span>Test Panels</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="billing.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-receipt w-5 text-center"></i><span>Billing</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="reagents.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-flask-vial w-5 text-center"></i><span>Reagents</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="audit.html" id="auditNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-history w-5 text-center"></i><span>Audit Log</span></a>
+    </nav>
+    <div class="p-4 border-t border-gray-200">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" id="userAvatar">A</div>
+        <div class="flex-1 min-w-0">
+          <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
+          <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
+        </div>
+        <button onclick="Auth.logout()" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Logout">
+          <i class="fas fa-sign-out-alt text-sm"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="flex-1 overflow-y-auto">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
+      <div>
+        <h1 class="text-gray-900 font-bold text-xl">Audit Log</h1>
+        <p class="text-gray-500 text-xs mt-0.5">Complete history of all system actions and data changes</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Auto-refresh toggle -->
+        <div class="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg">
+          <div class="relative w-3.5 h-3.5 flex-shrink-0">
+            <div class="absolute inset-0 bg-green-500 rounded-full" id="liveDot" style="display:none;"></div>
+            <div class="absolute inset-0 bg-gray-300 rounded-full" id="offlineDot"></div>
+          </div>
+          <span class="text-gray-600 text-xs font-medium">Auto-refresh</span>
+          <label class="relative inline-flex items-center cursor-pointer ml-1">
+            <input type="checkbox" id="autoRefreshToggle" class="sr-only peer" onchange="toggleAutoRefresh(this.checked)">
+            <div class="w-8 h-4 bg-gray-300 peer-checked:bg-green-500 rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4"></div>
+          </label>
+        </div>
+        <button onclick="loadAuditLogs()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+          <i class="fas fa-rotate-right"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="p-6">
+      <!-- Filters Row -->
+      <div class="flex flex-wrap items-center gap-3 mb-4">
+        <!-- Table Filter -->
+        <div class="relative">
+          <i class="fas fa-table absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          <select id="tableFilter" onchange="applyFilters()"
+            class="pl-8 pr-8 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:border-blue-500 focus:outline-none appearance-none cursor-pointer min-w-[160px]">
+            <option value="">All Tables</option>
+          </select>
+          <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+        </div>
+
+        <!-- Action Filter -->
+        <div class="relative">
+          <i class="fas fa-bolt absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          <select id="actionFilter" onchange="applyFilters()"
+            class="pl-8 pr-8 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:border-blue-500 focus:outline-none appearance-none cursor-pointer min-w-[140px]">
+            <option value="">All Actions</option>
+            <option value="create">Create</option>
+            <option value="update">Update</option>
+            <option value="delete">Delete</option>
+          </select>
+          <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+        </div>
+
+        <!-- Search -->
+        <div class="relative flex-1 max-w-sm">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+          <input type="text" id="searchInput" placeholder="Search by action or details..." oninput="applyFilters()"
+            class="w-full bg-white border border-gray-300 rounded-lg pl-9 pr-4 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-gray-400">
+        </div>
+
+        <span class="text-gray-500 text-sm ml-auto" id="logCount"></span>
+        <span class="text-gray-400 text-xs" id="lastRefreshed"></span>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Timestamp</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Table</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Record ID</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Details</th>
+              </tr>
+            </thead>
+            <tbody id="auditBody">
+              <tr><td colspan="6" class="px-5 py-12 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading audit logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Info note -->
+      <div class="mt-3 flex items-center gap-2 text-gray-400 text-xs">
+        <i class="fas fa-info-circle"></i>
+        <span>Showing latest 200 entries. Audit logs are read-only and cannot be modified.</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- DETAIL MODAL -->
+  <div id="detailModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-gray-200 max-h-[80vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-gray-900 font-bold text-lg">Change Details</h3>
+        <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div id="detailContent" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+  <script>
+    if (!Auth.requireAuth()) throw new Error('not logged in');
+
+    const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+    document.querySelectorAll('.nav-item').forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.classList.add('bg-blue-600', 'text-white');
+        link.classList.remove('text-gray-600');
+      }
+    });
+
+    const user = Auth.getUser();
+    if (user) {
+      document.getElementById('userName').textContent = user.full_name || user.username;
+      document.getElementById('userRole').textContent = (user.role || '').charAt(0).toUpperCase() + (user.role || '').slice(1);
+      document.getElementById('userAvatar').textContent = (user.full_name || user.username || 'A').charAt(0).toUpperCase();
+      if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
+      if (user.role !== 'admin') document.getElementById('auditNav')?.classList.add('hidden');
+    }
+
+    function showToast(msg, type = 'success') {
+      const colors = { success: 'bg-green-600', error: 'bg-red-600', warning: 'bg-amber-600', info: 'bg-blue-600' };
+      const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+      const t = document.createElement('div');
+      t.className = `pointer-events-all flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white text-sm font-medium ${colors[type] || colors.info} border border-white/10`;
+      t.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
+    }
+
+    let allLogs = [];
+    let autoRefreshInterval = null;
+
+    function actionBadge(action) {
+      const a = (action || '').toLowerCase();
+      if (a.includes('create') || a.includes('insert') || a.includes('add')) {
+        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200"><i class="fas fa-plus text-[0.5rem]"></i>${action}</span>`;
+      }
+      if (a.includes('update') || a.includes('edit') || a.includes('modify') || a.includes('patch')) {
+        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200"><i class="fas fa-pen text-[0.5rem]"></i>${action}</span>`;
+      }
+      if (a.includes('delete') || a.includes('remove') || a.includes('drop')) {
+        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200"><i class="fas fa-trash text-[0.5rem]"></i>${action}</span>`;
+      }
+      if (a.includes('login') || a.includes('logout') || a.includes('auth')) {
+        return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200"><i class="fas fa-key text-[0.5rem]"></i>${action}</span>`;
+      }
+      return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">${action || '—'}</span>`;
+    }
+
+    function truncateDetails(obj, maxLen = 80) {
+      if (!obj) return '—';
+      let str = '';
+      try { str = typeof obj === 'string' ? obj : JSON.stringify(obj); }
+      catch (e) { str = String(obj); }
+      if (str.length > maxLen) return str.slice(0, maxLen) + '…';
+      return str;
+    }
+
+    function populateTableFilter(logs) {
+      const tables = [...new Set(logs.map(l => l.table_name || l.entity || '').filter(Boolean))].sort();
+      const sel = document.getElementById('tableFilter');
+      const current = sel.value;
+      while (sel.options.length > 1) sel.remove(1);
+      tables.forEach(t => {
+        const o = document.createElement('option');
+        o.value = t;
+        o.textContent = t.charAt(0).toUpperCase() + t.slice(1);
+        if (t === current) o.selected = true;
+        sel.appendChild(o);
+      });
+    }
+
+    function applyFilters() {
+      const tableF = document.getElementById('tableFilter').value.toLowerCase();
+      const actionF = document.getElementById('actionFilter').value.toLowerCase();
+      const searchQ = document.getElementById('searchInput').value.toLowerCase();
+
+      let filtered = allLogs;
+      if (tableF) filtered = filtered.filter(l => (l.table_name || l.entity || '').toLowerCase() === tableF);
+      if (actionF) filtered = filtered.filter(l => (l.action || l.action_type || '').toLowerCase().includes(actionF));
+      if (searchQ) filtered = filtered.filter(l => {
+        const action = (l.action || l.action_type || '').toLowerCase();
+        const details = JSON.stringify(l.old_value || l.changes || l.details || '').toLowerCase();
+        const userStr = (l.username || l.user_name || l.performed_by || '').toLowerCase();
+        return action.includes(searchQ) || details.includes(searchQ) || userStr.includes(searchQ);
+      });
+
+      renderTable(filtered);
+    }
+
+    function renderTable(logs) {
+      document.getElementById('logCount').textContent = `${logs.length} entr${logs.length !== 1 ? 'ies' : 'y'}`;
+
+      if (!logs.length) {
+        document.getElementById('auditBody').innerHTML = `
+          <tr><td colspan="6" class="px-5 py-16 text-center">
+            <i class="fas fa-history text-4xl text-gray-300 mb-3 block"></i>
+            <p class="text-gray-500 font-medium">No audit entries found</p>
+            <p class="text-gray-400 text-sm mt-1">No activity matches your current filters</p>
+          </td></tr>`;
+        return;
+      }
+
+      document.getElementById('auditBody').innerHTML = logs.map(log => {
+        const ts = log.created_at || log.timestamp || log.performed_at;
+        const timeStr = ts ? new Date(ts).toLocaleString() : '—';
+        const userName = log.username || log.user_name || log.performed_by || log.user_id || '—';
+        const action = log.action || log.action_type || '—';
+        const tableName = log.table_name || log.entity || '—';
+        const recordId = log.record_id || log.entity_id || log.row_id || '—';
+        const details = log.old_value || log.new_value || log.changes || log.details || log.description;
+        const detailsStr = truncateDetails(details);
+        const hasDetails = details && JSON.stringify(details).length > 80;
+
+        return `
+          <tr class="border-b border-gray-100 hover:bg-blue-50/20 transition-colors">
+            <td class="px-5 py-3.5 whitespace-nowrap">
+              <div class="text-gray-700 text-xs font-medium">${timeStr}</div>
+            </td>
+            <td class="px-4 py-3.5">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 text-xs font-bold flex-shrink-0">
+                  ${String(userName).charAt(0).toUpperCase()}
+                </div>
+                <span class="text-gray-700 text-sm">${userName}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3.5">${actionBadge(action)}</td>
+            <td class="px-4 py-3.5">
+              <span class="font-mono text-xs text-purple-700 bg-purple-50 border border-purple-100 px-1.5 py-0.5 rounded">${tableName}</span>
+            </td>
+            <td class="px-4 py-3.5 font-mono text-gray-500 text-xs">${recordId}</td>
+            <td class="px-4 py-3.5 max-w-xs">
+              <span class="text-gray-500 text-xs font-mono">${detailsStr}</span>
+              ${hasDetails ? `<button onclick='showDetail(${JSON.stringify(log).replace(/'/g, "&#39;")})' class="ml-1.5 text-blue-500 hover:text-blue-700 text-xs underline">more</button>` : ''}
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function loadAuditLogs() {
+      const tableF = document.getElementById('tableFilter').value;
+      const url = tableF ? `/api/audit?limit=200&table_name=${encodeURIComponent(tableF)}` : '/api/audit?limit=200';
+
+      try {
+        const data = await API.get(url);
+        const prevTableVal = document.getElementById('tableFilter').value;
+        allLogs = Array.isArray(data) ? data : (data?.items || data?.logs || []);
+        populateTableFilter(allLogs);
+        if (prevTableVal) document.getElementById('tableFilter').value = prevTableVal;
+        applyFilters();
+        document.getElementById('lastRefreshed').textContent = `Last refreshed: ${new Date().toLocaleTimeString()}`;
+      } catch (e) {
+        document.getElementById('auditBody').innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>${e.message}</td></tr>`;
+        showToast('Failed to load audit logs', 'error');
+      }
+    }
+
+    function toggleAutoRefresh(enabled) {
+      if (enabled) {
+        autoRefreshInterval = setInterval(loadAuditLogs, 30000);
+        document.getElementById('liveDot').style.display = 'block';
+        document.getElementById('offlineDot').style.display = 'none';
+        showToast('Auto-refresh enabled (every 30s)', 'info');
+      } else {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+        document.getElementById('liveDot').style.display = 'none';
+        document.getElementById('offlineDot').style.display = 'block';
+      }
+    }
+
+    function showDetail(log) {
+      const container = document.getElementById('detailContent');
+      const ts = log.created_at || log.timestamp || log.performed_at;
+      const action = log.action || log.action_type || '—';
+      const table = log.table_name || log.entity || '—';
+      const recordId = log.record_id || log.entity_id || '—';
+      const oldVal = log.old_value;
+      const newVal = log.new_value;
+      const changes = log.changes || log.details || log.description;
+
+      let html = `
+        <div class="bg-gray-50 rounded-lg p-3 text-sm space-y-1.5">
+          <div class="flex justify-between"><span class="text-gray-500">Timestamp</span><span class="font-medium text-gray-900">${ts ? new Date(ts).toLocaleString() : '—'}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Action</span><span>${actionBadge(action)}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Table</span><span class="font-mono text-purple-700 text-xs bg-purple-50 px-1.5 py-0.5 rounded">${table}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Record ID</span><span class="font-mono text-gray-900">${recordId}</span></div>
+        </div>`;
+
+      if (oldVal) {
+        html += `
+          <div>
+            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Before</div>
+            <pre class="bg-red-50 border border-red-100 rounded-lg p-3 text-xs text-red-800 overflow-x-auto whitespace-pre-wrap">${JSON.stringify(oldVal, null, 2)}</pre>
+          </div>`;
+      }
+      if (newVal) {
+        html += `
+          <div>
+            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">After</div>
+            <pre class="bg-green-50 border border-green-100 rounded-lg p-3 text-xs text-green-800 overflow-x-auto whitespace-pre-wrap">${JSON.stringify(newVal, null, 2)}</pre>
+          </div>`;
+      }
+      if (!oldVal && !newVal && changes) {
+        html += `
+          <div>
+            <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Details</div>
+            <pre class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-700 overflow-x-auto whitespace-pre-wrap">${typeof changes === 'string' ? changes : JSON.stringify(changes, null, 2)}</pre>
+          </div>`;
+      }
+
+      container.innerHTML = html;
+      document.getElementById('detailModal').classList.add('open');
+    }
+
+    function closeDetailModal() { document.getElementById('detailModal').classList.remove('open'); }
+
+    document.getElementById('detailModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeDetailModal(); });
+
+    loadAuditLogs();
+    Help.init('audit');
+  </script>
+</body>
+</html>

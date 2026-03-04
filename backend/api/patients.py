@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database import get_db
-from models import Patient, Doctor
-from api.schemas import PatientCreate, PatientUpdate, PatientResponse
+from models import Patient, Doctor, Sample, Order, Result
+from api.schemas import PatientCreate, PatientUpdate, PatientResponse, PatientHistoryEntry
 
 router = APIRouter(prefix="/api/patients", tags=["patients"])
 
@@ -60,6 +60,33 @@ def update_patient(patient_id: int, data: PatientUpdate, db: Session = Depends(g
     if patient.doctor:
         resp.doctor_name = patient.doctor.name
     return resp
+
+@router.get("/{patient_id}/history", response_model=List[PatientHistoryEntry])
+def get_patient_history(patient_id: int, db: Session = Depends(get_db)):
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+
+    samples = db.query(Sample).filter(Sample.patient_id == patient_id).order_by(Sample.created_at.desc()).all()
+    result = []
+    for s in samples:
+        order_count = db.query(Order).filter(Order.sample_id == s.id).count()
+        results = db.query(Result).filter(Result.sample_id == s.id).all()
+        has_critical = any(r.status == "critical" for r in results)
+        entry = PatientHistoryEntry(
+            id=s.id,
+            sample_id=s.sample_id,
+            sample_type=s.sample_type,
+            collection_date=s.collection_date,
+            status=s.status,
+            priority=getattr(s, 'priority', 'routine'),
+            test_count=order_count,
+            result_count=len(results),
+            has_critical=has_critical
+        )
+        result.append(entry)
+    return result
+
 
 @router.delete("/{patient_id}")
 def delete_patient(patient_id: int, db: Session = Depends(get_db)):
