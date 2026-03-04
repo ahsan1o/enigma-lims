@@ -46,9 +46,9 @@
       </div>
       <h1 class="text-4xl font-bold text-gray-900 tracking-tight">Enigma <span class="text-blue-600">LIMS</span></h1>
       <p class="text-gray-500 text-sm mt-2">Modern Laboratory Management</p>
-      <div class="inline-flex items-center gap-2 mt-3 px-3 py-1.5 bg-white border border-gray-200 rounded-full shadow-sm">
-        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-        <span class="text-gray-500 text-xs">System Online</span>
+      <div class="inline-flex items-center gap-2 mt-3 px-3 py-1.5 bg-white border border-gray-200 rounded-full shadow-sm" id="serverStatusBadge">
+        <span class="w-2 h-2 bg-amber-400 rounded-full animate-pulse" id="serverStatusDot"></span>
+        <span class="text-gray-500 text-xs" id="serverStatusText">Connecting to server…</span>
       </div>
     </div>
 
@@ -215,6 +215,36 @@
     });
 
     document.getElementById('username').focus();
+
+    // Backend health check — wakes up Render free-tier service and updates status badge
+    (async function checkServerStatus() {
+      const dot  = document.getElementById('serverStatusDot');
+      const text = document.getElementById('serverStatusText');
+      const delays = [0, 8000, 15000, 20000]; // ms between attempts
+      const msgs   = [
+        'Connecting to server\u2026',
+        'Server waking up\u2026',
+        'Starting up (free tier can take ~60s)\u2026',
+        'Almost there\u2026'
+      ];
+
+      for (let i = 0; i < delays.length; i++) {
+        if (i > 0) await new Promise(r => setTimeout(r, delays[i]));
+        text.textContent = msgs[i];
+        try {
+          const res = await fetch(CONFIG.API_URL + '/api/health', { method: 'GET', cache: 'no-store' });
+          if (res.ok) {
+            dot.className = 'w-2 h-2 bg-green-500 rounded-full';
+            text.textContent = 'Server Online';
+            return;
+          }
+        } catch(_) { /* network / server sleeping */ }
+      }
+
+      // All retries exhausted
+      dot.className = 'w-2 h-2 bg-red-500 rounded-full';
+      text.textContent = 'Server unavailable \u2014 try refreshing';
+    })();
   </script>
 </body>
 </html>

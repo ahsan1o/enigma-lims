@@ -1,5 +1,6 @@
 const API = {
-  async request(method, path, body = null) {
+  // Retry up to 3 times with increasing delay for network/CORS failures
+  async request(method, path, body = null, _retry = 0) {
     const headers = { 'Content-Type': 'application/json' };
     const token = (typeof Auth !== 'undefined') ? Auth.getToken() : localStorage.getItem('enigma_token');
     if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -15,11 +16,37 @@ const API = {
         throw new Error(err.detail || 'Request failed');
       }
       if (res.status === 204) return null;
+      // Hide any "reconnecting" banner on success
+      const banner = document.getElementById('_apiOfflineBanner');
+      if (banner) banner.style.display = 'none';
       return await res.json();
     } catch(e) {
+      // TypeError = network error (server sleeping, CORS blocked, no internet)
+      if (e instanceof TypeError && _retry < 3) {
+        API._showReconnectBanner(_retry);
+        await new Promise(r => setTimeout(r, 3000 + _retry * 2000));
+        return API.request(method, path, body, _retry + 1);
+      }
       console.error('API error:', e);
       throw e;
     }
+  },
+
+  _showReconnectBanner(attempt) {
+    let banner = document.getElementById('_apiOfflineBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = '_apiOfflineBanner';
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#f59e0b;color:#fff;text-align:center;padding:8px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;';
+      document.body.appendChild(banner);
+    }
+    const msgs = [
+      'Connecting to server…',
+      'Server is starting up, please wait (30–60 sec on free tier)…',
+      'Still connecting, almost there…'
+    ];
+    banner.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${msgs[Math.min(attempt, msgs.length-1)]}`;
+    banner.style.display = 'flex';
   },
 
   get: (path) => API.request('GET', path),
