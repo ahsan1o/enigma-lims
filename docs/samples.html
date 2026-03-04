@@ -177,7 +177,9 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Patient <span class="text-red-500">*</span></label>
-          <select id="rPatient" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <input type="text" id="patientSearch" placeholder="Search by name to filter list…"
+            class="w-full px-3 py-2 border border-gray-300 border-b-0 rounded-t-lg text-gray-900 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+          <select id="rPatient" required class="w-full px-3 py-2 border border-gray-300 rounded-b-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">Select patient...</option>
           </select>
         </div>
@@ -346,19 +348,59 @@
     let allSamples = [];
     let currentFilter = '';
 
+    let allPatients = [];
+
     async function loadPatients() {
+      const sel = document.getElementById('rPatient');
+      sel.disabled = true;
+      sel.innerHTML = '<option value="">Loading patients\u2026</option>';
       try {
         const data = await API.getPatients();
-        const patients = Array.isArray(data) ? data : (data?.items || []);
-        const sel = document.getElementById('rPatient');
-        while (sel.options.length > 1) sel.remove(1);
-        patients.forEach(p => {
-          const opt = document.createElement('option');
-          opt.value = p.id;
-          opt.textContent = `${p.full_name||p.name} (${p.age}y ${p.gender||''})`;
-          sel.appendChild(opt);
-        });
-      } catch(e) { console.warn('Patients not loaded', e); }
+        allPatients = Array.isArray(data) ? data : (data?.items || []);
+        populatePatientDropdown('');
+        sel.disabled = false;
+        checkPatientUrlParam();
+      } catch(e) {
+        sel.innerHTML = '<option value="">\u26a0 Failed to load \u2014 click to retry</option>';
+        sel.disabled = false;
+        sel.addEventListener('focus', () => { if (!allPatients.length) loadPatients(); }, { once: true });
+      }
+    }
+
+    function populatePatientDropdown(search) {
+      const sel = document.getElementById('rPatient');
+      const currentVal = sel.value;
+      while (sel.options.length > 1) sel.remove(1);
+      const term = search.toLowerCase().trim();
+      const filtered = term
+        ? allPatients.filter(p => (p.full_name||p.name||'').toLowerCase().includes(term) || String(p.id).includes(term))
+        : allPatients;
+      if (!filtered.length && term) {
+        const opt = document.createElement('option'); opt.disabled = true;
+        opt.textContent = 'No matching patients'; sel.appendChild(opt);
+      }
+      filtered.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = `${p.full_name||p.name} (${p.age}y ${p.gender||''})`;
+        sel.appendChild(opt);
+      });
+      if (currentVal) sel.value = currentVal;
+    }
+
+    function checkPatientUrlParam() {
+      const params = new URLSearchParams(window.location.search);
+      const pid = params.get('patient_id');
+      if (!pid) return;
+      openRegisterModal();
+      const sel = document.getElementById('rPatient');
+      sel.value = pid;
+      if (!sel.value) {
+        const opt = document.createElement('option');
+        opt.value = pid;
+        opt.textContent = params.get('patient_name') ? decodeURIComponent(params.get('patient_name')) : `Patient #${pid}`;
+        sel.appendChild(opt); sel.value = pid;
+      }
     }
 
     async function loadSamples(filter='') {
@@ -426,6 +468,10 @@
       loadSamples(filter);
     }
 
+    document.getElementById('patientSearch').addEventListener('input', function() {
+      populatePatientDropdown(this.value);
+    });
+
     function openRegisterModal() {
       document.getElementById('registerForm').reset();
       document.getElementById('registerError').classList.add('hidden');
@@ -463,18 +509,20 @@
 
       try {
         const newSample = await API.createSample(payload);
+        const patName = document.getElementById('rPatient').options[document.getElementById('rPatient').selectedIndex]?.textContent?.split(' (')[0] || '—';
         showToast('Sample registered successfully');
         closeRegisterModal();
         await loadSamples(currentFilter);
         // Offer to print label immediately
         if (newSample && (newSample.sample_id || newSample.id)) {
-          const patName = document.getElementById('rPatient').options[document.getElementById('rPatient').selectedIndex]?.textContent?.split(' (')[0] || '—';
           printLabel({
             sample_id: newSample.sample_id || newSample.id,
             patient_name: patName,
             sample_type: payload.sample_type,
             collection_date: payload.collection_date
           });
+          // Prompt to add test orders (journey flow)
+          showAddOrderBanner(newSample.id || newSample.sample_id, patName);
         }
       } catch(err) {
         errEl.textContent = err.message || 'Failed to register sample';
@@ -602,6 +650,28 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       showToast(`Exported ${allSamples.length} sample${allSamples.length !== 1 ? 's' : ''} to CSV`);
+    }
+
+    function showAddOrderBanner(sampleId, patientName) {
+      const existing = document.getElementById('_addOrderBanner');
+      if (existing) existing.remove();
+      const banner = document.createElement('div');
+      banner.id = '_addOrderBanner';
+      banner.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:#fff;border:1.5px solid #bfdbfe;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.14);padding:16px 20px;display:flex;align-items:center;gap:16px;min-width:340px;max-width:460px;';
+      banner.innerHTML = `
+        <div style="width:40px;height:40px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-check" style="color:#16a34a;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="color:#1e293b;font-weight:600;font-size:14px;">Sample registered!</div>
+          <div style="color:#64748b;font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Add test orders for <strong>${patientName}</strong>?</div>
+        </div>
+        <a href="orders.html?sample_id=${sampleId}&patient_name=${encodeURIComponent(patientName)}" style="background:#2563eb;color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0;">
+          <i class="fas fa-clipboard-list" style="margin-right:5px;"></i>Add Orders
+        </a>
+        <button onclick="document.getElementById('_addOrderBanner').remove()" style="color:#94a3b8;background:none;border:none;cursor:pointer;flex-shrink:0;font-size:15px;padding:2px 4px;">&times;</button>`;
+      document.body.appendChild(banner);
+      setTimeout(() => { banner?.remove(); }, 15000);
     }
 
     loadPatients();

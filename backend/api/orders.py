@@ -38,8 +38,8 @@ def create_order(data: OrderCreate, db: Session = Depends(get_db)):
     test = db.query(Test).filter(Test.id == data.test_id).first()
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
-    doctor = db.query(Doctor).filter(Doctor.id == data.doctor_id).first()
-    if not doctor:
+    doctor = db.query(Doctor).filter(Doctor.id == data.doctor_id).first() if data.doctor_id else None
+    if data.doctor_id and not doctor:
         raise HTTPException(status_code=404, detail="Doctor not found")
 
     order = Order(**data.model_dump())
@@ -51,7 +51,7 @@ def create_order(data: OrderCreate, db: Session = Depends(get_db)):
     if sample.patient:
         resp.patient_name = sample.patient.name
     resp.test_name = test.test_name
-    resp.doctor_name = doctor.name
+    resp.doctor_name = doctor.name if doctor else None
     return resp
 
 @router.get("/{order_id}", response_model=OrderResponse)

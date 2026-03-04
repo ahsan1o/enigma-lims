@@ -177,14 +177,14 @@ class TestResponse(BaseModel):
 class OrderCreate(BaseModel):
     sample_id: int
     test_id: int
-    doctor_id: int
+    doctor_id: Optional[int] = None
     priority: str = "normal"  # normal, urgent, stat
 
 class OrderResponse(BaseModel):
     id: int
     sample_id: int
     test_id: int
-    doctor_id: int
+    doctor_id: Optional[int] = None
     patient_name: Optional[str] = None
     test_name: Optional[str] = None
     doctor_name: Optional[str] = None

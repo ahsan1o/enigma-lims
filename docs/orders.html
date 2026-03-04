@@ -591,7 +591,19 @@
       showToast(`Exported ${allOrders.length} order${allOrders.length !== 1 ? 's' : ''} to CSV`);
     }
 
-    loadDropdowns(); loadOrders();
+    loadDropdowns().then(() => {
+      // Auto-open order modal when arriving from sample registration journey
+      const params = new URLSearchParams(window.location.search);
+      const sid = params.get('sample_id');
+      if (sid) {
+        const sel = document.getElementById('rSample');
+        sel.value = sid;
+        if (sel.value) {
+          openNewOrderModal();
+        }
+      }
+    });
+    loadOrders();
     Help.init('orders');
   </script>
 </body>
