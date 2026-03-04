@@ -234,6 +234,7 @@ class ResultResponse(BaseModel):
     sample_id: int
     test_id: int
     test_name: Optional[str] = None
+    test_code: Optional[str] = None
     result_value: str
     unit: Optional[str]
     status: str
@@ -247,6 +248,12 @@ class ResultResponse(BaseModel):
     approved_date: Optional[datetime]
     machine_generated: bool
     created_at: datetime
+    price: Optional[float] = None
+    reference_min: Optional[float] = None
+    reference_max: Optional[float] = None
+    critical_min: Optional[float] = None
+    critical_max: Optional[float] = None
+    patient_name: Optional[str] = None
     class Config:
         from_attributes = True
 

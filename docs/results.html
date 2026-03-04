@@ -140,6 +140,7 @@
                 <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
                 <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Value</th>
                 <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Unit</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ref. Range</th>
                 <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                 <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Entered By</th>
                 <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Approved By</th>
@@ -147,7 +148,7 @@
               </tr>
             </thead>
             <tbody id="resultsBody">
-              <tr><td colspan="8" class="px-5 py-12 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading results...</td></tr>
+              <tr><td colspan="9" class="px-5 py-12 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading results...</td></tr>
             </tbody>
           </table>
         </div>
@@ -331,7 +332,7 @@
       document.getElementById('resultCount').textContent = `${results.length} result${results.length!==1?'s':''}`;
       if (!results.length) {
         document.getElementById('resultsBody').innerHTML = `
-          <tr><td colspan="8" class="px-5 py-16 text-center">
+          <tr><td colspan="9" class="px-5 py-16 text-center">
             <i class="fas fa-chart-bar text-4xl text-gray-300 mb-3 block"></i>
             <p class="text-gray-500 font-medium">No results found</p>
             <p class="text-gray-400 text-sm mt-1">Enter test results to get started</p>
@@ -350,6 +351,11 @@
           <td class="px-4 py-3.5 text-gray-600 text-sm">${r.patient_name||'—'}</td>
           <td class="px-4 py-3.5 font-mono text-gray-900 font-bold text-sm">${r.result_value??'—'}</td>
           <td class="px-4 py-3.5 text-gray-500 text-xs">${r.unit||'—'}</td>
+          <td class="px-4 py-3.5 text-xs text-gray-500">${
+            (r.reference_min != null && r.reference_max != null)
+              ? `<span class="font-mono">${r.reference_min}–${r.reference_max}</span>`
+              : (r.reference_min != null ? `≥${r.reference_min}` : r.reference_max != null ? `≤${r.reference_max}` : '—')
+          }</td>
           <td class="px-4 py-3.5">${resultBadge(r.status)}</td>
           <td class="px-4 py-3.5 text-gray-400 text-xs">${r.entered_by||'—'}</td>
           <td class="px-4 py-3.5">

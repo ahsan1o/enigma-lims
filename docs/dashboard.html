@@ -552,6 +552,670 @@
 
   <!-- 3-STEP PATIENT JOURNEY WIZARD -->
   <div id="journeyModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-200 flex flex-col" style="max-height:92vh">
+
+      <!-- Header -->
+      <div class="flex items-center gap-3 px-6 pt-5 pb-4 border-b border-gray-100 flex-shrink-0">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-flask text-white text-sm"></i>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-gray-900 font-bold text-base leading-tight">Start New Patient Visit</h3>
+          <p class="text-gray-400 text-xs mt-0.5">Patient &rarr; Tests &rarr; Sample Collection</p>
+        </div>
+        <button onclick="closeJourneyModal()" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="flex items-center px-6 py-3 flex-shrink-0">
+        <div id="jDot1" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-blue-600 text-white flex-shrink-0">1</div>
+        <span id="jLabel1" class="text-xs font-semibold text-blue-600 ml-1.5">Patient</span>
+        <div class="flex-1 h-px bg-gray-200 mx-2"></div>
+        <div id="jDot2" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 text-gray-500 flex-shrink-0">2</div>
+        <span id="jLabel2" class="text-xs text-gray-400 ml-1.5">Tests</span>
+        <div class="flex-1 h-px bg-gray-200 mx-2"></div>
+        <div id="jDot3" class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 text-gray-500 flex-shrink-0">3</div>
+        <span id="jLabel3" class="text-xs text-gray-400 ml-1.5">Sample</span>
+      </div>
+
+      <!-- Form body (scrollable) -->
+      <form id="journeyForm" class="flex-1 overflow-y-auto px-6 min-h-0">
+
+        <!-- STEP 1: Patient Info -->
+        <div id="jStep1" class="space-y-3 py-2">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Full Name <span class="text-red-500">*</span></label>
+            <input id="jName" type="text" placeholder="e.g. Muhammad Ali"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Age <span class="text-red-500">*</span></label>
+              <input id="jAge" type="number" min="0" max="150" placeholder="Years"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Gender <span class="text-red-500">*</span></label>
+              <select id="jGender" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Select…</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Phone</label>
+            <div class="flex">
+              <span class="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm font-medium select-none">+92</span>
+              <input id="jPhone" type="tel" placeholder="300-1234567"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Tests & Doctor -->
+        <div id="jStep2" class="hidden py-2 space-y-3">
+          <!-- Tab switcher -->
+          <div class="flex gap-1 bg-gray-100 rounded-lg p-1">
+            <button type="button" id="jTabTests" onclick="jSwitchTab('tests')"
+              class="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all bg-white text-blue-600 shadow-sm">
+              <i class="fas fa-flask mr-1 text-xs"></i>Individual Tests
+            </button>
+            <button type="button" id="jTabPanels" onclick="jSwitchTab('panels')"
+              class="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-gray-500 hover:text-gray-700">
+              <i class="fas fa-layer-group mr-1 text-xs"></i>Test Panels
+            </button>
+          </div>
+
+          <!-- Individual tests pane -->
+          <div id="jTestsPane">
+            <input id="jTestSearch" type="text" placeholder="Search tests by name or code…"
+              class="w-full px-3 py-2 border border-gray-300 rounded-t-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+            <div id="jTestList" class="border border-t-0 border-gray-300 rounded-b-lg overflow-y-auto bg-white" style="max-height:165px">
+              <p class="text-gray-400 text-sm text-center py-6"><i class="fas fa-spinner fa-spin mr-1"></i> Loading…</p>
+            </div>
+          </div>
+
+          <!-- Panels pane -->
+          <div id="jPanelsPane" class="hidden">
+            <div id="jPanelList" class="border border-gray-300 rounded-lg overflow-y-auto bg-white" style="max-height:192px">
+              <p class="text-gray-400 text-sm text-center py-6"><i class="fas fa-spinner fa-spin mr-1"></i> Loading panels…</p>
+            </div>
+          </div>
+
+          <!-- Doctor + Priority -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Referring Doctor</label>
+              <select id="jDoctor" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">— Optional —</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Priority</label>
+              <select id="jPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="routine">Routine</option>
+                <option value="urgent">Urgent</option>
+                <option value="stat">STAT</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Selection bar -->
+          <div class="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 flex items-center justify-between">
+            <span id="jSelCount" class="text-xs text-blue-700 font-medium">0 tests selected</span>
+            <span class="text-sm font-bold text-blue-800">Total: PKR <span id="jTotalPrice">0</span></span>
+          </div>
+        </div>
+
+        <!-- STEP 3: Sample Collection & Billing -->
+        <div id="jStep3" class="hidden py-2 space-y-3">
+          <!-- Summary -->
+          <div id="jSummary"></div>
+
+          <!-- Tube rows -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Sample Tubes</label>
+              <span class="text-xs text-gray-400">Each tube gets a unique barcode</span>
+            </div>
+            <div id="jTubeRows" class="space-y-2"></div>
+          </div>
+
+          <!-- Date + Notes -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Collection Date <span class="text-red-500">*</span></label>
+              <input id="jCollectionDate" type="date"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Notes</label>
+              <input id="jNotes" type="text" placeholder="Optional…"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+            </div>
+          </div>
+
+          <!-- Billing section -->
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div class="bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-200">Billing</div>
+            <div class="px-3 pt-2 pb-3">
+              <div id="jBillingLines" class="space-y-1 text-xs text-gray-600 mb-2"></div>
+              <div class="flex items-center justify-between border-t border-gray-200 pt-2">
+                <span class="text-sm font-semibold text-gray-800">Total</span>
+                <span class="text-base font-bold text-gray-900">PKR <span id="jBillingTotal">0</span></span>
+              </div>
+              <label class="flex items-center gap-2 mt-3 cursor-pointer">
+                <input type="checkbox" id="jCreateInvoice" class="w-4 h-4 text-blue-600 rounded">
+                <span class="text-sm font-medium text-gray-700">Generate invoice &amp; receipt</span>
+              </label>
+              <div id="jPaymentSection" class="hidden mt-2 pl-6 space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="jMarkPaid" class="w-4 h-4 text-green-600 rounded">
+                  <span class="text-sm text-gray-700">Mark payment received now</span>
+                </label>
+                <div id="jPaidAmountRow" class="hidden grid grid-cols-2 gap-2">
+                  <input id="jPaidAmount" type="number" min="0" step="1" placeholder="Amount (PKR)"
+                    class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400">
+                  <select id="jPayMethod" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option>Cash</option><option>Card</option><option>Online Transfer</option><option>Cheque</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Error + Footer -->
+      <div class="px-6 pb-5 pt-3 flex-shrink-0 border-t border-gray-100">
+        <div id="journeyError" class="hidden mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
+        <div class="flex items-center gap-3">
+          <button type="button" id="jBackBtn" onclick="jPrevStep()"
+            class="hidden bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5">
+            <i class="fas fa-arrow-left text-xs"></i> Back
+          </button>
+          <div class="flex-1"></div>
+          <button type="button" onclick="closeJourneyModal()" class="text-gray-400 hover:text-gray-600 text-sm px-3 py-2">Cancel</button>
+          <button type="button" id="jNextBtn" onclick="jNextStep()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+            Next <i class="fas fa-arrow-right text-xs"></i>
+          </button>
+          <button type="submit" form="journeyForm" id="jSubmitBtn"
+            class="hidden bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+            <i class="fas fa-check"></i> Register &amp; Start
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATIENT TOKEN / RECEIPT MODAL -->
+  <div id="receiptModal" class="modal-overlay" style="z-index:1100">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 flex flex-col" style="max-height:90vh">
+      <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-gray-100 flex-shrink-0">
+        <div>
+          <h3 class="font-bold text-gray-900 text-base flex items-center gap-2">
+            <i class="fas fa-check-circle text-green-500"></i> Visit Registered!
+          </h3>
+          <p class="text-gray-400 text-xs mt-0.5">Orders created · Print token for patient</p>
+        </div>
+        <button onclick="closeReceiptModal()" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="receiptContent" class="flex-1 overflow-y-auto px-6 py-4"></div>
+      <div class="px-6 pb-5 pt-3 border-t border-gray-100 flex gap-2 justify-end flex-shrink-0">
+        <button onclick="printToken()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5">
+          <i class="fas fa-print text-xs"></i> Print Token
+        </button>
+        <button id="receiptGoResults" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5">
+          <i class="fas fa-vial text-xs"></i> Enter Results
+        </button>
+        <button onclick="closeReceiptModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── 3-Step Patient Journey Wizard ──────────────────────────────────────
+    let _journeyStep = 1;
+    let _journeyTests = [];
+    let _journeyDoctors = [];
+    let _journeyPanels = [];
+    let _journeyTubes = [];
+    let _selectedTests = new Map(); // test_id(int) → {id, name, price}
+
+    function openJourneyModal() {
+      _journeyStep = 1;
+      _selectedTests.clear();
+      _journeyTubes = [];
+      document.getElementById('journeyForm').reset();
+      document.getElementById('journeyError').classList.add('hidden');
+      _showJourneyStep(1);
+      document.getElementById('journeyModal').classList.add('open');
+      setTimeout(() => document.getElementById('jName').focus(), 80);
+      _loadJourneyData();
+    }
+    function closeJourneyModal() { document.getElementById('journeyModal').classList.remove('open'); }
+    function openReceiptModal() { document.getElementById('receiptModal').classList.add('open'); }
+    function closeReceiptModal() { document.getElementById('receiptModal').classList.remove('open'); }
+
+    async function _loadJourneyData() {
+      try {
+        const [tests, doctors, panels] = await Promise.all([
+          API.getTests(), API.getDoctors(), API.getPanels(true)
+        ]);
+        _journeyTests  = Array.isArray(tests)   ? tests   : (tests?.items   || []);
+        _journeyDoctors= Array.isArray(doctors)  ? doctors : (doctors?.items || []);
+        _journeyPanels = Array.isArray(panels)   ? panels  : (panels?.items  || []);
+        _renderTestList('');
+        _renderPanelList();
+        _renderDoctorSelect();
+      } catch(e) {
+        document.getElementById('jTestList').innerHTML =
+          '<p class="text-red-400 text-sm text-center py-4"><i class="fas fa-exclamation-triangle mr-1"></i> Failed to load. Check server connection.</p>';
+      }
+    }
+
+    function jSwitchTab(tab) {
+      const toTests = tab === 'tests';
+      document.getElementById('jTestsPane').classList.toggle('hidden', !toTests);
+      document.getElementById('jPanelsPane').classList.toggle('hidden', toTests);
+      const active   = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all bg-white text-blue-600 shadow-sm';
+      const inactive = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-gray-500 hover:text-gray-700';
+      document.getElementById('jTabTests').className  = toTests  ? active : inactive;
+      document.getElementById('jTabPanels').className = !toTests ? active : inactive;
+    }
+
+    function _renderTestList(search) {
+      const container = document.getElementById('jTestList');
+      const q = (search || '').trim().toLowerCase();
+      const filtered = _journeyTests.filter(t =>
+        !q || t.test_name.toLowerCase().includes(q) || (t.test_code||'').toLowerCase().includes(q)
+      );
+      if (!filtered.length) {
+        container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">No tests found</p>';
+        return;
+      }
+      container.innerHTML = filtered.map(t => {
+        const sel = _selectedTests.has(t.id);
+        const p = t.price || 0;
+        const safeName = (t.test_name||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        return `<div class="flex items-center gap-2 px-3 py-2 cursor-pointer border-b border-gray-50 last:border-0 transition-colors ${sel?'bg-blue-50':'hover:bg-gray-50'}"
+          onclick="_toggleTest(${t.id},'${safeName}',${p})">
+          <div class="w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${sel?'bg-blue-600 border-blue-600':'border-gray-300'}">
+            ${sel?'<i class="fas fa-check text-white" style="font-size:8px"></i>':''}
+          </div>
+          <span class="text-sm text-gray-800 flex-1 leading-tight">${t.test_name}</span>
+          <span class="text-xs text-gray-400 mr-1">${t.test_code||''}</span>
+          ${p?`<span class="text-xs font-medium text-green-600">PKR ${p}</span>`:''}
+        </div>`;
+      }).join('');
+    }
+
+    function _renderPanelList() {
+      const container = document.getElementById('jPanelList');
+      if (!_journeyPanels.length) {
+        container.innerHTML = '<p class="text-gray-400 text-sm text-center py-6 px-3">No test panels configured.<br><span class="text-xs">Create panels in the Tests section first.</span></p>';
+        return;
+      }
+      container.innerHTML = _journeyPanels.map(p => {
+        const items = p.items || [];
+        const allSel = items.length > 0 && items.every(i => _selectedTests.has(i.test_id));
+        const total = items.reduce((sum, i) => {
+          const t = _journeyTests.find(x => x.id === i.test_id);
+          return sum + (t ? (t.price || 0) : 0);
+        }, 0);
+        return `<div onclick="_togglePanel(${p.id})"
+          class="flex items-center gap-3 px-3 py-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-blue-50 transition-colors ${allSel?'bg-blue-50':''}">
+          <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${allSel?'bg-blue-600 border-blue-600':'border-gray-300'}">
+            ${allSel?'<i class="fas fa-check text-white" style="font-size:8px"></i>':''}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-gray-800">${p.name}</div>
+            <div class="text-xs text-gray-400 truncate">${items.length} tests${p.description?' · '+p.description:''}</div>
+          </div>
+          ${total>0?`<span class="text-xs font-semibold text-green-600 flex-shrink-0">PKR ${total}</span>`:''}
+        </div>`;
+      }).join('');
+    }
+
+    function _renderDoctorSelect() {
+      const sel = document.getElementById('jDoctor');
+      sel.innerHTML = '<option value="">— Optional —</option>' +
+        _journeyDoctors.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+    }
+
+    function _toggleTest(testId, testName, testPrice) {
+      if (_selectedTests.has(testId)) { _selectedTests.delete(testId); }
+      else { _selectedTests.set(testId, {id: testId, name: testName, price: parseFloat(testPrice)||0}); }
+      _renderTestList(document.getElementById('jTestSearch').value || '');
+      _updateSelectionBar();
+    }
+
+    function _togglePanel(panelId) {
+      const panel = _journeyPanels.find(p => p.id === panelId);
+      if (!panel) return;
+      const items = panel.items || [];
+      const allSel = items.length > 0 && items.every(i => _selectedTests.has(i.test_id));
+      if (allSel) {
+        items.forEach(i => _selectedTests.delete(i.test_id));
+      } else {
+        items.forEach(i => {
+          const t = _journeyTests.find(x => x.id === i.test_id);
+          _selectedTests.set(i.test_id, {id: i.test_id, name: i.test_name, price: t ? (t.price||0) : 0});
+        });
+      }
+      _renderTestList(document.getElementById('jTestSearch').value || '');
+      _renderPanelList();
+      _updateSelectionBar();
+    }
+
+    function _updateSelectionBar() {
+      const vals = [..._selectedTests.values()];
+      const total = vals.reduce((s, t) => s + (t.price||0), 0);
+      document.getElementById('jSelCount').textContent = `${vals.length} test${vals.length!==1?'s':''} selected`;
+      document.getElementById('jTotalPrice').textContent = total.toFixed(0);
+    }
+
+    function _testTubeType(name) {
+      const n = (name||'').toLowerCase();
+      if (n.includes('urine') || n.includes('urinalysis') || n.includes('uro')) return 'Urine';
+      if (n.includes('stool') || n.includes('fecal') || n.includes('occult')) return 'Stool';
+      if (n.includes('sputum') || n.includes('afb') || n.includes(' tb')) return 'Sputum';
+      if (n.includes('swab') || n.includes('throat') || n.includes('wound')) return 'Swab';
+      if (n.includes('csf') || n.includes('spinal fluid')) return 'CSF';
+      return 'Blood';
+    }
+
+    function _buildTubes(selected) {
+      const groups = new Map();
+      selected.forEach(t => {
+        const type = _testTubeType(t.name);
+        if (!groups.has(type)) groups.set(type, []);
+        groups.get(type).push(t);
+      });
+      return [...groups.entries()].map(([type, tests], idx) => ({idx, type, tests}));
+    }
+
+    function _showJourneyStep(step) {
+      _journeyStep = step;
+      ['jStep1','jStep2','jStep3'].forEach((id, i) => {
+        document.getElementById(id).classList.toggle('hidden', i+1 !== step);
+      });
+      [1,2,3].forEach(s => {
+        const dot = document.getElementById('jDot'+s);
+        const lbl = document.getElementById('jLabel'+s);
+        if (s < step) {
+          dot.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-green-500 text-white flex-shrink-0';
+          dot.innerHTML = '<i class="fas fa-check text-xs"></i>';
+        } else if (s === step) {
+          dot.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-blue-600 text-white flex-shrink-0';
+          dot.textContent = s;
+        } else {
+          dot.className = 'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-gray-200 text-gray-500 flex-shrink-0';
+          dot.textContent = s;
+        }
+        const isLast = s === 3;
+        if (lbl) lbl.className = s===step
+          ? `text-xs font-semibold text-blue-600 ml-1.5`
+          : `text-xs text-gray-400 ml-1.5`;
+      });
+      document.getElementById('jBackBtn').classList.toggle('hidden', step === 1);
+      document.getElementById('jNextBtn').classList.toggle('hidden', step === 3);
+      document.getElementById('jSubmitBtn').classList.toggle('hidden', step !== 3);
+
+      if (step === 3) {
+        const selected = [..._selectedTests.values()];
+        _journeyTubes = _buildTubes(selected);
+        _renderTubeRows();
+        _renderBillingSection();
+        if (!document.getElementById('jCollectionDate').value)
+          document.getElementById('jCollectionDate').value = new Date().toISOString().split('T')[0];
+        // Mini summary at top of Step 3
+        const name = document.getElementById('jName').value.trim();
+        const age  = document.getElementById('jAge').value;
+        const gender = document.getElementById('jGender').value;
+        const priority = document.getElementById('jPriority').value;
+        const chips = selected.map(t =>
+          `<span class="inline-block bg-blue-100 text-blue-700 text-xs px-1.5 py-0.5 rounded mr-1 mb-1">${t.name}</span>`
+        ).join('');
+        document.getElementById('jSummary').innerHTML = `
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm mb-1">
+            <div class="flex items-center gap-2 mb-1.5">
+              <i class="fas fa-user text-gray-400 text-xs"></i>
+              <span class="font-semibold text-gray-800">${name}</span>
+              <span class="text-gray-400 text-xs">${age}y · ${gender}</span>
+              <span class="ml-auto text-xs font-bold uppercase ${priority==='stat'?'text-red-600':priority==='urgent'?'text-orange-500':'text-gray-400'}">${priority}</span>
+            </div>
+            <div class="flex flex-wrap">${chips}</div>
+          </div>`;
+      }
+    }
+
+    function _renderTubeRows() {
+      const TYPES = ['Blood','Urine','Stool','Sputum','Swab','CSF','Other'];
+      const colors = {Blood:'text-red-400', Urine:'text-yellow-500', Stool:'text-amber-700', Sputum:'text-orange-400', Swab:'text-purple-400', CSF:'text-blue-400', Other:'text-gray-400'};
+      document.getElementById('jTubeRows').innerHTML = _journeyTubes.map((tube, i) => `
+        <div class="border border-gray-200 rounded-lg p-3">
+          <div class="flex items-center gap-2 mb-1.5">
+            <i class="fas fa-vial ${colors[tube.type]||'text-gray-400'} text-sm"></i>
+            <span class="text-xs font-bold text-gray-600 uppercase tracking-wide">Tube ${i+1}</span>
+            <select class="ml-auto border border-gray-200 rounded px-2 py-0.5 text-xs bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              onchange="_journeyTubes[${i}].type=this.value">
+              ${TYPES.map(st => `<option value="${st}" ${st===tube.type?'selected':''}>${st}</option>`).join('')}
+            </select>
+          </div>
+          <div class="flex flex-wrap gap-1">
+            ${tube.tests.map(t => `<span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">${t.name}</span>`).join('')}
+          </div>
+        </div>`).join('');
+    }
+
+    function _renderBillingSection() {
+      const selected = [..._selectedTests.values()];
+      const total = selected.reduce((s, t) => s + (t.price||0), 0);
+      document.getElementById('jBillingLines').innerHTML = selected.length
+        ? selected.map(t => `
+            <div class="flex items-center justify-between">
+              <span class="truncate flex-1 text-gray-600">${t.name}</span>
+              <span class="font-medium text-gray-800 ml-2 flex-shrink-0">PKR ${(t.price||0).toFixed(0)}</span>
+            </div>`).join('')
+        : '<div class="text-gray-400 text-center text-xs">No tests</div>';
+      document.getElementById('jBillingTotal').textContent = total.toFixed(0);
+      const pa = document.getElementById('jPaidAmount');
+      if (pa) pa.value = total.toFixed(0);
+    }
+
+    function jNextStep() {
+      const errEl = document.getElementById('journeyError');
+      errEl.classList.add('hidden');
+      if (_journeyStep === 1) {
+        const name   = document.getElementById('jName').value.trim();
+        const age    = document.getElementById('jAge').value;
+        const gender = document.getElementById('jGender').value;
+        if (!name)  { errEl.textContent='Please enter patient name.';  errEl.classList.remove('hidden'); return; }
+        if (!age || parseInt(age)<0 || parseInt(age)>150) { errEl.textContent='Please enter a valid age.'; errEl.classList.remove('hidden'); return; }
+        if (!gender){ errEl.textContent='Please select gender.';       errEl.classList.remove('hidden'); return; }
+        _showJourneyStep(2);
+      } else if (_journeyStep === 2) {
+        if (!_selectedTests.size) { errEl.textContent='Please select at least one test.'; errEl.classList.remove('hidden'); return; }
+        _showJourneyStep(3);
+      }
+    }
+
+    function jPrevStep() {
+      document.getElementById('journeyError').classList.add('hidden');
+      if (_journeyStep > 1) _showJourneyStep(_journeyStep - 1);
+    }
+
+    function _showReceipt({patient, samples, invoice, totalAmount, paid, paidAmount, payMethod}) {
+      const total = invoice ? (invoice.total_amount || totalAmount) : totalAmount;
+      const now   = new Date().toLocaleString('en-GB', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const selected = [..._selectedTests.values()];
+
+      const tubeRows = samples.map(s =>
+        `<tr><td class="py-1 pr-3 font-mono font-bold" style="color:#1d4ed8">${s.sampleBarcode}</td>
+          <td class="py-1 pr-3">${s.type}</td>
+          <td class="py-1 text-xs" style="color:#6b7280">${s.tests.map(t=>t.name).join(', ')}</td></tr>`
+      ).join('');
+
+      const testRows = selected.map(t =>
+        `<tr><td class="py-0.5">${t.name}</td>
+          <td class="py-0.5 text-right font-medium">${(t.price||0)>0?'PKR '+(t.price||0).toFixed(0):'-'}</td></tr>`
+      ).join('');
+
+      const payStatus = paid
+        ? `<span style="color:#16a34a;font-weight:600">✓ PAID — ${payMethod}: PKR ${paidAmount.toFixed(0)}</span>`
+        : `<span style="color:#d97706;font-weight:600">⏳ Payment Pending — PKR ${total.toFixed(0)}</span>`;
+
+      document.getElementById('receiptContent').innerHTML = `
+        <div style="text-align:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #d1d5db">
+          <div style="font-size:15px;font-weight:700;color:#111827">ENIGMA DIAGNOSTICS LABORATORY</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:2px">Patient Token / Order Receipt</div>
+        </div>
+        <table style="width:100%;font-size:13px;margin-bottom:12px">
+          <tr><td style="color:#9ca3af;padding:2px 8px 2px 0;width:90px">Patient</td><td style="font-weight:600;padding:2px 0">${patient.name}</td></tr>
+          <tr><td style="color:#9ca3af;padding:2px 8px 2px 0">Age/Gender</td><td style="padding:2px 0">${patient.age} yrs · ${patient.gender}</td></tr>
+          ${patient.phone?`<tr><td style="color:#9ca3af;padding:2px 8px 2px 0">Phone</td><td style="padding:2px 0">${patient.phone}</td></tr>`:''}
+        </table>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Sample Barcodes</div>
+          <table style="width:100%;font-size:13px">${tubeRows}</table>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Tests Ordered</div>
+          <table style="width:100%;font-size:13px">
+            ${testRows}
+            <tr><td colspan="2" style="padding-top:6px;border-top:1px solid #e5e7eb"></td></tr>
+            <tr><td style="font-weight:600">Total</td><td style="text-align:right;font-weight:700">PKR ${(total||0).toFixed(0)}</td></tr>
+          </table>
+        </div>
+        <div style="font-size:13px;padding:8px 0;border-top:1px solid #e5e7eb">${payStatus}</div>
+        <div style="font-size:11px;color:#9ca3af;text-align:center;margin-top:10px;padding-top:10px;border-top:1px dashed #d1d5db">
+          Registered: ${now}<br>Present this token to collect your test report.
+        </div>`;
+
+      document.getElementById('receiptGoResults').onclick = () => {
+        closeReceiptModal();
+        const sid = samples[0]?.sampleId;
+        if (sid) window.location.href = `results.html?sample_id=${sid}`;
+      };
+      openReceiptModal();
+    }
+
+    function printToken() {
+      const html = document.getElementById('receiptContent').innerHTML;
+      const win = window.open('', '_blank', 'width=420,height=620,menubar=no,toolbar=no,scrollbars=yes');
+      if (!win) { alert('Please allow pop-ups to print.'); return; }
+      win.document.write(`<!DOCTYPE html><html><head><title>Patient Token</title>
+        <style>
+          *{box-sizing:border-box} body{font-family:Arial,sans-serif;margin:0;padding:20px;font-size:13px;color:#111827}
+          table{width:100%;border-collapse:collapse} td{vertical-align:top}
+          @media print{@page{margin:8mm} body{padding:5px}}
+        </style></head><body>${html}</body></html>`);
+      win.document.close();
+      setTimeout(() => { win.print(); }, 350);
+    }
+
+    // ── Event listeners ────────────────────────────────────────────────────
+    document.getElementById('journeyModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeJourneyModal(); });
+    document.getElementById('receiptModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeReceiptModal(); });
+    document.getElementById('jTestSearch').addEventListener('input', e => { _renderTestList(e.target.value); });
+    document.getElementById('jCreateInvoice').addEventListener('change', e => {
+      document.getElementById('jPaymentSection').classList.toggle('hidden', !e.target.checked);
+    });
+    document.getElementById('jMarkPaid').addEventListener('change', e => {
+      document.getElementById('jPaidAmountRow').classList.toggle('hidden', !e.target.checked);
+    });
+
+    // ── Submit ─────────────────────────────────────────────────────────────
+    document.getElementById('journeyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('journeyError');
+      errEl.classList.add('hidden');
+      const btn = document.getElementById('jSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Creating…';
+      try {
+        // 1. Create patient
+        const phoneRaw = document.getElementById('jPhone').value.trim();
+        const patient  = await API.createPatient({
+          name:   document.getElementById('jName').value.trim(),
+          age:    parseInt(document.getElementById('jAge').value),
+          gender: document.getElementById('jGender').value,
+          phone:  phoneRaw ? ('+92' + phoneRaw.replace(/^\+92/, '')) : null
+        });
+
+        // 2. Shared order fields
+        const priority      = document.getElementById('jPriority').value;
+        const collectionDate= document.getElementById('jCollectionDate').value;
+        const notes         = document.getElementById('jNotes').value.trim() || null;
+        const orderPriority = priority === 'routine' ? 'normal' : priority;
+        const doctorIdRaw   = document.getElementById('jDoctor').value;
+        const doctorId      = doctorIdRaw ? parseInt(doctorIdRaw) : null;
+
+        // 3. Create one sample per tube
+        const createdSamples = [];
+        for (const tube of _journeyTubes) {
+          const sample = await API.createSample({
+            patient_id:      patient.id,
+            sample_type:     tube.type,
+            collection_date: new Date(collectionDate).toISOString(),
+            priority,
+            notes
+          });
+          createdSamples.push({...tube, sampleId: sample.id, sampleBarcode: sample.sample_id});
+        }
+
+        // 4. Create orders (one per test, linked to its tube's sample)
+        for (const tube of createdSamples) {
+          for (const test of tube.tests) {
+            await API.createOrder({sample_id: tube.sampleId, test_id: test.id, doctor_id: doctorId, priority: orderPriority});
+          }
+        }
+
+        // 5. Invoice (optional)
+        let invoice = null;
+        const doInvoice = document.getElementById('jCreateInvoice').checked;
+        const doPayment = doInvoice && document.getElementById('jMarkPaid').checked;
+        const selected  = [..._selectedTests.values()];
+        const totalAmount = selected.reduce((s, t) => s + (t.price||0), 0);
+        if (doInvoice) {
+          invoice = await API.createInvoice({
+            patient_id: patient.id,
+            sample_id:  createdSamples[0]?.sampleId || null,
+            items:      selected.map(t => ({description: t.name, test_id: t.id, amount: t.price||0})),
+            notes
+          });
+          if (doPayment && invoice) {
+            const paidAmt = parseFloat(document.getElementById('jPaidAmount').value) || totalAmount;
+            await API.payInvoice(invoice.id, {amount: paidAmt, notes: document.getElementById('jPayMethod').value});
+          }
+        }
+
+        closeJourneyModal();
+        _showReceipt({
+          patient,
+          samples: createdSamples,
+          invoice,
+          totalAmount,
+          paid:       doPayment,
+          paidAmount: parseFloat(document.getElementById('jPaidAmount')?.value) || totalAmount,
+          payMethod:  document.getElementById('jPayMethod')?.value || 'Cash'
+        });
+      } catch(err) {
+        errEl.textContent = err.message || 'Failed to register visit. Please try again.';
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check mr-1"></i> Register &amp; Start';
+      }
+    });
+  </script>
+</body>
+</html>
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-200 flex flex-col" style="max-height:90vh">
 
       <!-- Header -->
