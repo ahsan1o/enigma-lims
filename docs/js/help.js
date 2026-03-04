@@ -16,7 +16,9 @@ const HELP_CONTENT = {
     },
     actions: [
       'Check pending results count — work through those first',
-      'Use the 5-step workflow guide to navigate any patient visit',
+      'Click "New Patient" to register a brand-new patient and start their visit in one flow',
+      'Click "Existing Patient" to start a visit for a patient already in the system',
+      'Use the 5-step workflow guide to navigate any patient visit manually',
       'Click Refresh to update all statistics',
       'Charts show sample and result status distributions'
     ],
@@ -261,8 +263,8 @@ const TOUR_STEPS = [
     iconBg: 'bg-blue-600',
     step: null,
     title: 'Welcome to Enigma LIMS',
-    body: 'This is your Laboratory Information Management System. The workflow is simple: <strong>Register Patient → Collect Sample → Order Tests → Enter Results → Print Report</strong> with full billing.',
-    sub: 'There are two roles: <strong>Lab Technician</strong> (sees the 5-step core workflow) and <strong>Super Admin</strong> (sees everything including Tests, Billing, Users, Instruments). Let\'s take a quick tour.',
+    body: 'This is your Laboratory Information Management System. The workflow is simple: <strong>Register Patient → Collect Sample → Order Tests → Enter Results → Print Report</strong>.',
+    sub: '<strong>Two quick-start buttons are on the dashboard:</strong> <span style="color:#1d4ed8">New Patient</span> — for a first-time visitor. <span style="color:#1d4ed8">Existing Patient</span> — for a returning patient. Both guide you through the same 3-step wizard. There are two roles: Lab Technician (sees the 5-step core workflow) and Super Admin (sees everything).',
     link: null
   },
   {
@@ -270,8 +272,8 @@ const TOUR_STEPS = [
     iconBg: 'bg-blue-500',
     step: 1,
     title: 'Step 1 — Register the Patient',
-    body: 'Every lab visit starts with a patient. Go to <strong>Patients → Add Patient</strong>. Enter name, age, and gender. Phone is optional but useful.',
-    sub: 'Register a patient only once. They can return for future visits without re-registering — the system keeps their full test history.',
+    body: 'Every lab visit starts with a patient. Use the <strong>New Patient</strong> button on the dashboard for first-time visitors, or <strong>Existing Patient</strong> for repeat patients. You can also go to <strong>Patients → Add Patient</strong> directly.',
+    sub: 'Register a patient only once. They can return for future visits without re-registering — the system keeps their full test history. Use "Existing Patient" to find them by name or phone number.',
     link: { href: 'patients.html', label: 'Go to Patients →' }
   },
   {

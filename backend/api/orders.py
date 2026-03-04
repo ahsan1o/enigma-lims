@@ -20,6 +20,8 @@ def _enrich_order(o: Order) -> OrderResponse:
         data.test_price = o.test.price
     if o.doctor:
         data.doctor_name = o.doctor.name
+    elif o.doctor_name:
+        data.doctor_name = o.doctor_name
     return data
 
 
@@ -92,6 +94,7 @@ def create_bulk_orders(data: BulkOrderCreate, db: Session = Depends(get_db)):
             sample_id=data.sample_id,
             test_id=test_id,
             doctor_id=data.doctor_id,
+            doctor_name=data.doctor_name,
             priority=data.priority,
             status="pending"
         )

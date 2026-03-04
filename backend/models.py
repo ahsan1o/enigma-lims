@@ -108,6 +108,7 @@ class Order(Base):
     sample_id = Column(Integer, ForeignKey("samples.id"), nullable=False)
     test_id = Column(Integer, ForeignKey("tests.id"), nullable=False)
     doctor_id = Column(Integer, ForeignKey("doctors.id"), nullable=True)
+    doctor_name = Column(String(255), nullable=True)   # Free-text referring doctor name
     priority = Column(String(20), default="normal")  # normal, urgent, stat
     status = Column(String(50), default="pending")  # pending, in_progress, completed
     created_at = Column(DateTime, default=datetime.utcnow)

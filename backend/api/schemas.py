@@ -200,6 +200,7 @@ class OrderCreate(BaseModel):
     sample_id: int
     test_id: int
     doctor_id: Optional[int] = None
+    doctor_name: Optional[str] = None
     priority: str = "normal"  # normal, urgent, stat
 
 class OrderResponse(BaseModel):
@@ -474,6 +475,7 @@ class BulkOrderCreate(BaseModel):
     sample_id: int
     test_ids: List[int]
     doctor_id: Optional[int] = None
+    doctor_name: Optional[str] = None
     priority: str = "normal"
 
 

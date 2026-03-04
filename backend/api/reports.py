@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import exists
+from sqlalchemy import exists, or_
 from datetime import datetime
 from database import get_db
 from models import Sample, Result, Order, TestReferenceRange
@@ -62,12 +62,16 @@ def generate_report(sample_id: int, db: Session = Depends(get_db)):
         joinedload(Result.approved_by_user)
     ).filter(Result.sample_id == sample_id).all()
 
-    # Get doctor name from a completed order for this sample
+    # Get doctor name from a completed order for this sample (free-text doctor_name first, then FK)
     order_with_doctor = db.query(Order).filter(
         Order.sample_id == sample_id,
-        Order.doctor_id.isnot(None)
+        or_(Order.doctor_id.isnot(None), Order.doctor_name.isnot(None))
     ).options(joinedload(Order.doctor)).first()
-    referring_doctor = order_with_doctor.doctor.name if order_with_doctor and order_with_doctor.doctor else None
+    referring_doctor = None
+    if order_with_doctor:
+        referring_doctor = order_with_doctor.doctor_name or (
+            order_with_doctor.doctor.name if order_with_doctor.doctor else None
+        )
 
     patient = sample.patient
     patient_age = patient.age if patient else None
@@ -158,6 +162,19 @@ def list_reports(db: Session = Depends(get_db)):
         exists().where(Result.sample_id == Sample.id)
     ).order_by(Sample.created_at.desc()).limit(200).all()
 
+    # Batch-load referring doctors to avoid N+1
+    sample_ids = [s.id for s in samples]
+    orders_with_docs = db.query(Order).filter(
+        Order.sample_id.in_(sample_ids),
+        or_(Order.doctor_id.isnot(None), Order.doctor_name.isnot(None))
+    ).options(joinedload(Order.doctor)).all()
+    doctor_map = {}
+    for o in orders_with_docs:
+        if o.sample_id not in doctor_map:
+            doc = o.doctor_name or (o.doctor.name if o.doctor else None)
+            if doc:
+                doctor_map[o.sample_id] = doc
+
     return [
         {
             "id": s.id,
@@ -168,7 +185,7 @@ def list_reports(db: Session = Depends(get_db)):
             "status": s.status,
             "collection_date": s.collection_date.isoformat(),
             "result_count": len(s.results),
-            "referring_doctor": None
+            "referring_doctor": doctor_map.get(s.id)
         }
         for s in samples
     ]

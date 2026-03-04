@@ -167,9 +167,8 @@
           <!-- Doctor -->
           <div>
             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Referring Doctor</label>
-            <select id="oDoctor" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">None</option>
-            </select>
+            <input type="text" id="oDoctor" placeholder="e.g. Dr. Usman Ali (optional)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
           </div>
           <!-- Priority -->
           <div>
@@ -335,16 +334,14 @@
     // ── Dropdown loading ───────────────────────────────────────────────────────
     async function loadDropdowns() {
       try {
-        const [samplesData, testsData, doctorsData, panelsData] = await Promise.all([
+        const [samplesData, testsData, panelsData] = await Promise.all([
           API.getSamples().catch(()=>null),
           API.getTests().catch(()=>null),
-          API.getDoctors().catch(()=>null),
           API.getPanels(true).catch(()=>null)
         ]);
         samplesList = Array.isArray(samplesData) ? samplesData : (samplesData?.items||[]);
         testsList   = Array.isArray(testsData)   ? testsData   : (testsData?.items||[]);
         panelsList  = Array.isArray(panelsData)  ? panelsData  : (panelsData?.items||[]);
-        const doctors = Array.isArray(doctorsData) ? doctorsData : (doctorsData?.items||[]);
 
         // Sample dropdown
         const ss = document.getElementById('rSample');
@@ -357,16 +354,6 @@
           o.dataset.sampleType = s.sample_type || '';
           o.dataset.patientName = s.patient_name || '';
           ss.appendChild(o);
-        });
-
-        // Doctor dropdown
-        const ds = document.getElementById('oDoctor');
-        while(ds.options.length>1) ds.remove(1);
-        doctors.forEach(d => {
-          const o = document.createElement('option');
-          o.value = d.id;
-          o.textContent = `Dr. ${d.name||d.full_name||d.username}`;
-          ds.appendChild(o);
         });
 
         // Render test + panel lists
@@ -532,7 +519,7 @@
         errEl.classList.remove('hidden');
         return;
       }
-      const doctorIdVal = document.getElementById('oDoctor').value;
+      const doctorNameVal = document.getElementById('oDoctor').value.trim();
       const btn = document.getElementById('orderSubmitBtn');
       const icon = document.getElementById('orderBtnIcon');
       btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
@@ -542,7 +529,7 @@
         const payload = {
           sample_id: sampleId,
           test_ids: [..._selectedTests.keys()],
-          doctor_id: doctorIdVal ? parseInt(doctorIdVal) : null,
+          doctor_name: doctorNameVal || null,
           priority: document.getElementById('oPriority').value
         };
         const created = await API.createBulkOrders(payload);

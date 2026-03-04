@@ -223,7 +223,7 @@
         return;
       }
       tbody.innerHTML = list.map(r => {
-        const testCount = r.test_count != null ? r.test_count : (Array.isArray(r.tests) ? r.tests.length : null);
+        const testCount = r.result_count ?? r.test_count ?? (Array.isArray(r.tests) ? r.tests.length : null);
         return `
           <tr class="border-b border-gray-100 hover:bg-blue-50/30 transition-colors">
             <td class="px-5 py-3.5 font-mono text-blue-600 text-xs font-bold">${r.sample_id||r.id||'—'}</td>
@@ -235,7 +235,7 @@
               ${testCount != null ? `<span class="text-gray-900 font-medium">${testCount}</span> test${testCount!==1?'s':''}` : '—'}
             </td>
             <td class="px-4 py-3.5 text-gray-500 text-sm">${r.doctor_name||r.referring_doctor||'—'}</td>
-            <td class="px-4 py-3.5 text-gray-400 text-xs">${formatDateTime(r.collected_at||r.created_at)}</td>
+            <td class="px-4 py-3.5 text-gray-400 text-xs">${formatDateTime(r.collection_date||r.collected_at||r.created_at)}</td>
             <td class="px-4 py-3.5">${statusBadge(r.status)}</td>
             <td class="px-4 py-3.5">
               <button onclick="openReport(${r.id})"

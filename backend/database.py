@@ -30,6 +30,7 @@ def _migrate_schema():
     """Run safe schema migrations for columns added after initial release."""
     migrations = [
         "ALTER TABLE tests ADD COLUMN price FLOAT DEFAULT 0.0",
+        "ALTER TABLE orders ADD COLUMN doctor_name VARCHAR(255)",
         """CREATE TABLE IF NOT EXISTS test_reference_ranges (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             test_id INTEGER NOT NULL REFERENCES tests(id) ON DELETE CASCADE,

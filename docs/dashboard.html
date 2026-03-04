@@ -210,9 +210,16 @@
             <h3 class="text-gray-900 font-semibold text-sm">Lab Workflow</h3>
             <p class="text-gray-400 text-xs mt-0.5">Follow these 5 steps for every patient visit</p>
           </div>
-          <button onclick="openJourneyModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
-            <i class="fas fa-play text-xs"></i> Start New Visit
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="openJourneyModal('existing')" id="existingPatientBtn"
+              class="bg-white border-2 border-blue-600 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:bg-blue-50 flex items-center gap-1.5">
+              <i class="fas fa-user-check text-xs"></i> Existing Patient
+            </button>
+            <button onclick="openJourneyModal('new')" id="newPatientBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+              <i class="fas fa-user-plus text-xs"></i> New Patient
+            </button>
+          </div>
         </div>
         <div class="flex items-stretch gap-2 overflow-x-auto pb-1">
           <a href="patients.html" class="flex-1 min-w-[130px] flex flex-col items-center text-center p-3 rounded-xl border-2 border-blue-100 bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-all group">
@@ -560,8 +567,8 @@
           <i class="fas fa-flask text-white text-sm"></i>
         </div>
         <div class="flex-1">
-          <h3 class="text-gray-900 font-bold text-base leading-tight">Start New Patient Visit</h3>
-          <p class="text-gray-400 text-xs mt-0.5">Patient &rarr; Tests &rarr; Sample Collection</p>
+          <h3 id="journeyTitle" class="text-gray-900 font-bold text-base leading-tight">Start New Patient Visit</h3>
+          <p id="journeySubtitle" class="text-gray-400 text-xs mt-0.5">Patient &rarr; Tests &rarr; Sample Collection</p>
         </div>
         <button onclick="closeJourneyModal()" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times"></i></button>
       </div>
@@ -614,6 +621,26 @@
           </div>
         </div>
 
+        <!-- STEP 1 (Existing Patient): Search & Select -->
+        <div id="jStep1Existing" class="hidden space-y-3 py-2">
+          <div>
+            <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Search Patient <span class="text-red-500">*</span></label>
+            <input id="jPatientSearch" type="text" placeholder="Name or phone number…" oninput="filterExistingPatients(this.value)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+          </div>
+          <div id="jPatientList" class="border border-gray-200 rounded-lg overflow-y-auto bg-white" style="max-height:220px">
+            <p class="text-gray-400 text-sm text-center py-6"><i class="fas fa-spinner fa-spin mr-1"></i> Loading patients…</p>
+          </div>
+          <div id="jSelectedPatientBox" class="hidden bg-blue-50 border border-blue-200 rounded-lg px-3 py-2.5 flex items-center gap-2">
+            <i class="fas fa-user-check text-blue-600 text-sm flex-shrink-0"></i>
+            <div class="flex-1 min-w-0">
+              <div id="jSelectedPatientName" class="text-sm font-semibold text-blue-900 truncate"></div>
+              <div id="jSelectedPatientInfo" class="text-xs text-blue-600"></div>
+            </div>
+            <button type="button" onclick="clearSelectedPatient()" class="text-blue-400 hover:text-blue-600 text-xs flex-shrink-0"><i class="fas fa-times"></i></button>
+          </div>
+        </div>
+
         <!-- STEP 2: Tests & Doctor -->
         <div id="jStep2" class="hidden py-2 space-y-3">
           <!-- Tab switcher -->
@@ -648,9 +675,8 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Referring Doctor</label>
-              <select id="jDoctor" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="">— Optional —</option>
-              </select>
+              <input type="text" id="jDoctor" placeholder="e.g. Dr. Usman Ali (optional)"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
             </div>
             <div>
               <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Priority</label>
@@ -698,31 +724,12 @@
           </div>
 
           <!-- Billing section -->
-          <div class="border border-gray-200 rounded-lg overflow-hidden">
-            <div class="bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-200">Billing</div>
-            <div class="px-3 pt-2 pb-3">
-              <div id="jBillingLines" class="space-y-1 text-xs text-gray-600 mb-2"></div>
-              <div class="flex items-center justify-between border-t border-gray-200 pt-2">
-                <span class="text-sm font-semibold text-gray-800">Total</span>
-                <span class="text-base font-bold text-gray-900">PKR <span id="jBillingTotal">0</span></span>
-              </div>
-              <label class="flex items-center gap-2 mt-3 cursor-pointer">
-                <input type="checkbox" id="jCreateInvoice" class="w-4 h-4 text-blue-600 rounded">
-                <span class="text-sm font-medium text-gray-700">Generate invoice &amp; receipt</span>
-              </label>
-              <div id="jPaymentSection" class="hidden mt-2 pl-6 space-y-2">
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" id="jMarkPaid" class="w-4 h-4 text-green-600 rounded">
-                  <span class="text-sm text-gray-700">Mark payment received now</span>
-                </label>
-                <div id="jPaidAmountRow" class="hidden grid grid-cols-2 gap-2">
-                  <input id="jPaidAmount" type="number" min="0" step="1" placeholder="Amount (PKR)"
-                    class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-400">
-                  <select id="jPayMethod" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option>Cash</option><option>Card</option><option>Online Transfer</option><option>Cheque</option>
-                  </select>
-                </div>
-              </div>
+          <div class="bg-green-50 border border-green-200 rounded-lg px-3 py-3">
+            <div class="text-xs font-semibold text-green-700 uppercase tracking-wider mb-2"><i class="fas fa-receipt mr-1"></i>Visit Total</div>
+            <div id="jBillingLines" class="space-y-1 text-xs text-gray-600 mb-2"></div>
+            <div class="flex items-center justify-between border-t border-green-300 pt-2">
+              <span class="text-sm font-semibold text-gray-800">Total Amount</span>
+              <span class="text-base font-bold text-green-700">PKR <span id="jBillingTotal">0</span></span>
             </div>
           </div>
         </div>
@@ -781,37 +788,103 @@
     // ─── 3-Step Patient Journey Wizard ──────────────────────────────────────
     let _journeyStep = 1;
     let _journeyTests = [];
-    let _journeyDoctors = [];
     let _journeyPanels = [];
     let _journeyTubes = [];
     let _selectedTests = new Map(); // test_id(int) → {id, name, price}
+    let _journeyMode = 'new'; // 'new' or 'existing'
+    let _journeyPatient = null; // for existing mode
+    let _allPatients = []; // cache
 
-    function openJourneyModal() {
+    function openJourneyModal(mode) {
+      _journeyMode = mode || 'new';
       _journeyStep = 1;
+      _journeyPatient = null;
       _selectedTests.clear();
       _journeyTubes = [];
       document.getElementById('journeyForm').reset();
       document.getElementById('journeyError').classList.add('hidden');
+      document.getElementById('jPatientSearch') && (document.getElementById('jPatientSearch').value = '');
+      document.getElementById('jSelectedPatientBox').classList.add('hidden');
+      // Update title/subtitle
+      if (_journeyMode === 'existing') {
+        document.getElementById('journeyTitle').textContent = 'Existing Patient Visit';
+        document.getElementById('journeySubtitle').textContent = 'Select Patient → Tests → Sample Collection';
+      } else {
+        document.getElementById('journeyTitle').textContent = 'Start New Patient Visit';
+        document.getElementById('journeySubtitle').textContent = 'Patient → Tests → Sample Collection';
+      }
       _showJourneyStep(1);
       document.getElementById('journeyModal').classList.add('open');
-      setTimeout(() => document.getElementById('jName').focus(), 80);
+      if (_journeyMode === 'new') {
+        setTimeout(() => document.getElementById('jName').focus(), 80);
+      } else {
+        setTimeout(() => document.getElementById('jPatientSearch').focus(), 80);
+        _loadExistingPatients();
+      }
       _loadJourneyData();
     }
     function closeJourneyModal() { document.getElementById('journeyModal').classList.remove('open'); }
     function openReceiptModal() { document.getElementById('receiptModal').classList.add('open'); }
     function closeReceiptModal() { document.getElementById('receiptModal').classList.remove('open'); }
 
+    async function _loadExistingPatients() {
+      try {
+        const data = await API.getPatients();
+        _allPatients = Array.isArray(data) ? data : (data?.items || []);
+        filterExistingPatients('');
+      } catch(e) {
+        document.getElementById('jPatientList').innerHTML =
+          '<p class="text-red-400 text-sm text-center py-4"><i class="fas fa-exclamation-triangle mr-1"></i> Failed to load patients.</p>';
+      }
+    }
+
+    function filterExistingPatients(q) {
+      const term = (q || '').toLowerCase().trim();
+      const list = term
+        ? _allPatients.filter(p => p.name.toLowerCase().includes(term) || (p.phone || '').includes(term))
+        : _allPatients;
+      const container = document.getElementById('jPatientList');
+      if (!list.length) {
+        container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">No patients found</p>';
+        return;
+      }
+      container.innerHTML = list.slice(0, 50).map(p => `
+        <div onclick="selectExistingPatient(${p.id},'${(p.name||'').replace(/'/g,"\\'")}',${p.age||0},'${p.gender||''}','${p.phone||''}')"
+          class="flex items-center gap-3 px-3 py-2.5 border-b border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors last:border-0">
+          <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <span class="text-blue-700 text-xs font-bold">${(p.name||'?').charAt(0).toUpperCase()}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-gray-900 truncate">${p.name}</div>
+            <div class="text-xs text-gray-400">${p.age ? p.age+'y' : ''} · ${p.gender||''} · ${p.phone||'—'}</div>
+          </div>
+          <i class="fas fa-chevron-right text-gray-300 text-xs flex-shrink-0"></i>
+        </div>`).join('');
+    }
+
+    function selectExistingPatient(id, name, age, gender, phone) {
+      _journeyPatient = { id, name, age, gender, phone };
+      document.getElementById('jSelectedPatientName').textContent = name;
+      document.getElementById('jSelectedPatientInfo').textContent = `${age}y · ${gender}${phone ? ' · ' + phone : ''}`;
+      document.getElementById('jSelectedPatientBox').classList.remove('hidden');
+      document.getElementById('jPatientList').style.opacity = '0.5';
+    }
+
+    function clearSelectedPatient() {
+      _journeyPatient = null;
+      document.getElementById('jSelectedPatientBox').classList.add('hidden');
+      document.getElementById('jPatientList').style.opacity = '1';
+    }
+
     async function _loadJourneyData() {
       try {
-        const [tests, doctors, panels] = await Promise.all([
-          API.getTests(), API.getDoctors(), API.getPanels(true)
+        const [tests, panels] = await Promise.all([
+          API.getTests(), API.getPanels(true)
         ]);
-        _journeyTests  = Array.isArray(tests)   ? tests   : (tests?.items   || []);
-        _journeyDoctors= Array.isArray(doctors)  ? doctors : (doctors?.items || []);
-        _journeyPanels = Array.isArray(panels)   ? panels  : (panels?.items  || []);
+        _journeyTests  = Array.isArray(tests)  ? tests  : (tests?.items  || []);
+        _journeyPanels = Array.isArray(panels) ? panels : (panels?.items || []);
         _renderTestList('');
         _renderPanelList();
-        _renderDoctorSelect();
       } catch(e) {
         document.getElementById('jTestList').innerHTML =
           '<p class="text-red-400 text-sm text-center py-4"><i class="fas fa-exclamation-triangle mr-1"></i> Failed to load. Check server connection.</p>';
@@ -881,11 +954,7 @@
       }).join('');
     }
 
-    function _renderDoctorSelect() {
-      const sel = document.getElementById('jDoctor');
-      sel.innerHTML = '<option value="">— Optional —</option>' +
-        _journeyDoctors.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
-    }
+    function _renderDoctorSelect() { /* no-op — doctor is now a free text input */ }
 
     function _toggleTest(testId, testName, testPrice) {
       if (_selectedTests.has(testId)) { _selectedTests.delete(testId); }
@@ -944,6 +1013,20 @@
       ['jStep1','jStep2','jStep3'].forEach((id, i) => {
         document.getElementById(id).classList.toggle('hidden', i+1 !== step);
       });
+      // For existing mode step 1, hide new-patient fields and show existing-patient panel
+      const existingPanel = document.getElementById('jStep1Existing');
+      const newPanel = document.getElementById('jStep1');
+      if (step === 1) {
+        if (_journeyMode === 'existing') {
+          newPanel.classList.add('hidden');
+          existingPanel.classList.remove('hidden');
+        } else {
+          newPanel.classList.remove('hidden');
+          existingPanel.classList.add('hidden');
+        }
+      } else {
+        existingPanel.classList.add('hidden');
+      }
       [1,2,3].forEach(s => {
         const dot = document.getElementById('jDot'+s);
         const lbl = document.getElementById('jLabel'+s);
@@ -1032,12 +1115,16 @@
       const errEl = document.getElementById('journeyError');
       errEl.classList.add('hidden');
       if (_journeyStep === 1) {
-        const name   = document.getElementById('jName').value.trim();
-        const age    = document.getElementById('jAge').value;
-        const gender = document.getElementById('jGender').value;
-        if (!name)  { errEl.textContent='Please enter patient name.';  errEl.classList.remove('hidden'); return; }
-        if (!age || parseInt(age)<0 || parseInt(age)>150) { errEl.textContent='Please enter a valid age.'; errEl.classList.remove('hidden'); return; }
-        if (!gender){ errEl.textContent='Please select gender.';       errEl.classList.remove('hidden'); return; }
+        if (_journeyMode === 'existing') {
+          if (!_journeyPatient) { errEl.textContent='Please select a patient first.'; errEl.classList.remove('hidden'); return; }
+        } else {
+          const name   = document.getElementById('jName').value.trim();
+          const age    = document.getElementById('jAge').value;
+          const gender = document.getElementById('jGender').value;
+          if (!name)  { errEl.textContent='Please enter patient name.';  errEl.classList.remove('hidden'); return; }
+          if (!age || parseInt(age)<0 || parseInt(age)>150) { errEl.textContent='Please enter a valid age.'; errEl.classList.remove('hidden'); return; }
+          if (!gender){ errEl.textContent='Please select gender.';       errEl.classList.remove('hidden'); return; }
+        }
         _showJourneyStep(2);
       } else if (_journeyStep === 2) {
         if (!_selectedTests.size) { errEl.textContent='Please select at least one test.'; errEl.classList.remove('hidden'); return; }
@@ -1050,8 +1137,8 @@
       if (_journeyStep > 1) _showJourneyStep(_journeyStep - 1);
     }
 
-    function _showReceipt({patient, samples, invoice, totalAmount, paid, paidAmount, payMethod}) {
-      const total = invoice ? (invoice.total_amount || totalAmount) : totalAmount;
+    function _showReceipt({patient, samples, totalAmount}) {
+      const total = totalAmount || 0;
       const now   = new Date().toLocaleString('en-GB', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
       const selected = [..._selectedTests.values()];
 
@@ -1065,10 +1152,6 @@
         `<tr><td class="py-0.5">${t.name}</td>
           <td class="py-0.5 text-right font-medium">${(t.price||0)>0?'PKR '+(t.price||0).toFixed(0):'-'}</td></tr>`
       ).join('');
-
-      const payStatus = paid
-        ? `<span style="color:#16a34a;font-weight:600">✓ PAID — ${payMethod}: PKR ${paidAmount.toFixed(0)}</span>`
-        : `<span style="color:#d97706;font-weight:600">⏳ Payment Pending — PKR ${total.toFixed(0)}</span>`;
 
       document.getElementById('receiptContent').innerHTML = `
         <div style="text-align:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed #d1d5db">
@@ -1089,10 +1172,9 @@
           <table style="width:100%;font-size:13px">
             ${testRows}
             <tr><td colspan="2" style="padding-top:6px;border-top:1px solid #e5e7eb"></td></tr>
-            <tr><td style="font-weight:600">Total</td><td style="text-align:right;font-weight:700">PKR ${(total||0).toFixed(0)}</td></tr>
+            <tr><td style="font-weight:700">Total Amount</td><td style="text-align:right;font-weight:700;color:#15803d">PKR ${total.toFixed(0)}</td></tr>
           </table>
         </div>
-        <div style="font-size:13px;padding:8px 0;border-top:1px solid #e5e7eb">${payStatus}</div>
         <div style="font-size:11px;color:#9ca3af;text-align:center;margin-top:10px;padding-top:10px;border-top:1px dashed #d1d5db">
           Registered: ${now}<br>Present this token to collect your test report.
         </div>`;
@@ -1123,12 +1205,6 @@
     document.getElementById('journeyModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeJourneyModal(); });
     document.getElementById('receiptModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeReceiptModal(); });
     document.getElementById('jTestSearch').addEventListener('input', e => { _renderTestList(e.target.value); });
-    document.getElementById('jCreateInvoice').addEventListener('change', e => {
-      document.getElementById('jPaymentSection').classList.toggle('hidden', !e.target.checked);
-    });
-    document.getElementById('jMarkPaid').addEventListener('change', e => {
-      document.getElementById('jPaidAmountRow').classList.toggle('hidden', !e.target.checked);
-    });
 
     // ── Submit ─────────────────────────────────────────────────────────────
     document.getElementById('journeyForm').addEventListener('submit', async (e) => {
@@ -1139,22 +1215,26 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Creating…';
       try {
-        // 1. Create patient
-        const phoneRaw = document.getElementById('jPhone').value.trim();
-        const patient  = await API.createPatient({
-          name:   document.getElementById('jName').value.trim(),
-          age:    parseInt(document.getElementById('jAge').value),
-          gender: document.getElementById('jGender').value,
-          phone:  phoneRaw ? ('+92' + phoneRaw.replace(/^\+92/, '')) : null
-        });
+        // 1. Get or create patient
+        let patient;
+        if (_journeyMode === 'existing') {
+          patient = _journeyPatient; // already has {id, name, age, gender, phone}
+        } else {
+          const phoneRaw = document.getElementById('jPhone').value.trim();
+          patient = await API.createPatient({
+            name:   document.getElementById('jName').value.trim(),
+            age:    parseInt(document.getElementById('jAge').value),
+            gender: document.getElementById('jGender').value,
+            phone:  phoneRaw ? ('+92' + phoneRaw.replace(/^\+92/, '')) : null
+          });
+        }
 
         // 2. Shared order fields
-        const priority      = document.getElementById('jPriority').value;
-        const collectionDate= document.getElementById('jCollectionDate').value;
-        const notes         = document.getElementById('jNotes').value.trim() || null;
-        const orderPriority = priority === 'routine' ? 'normal' : priority;
-        const doctorIdRaw   = document.getElementById('jDoctor').value;
-        const doctorId      = doctorIdRaw ? parseInt(doctorIdRaw) : null;
+        const priority       = document.getElementById('jPriority').value;
+        const collectionDate = document.getElementById('jCollectionDate').value;
+        const notes          = document.getElementById('jNotes').value.trim() || null;
+        const orderPriority  = priority === 'routine' ? 'normal' : priority;
+        const doctorName     = document.getElementById('jDoctor').value.trim() || null;
 
         // 3. Create one sample per tube
         const createdSamples = [];
@@ -1172,39 +1252,16 @@
         // 4. Create orders (one per test, linked to its tube's sample)
         for (const tube of createdSamples) {
           for (const test of tube.tests) {
-            await API.createOrder({sample_id: tube.sampleId, test_id: test.id, doctor_id: doctorId, priority: orderPriority});
+            await API.createOrder({sample_id: tube.sampleId, test_id: test.id, doctor_name: doctorName, priority: orderPriority});
           }
         }
 
-        // 5. Invoice (optional)
-        let invoice = null;
-        const doInvoice = document.getElementById('jCreateInvoice').checked;
-        const doPayment = doInvoice && document.getElementById('jMarkPaid').checked;
-        const selected  = [..._selectedTests.values()];
+        // 5. Calculate total (no invoice creation — just show total)
+        const selected = [..._selectedTests.values()];
         const totalAmount = selected.reduce((s, t) => s + (t.price||0), 0);
-        if (doInvoice) {
-          invoice = await API.createInvoice({
-            patient_id: patient.id,
-            sample_id:  createdSamples[0]?.sampleId || null,
-            items:      selected.map(t => ({description: t.name, test_id: t.id, amount: t.price||0})),
-            notes
-          });
-          if (doPayment && invoice) {
-            const paidAmt = parseFloat(document.getElementById('jPaidAmount').value) || totalAmount;
-            await API.payInvoice(invoice.id, {amount: paidAmt, notes: document.getElementById('jPayMethod').value});
-          }
-        }
 
         closeJourneyModal();
-        _showReceipt({
-          patient,
-          samples: createdSamples,
-          invoice,
-          totalAmount,
-          paid:       doPayment,
-          paidAmount: parseFloat(document.getElementById('jPaidAmount')?.value) || totalAmount,
-          payMethod:  document.getElementById('jPayMethod')?.value || 'Cash'
-        });
+        _showReceipt({ patient, samples: createdSamples, totalAmount });
       } catch(err) {
         errEl.textContent = err.message || 'Failed to register visit. Please try again.';
         errEl.classList.remove('hidden');
