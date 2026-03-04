@@ -548,44 +548,9 @@
     loadDashboard();
     Help.init('dashboard');
     Help.startTour();
-
-    // ─── Patient Journey Modal ─────────────────────────────────────────────
-    function openJourneyModal() {
-      document.getElementById('journeyForm').reset();
-      document.getElementById('journeyError').classList.add('hidden');
-      document.getElementById('journeyModal').classList.add('open');
-      setTimeout(() => document.getElementById('jName').focus(), 80);
-    }
-    function closeJourneyModal() { document.getElementById('journeyModal').classList.remove('open'); }
-    document.getElementById('journeyModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeJourneyModal(); });
-
-    document.getElementById('journeyForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const errEl = document.getElementById('journeyError');
-      errEl.classList.add('hidden');
-      const btn = document.getElementById('journeyBtn');
-      const icon = document.getElementById('journeyBtnIcon');
-      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
-      try {
-        const payload = {
-          name: document.getElementById('jName').value.trim(),
-          age: parseInt(document.getElementById('jAge').value),
-          gender: document.getElementById('jGender').value,
-          phone: document.getElementById('jPhone').value.trim() || null
-        };
-        const patient = await API.createPatient(payload);
-        const pid = patient.id;
-        const pname = patient.name || patient.full_name || payload.name;
-        closeJourneyModal();
-        window.location.href = `samples.html?patient_id=${pid}&patient_name=${encodeURIComponent(pname)}`;
-      } catch(err) {
-        errEl.textContent = err.message || 'Failed to create patient';
-        errEl.classList.remove('hidden');
-      } finally { btn.disabled = false; icon.className = 'fas fa-user-plus'; }
-    });
   </script>
 
-  <!-- PATIENT JOURNEY MODAL -->
+  <!-- PATIENT JOURNEY MODAL (HTML must be before the journey script below) -->
   <div id="journeyModal" class="modal-overlay">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-200">
       <div class="flex items-center gap-3 mb-5">
@@ -601,7 +566,7 @@
       <form id="journeyForm" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Full Name <span class="text-red-500">*</span></label>
-          <input id="jName" type="text" required placeholder="Patient full name"
+          <input id="jName" type="text" required placeholder="e.g. Muhammad Ali"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
         </div>
         <div class="grid grid-cols-2 gap-3">
@@ -622,8 +587,12 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Phone</label>
-          <input id="jPhone" type="tel" placeholder="Optional"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+          <div class="flex">
+            <span class="inline-flex items-center px-3 py-2 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm font-medium select-none">+92</span>
+            <input id="jPhone" type="tel" placeholder="300-1234567" pattern="[0-9\-\s]{7,12}"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400">
+          </div>
+          <p class="text-gray-400 text-xs mt-1">e.g. 300-1234567</p>
         </div>
         <div id="journeyError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
         <div class="flex justify-end gap-3 pt-1">
@@ -635,5 +604,43 @@
       </form>
     </div>
   </div>
+
+  <script>
+    // ─── Patient Journey Modal ─────────────────────────────────────────────
+    function openJourneyModal() {
+      document.getElementById('journeyForm').reset();
+      document.getElementById('journeyError').classList.add('hidden');
+      document.getElementById('journeyModal').classList.add('open');
+      setTimeout(() => document.getElementById('jName').focus(), 80);
+    }
+    function closeJourneyModal() { document.getElementById('journeyModal').classList.remove('open'); }
+    document.getElementById('journeyModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeJourneyModal(); });
+
+    document.getElementById('journeyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('journeyError');
+      errEl.classList.add('hidden');
+      const btn = document.getElementById('journeyBtn');
+      const icon = document.getElementById('journeyBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+      try {
+        const phoneRaw = document.getElementById('jPhone').value.trim();
+        const payload = {
+          name: document.getElementById('jName').value.trim(),
+          age: parseInt(document.getElementById('jAge').value),
+          gender: document.getElementById('jGender').value,
+          phone: phoneRaw ? ('+92' + phoneRaw.replace(/^\+92/, '')) : null
+        };
+        const patient = await API.createPatient(payload);
+        const pid = patient.id;
+        const pname = patient.name || patient.full_name || payload.name;
+        closeJourneyModal();
+        window.location.href = `samples.html?patient_id=${pid}&patient_name=${encodeURIComponent(pname)}`;
+      } catch(err) {
+        errEl.textContent = err.message || 'Failed to create patient';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-user-plus'; }
+    });
+  </script>
 </body>
 </html>
