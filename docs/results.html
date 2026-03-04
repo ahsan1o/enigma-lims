@@ -15,41 +15,41 @@
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
     .nav-item.active { background-color: #2563eb !important; color: white !important; }
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
     .tab-btn { padding:.4rem .9rem; border-radius:.5rem; font-size:.8rem; font-weight:500; cursor:pointer; border:1px solid #e2e8f0; background:transparent; color:#64748b; transition:all .2s; }
     .tab-btn.active { background:#2563eb; color:#fff; border-color:#2563eb; }
-    .tab-btn:hover:not(.active) { background:#e2e8f0; color:#cbd5e1; }
+    .tab-btn:hover:not(.active) { background:#f1f5f9; color:#1e293b; }
     @keyframes critPulse { 0%,100%{opacity:1} 50%{opacity:.55} }
     .critical-badge { animation: critPulse 1.3s ease infinite; }
-    select option { background:#1e293b; color:#f1f5f9; }
+    select option { background:#ffffff; color:#1e293b; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0" style="min-height:100vh">
     <div class="p-5 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
           <i class="fas fa-flask text-white text-lg"></i>
         </div>
         <div>
-          <div class="text-white font-bold text-base leading-tight">Enigma</div>
-          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+          <div class="text-gray-900 font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-600 text-xs font-semibold tracking-widest">LIMS</div>
         </div>
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
-      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
-      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
-      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
-      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
     </nav>
     <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
@@ -58,7 +58,7 @@
           <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
           <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
         </div>
-        <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition-colors p-1" title="Logout">
+        <button onclick="Auth.logout()" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Logout">
           <i class="fas fa-sign-out-alt text-sm"></i>
         </button>
       </div>
@@ -69,7 +69,7 @@
   <main class="flex-1 overflow-y-auto">
     <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
       <div>
-        <h1 class="text-white font-bold text-xl">Results</h1>
+        <h1 class="text-gray-900 font-bold text-xl">Results</h1>
         <p class="text-gray-500 text-xs mt-0.5">Enter and approve laboratory test results</p>
       </div>
       <button onclick="openEnterModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
@@ -78,6 +78,21 @@
     </div>
 
     <div class="p-6">
+      <!-- BARCODE QUICK SCAN -->
+      <div class="bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-barcode text-white text-sm"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-xs font-semibold text-green-800 mb-0.5">Scan to Enter Result</p>
+          <input id="resultBarcodeScan" type="text" placeholder="Scan sample barcode to jump to result entry..."
+            class="w-full text-sm bg-transparent border-none outline-none text-green-900 placeholder-green-400 font-mono">
+        </div>
+        <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">
+          <i class="fas fa-circle text-green-500 mr-1" style="font-size:6px;vertical-align:middle"></i>Scanner Active
+        </span>
+      </div>
+
       <div class="flex items-center gap-2 mb-5 flex-wrap">
         <button class="tab-btn active" onclick="setFilter('',this)">All</button>
         <button class="tab-btn" onclick="setFilter('normal',this)">
@@ -99,15 +114,15 @@
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-gray-200">
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Test</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Patient</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Value</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Unit</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Entered By</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Approved By</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Test</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Value</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Unit</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Entered By</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Approved By</th>
+                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody id="resultsBody">
@@ -123,36 +138,46 @@
   <div id="enterModal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-6 w-full max-w-lg border border-gray-200 shadow-2xl">
       <div class="flex items-center justify-between mb-5">
-        <h3 class="text-white font-bold text-lg">Enter Result</h3>
-        <button onclick="closeEnterModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+        <h3 class="text-gray-900 font-bold text-lg">Enter Result</h3>
+        <button onclick="closeEnterModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
       <form id="enterForm" class="space-y-4">
+        <div class="bg-purple-50 border border-purple-200 rounded-lg p-3 mb-4 flex items-center gap-3">
+          <div class="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-barcode text-purple-600"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-xs font-semibold text-purple-800">Barcode Lookup</p>
+            <p class="text-xs text-purple-600 mt-0.5">Scan the sample barcode to instantly load its pending orders for result entry</p>
+          </div>
+          <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">Auto-load</span>
+        </div>
         <div>
-          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Order <span class="text-red-400">*</span></label>
-          <select id="rOrder" required class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+          <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Order <span class="text-red-400">*</span></label>
+          <select id="rOrder" required class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none text-sm">
             <option value="">Select order...</option>
           </select>
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Result Value <span class="text-red-400">*</span></label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Result Value <span class="text-red-400">*</span></label>
             <input type="text" id="rValue" placeholder="e.g., 5.2, Positive" required
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm">
+              class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm">
           </div>
           <div>
-            <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Unit</label>
+            <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Unit</label>
             <input type="text" id="rUnit" placeholder="e.g., mg/dL"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm">
+              class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm">
           </div>
         </div>
         <div>
-          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Interpretation / Notes</label>
+          <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Interpretation / Notes</label>
           <textarea id="rNotes" placeholder="Clinical interpretation or additional notes..." rows="3"
-            class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
+            class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
         </div>
-        <div id="enterError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div id="enterError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
         <div class="flex justify-end gap-3 pt-2">
-          <button type="button" onclick="closeEnterModal()" class="bg-gray-100 hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button type="button" onclick="closeEnterModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
           <button type="submit" id="enterBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
             <i class="fas fa-save" id="enterBtnIcon"></i>
             <span>Save Result</span>
@@ -166,21 +191,21 @@
   <div id="approveModal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-6 w-full max-w-md border border-gray-200 shadow-2xl">
       <div class="flex items-center justify-between mb-5">
-        <h3 class="text-white font-bold text-lg">Approve Result</h3>
-        <button onclick="closeApproveModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+        <h3 class="text-gray-900 font-bold text-lg">Approve Result</h3>
+        <button onclick="closeApproveModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
-      <div class="bg-gray-100/50 rounded-xl p-4 mb-4 space-y-2">
+      <div class="bg-gray-50 rounded-xl p-4 mb-4 space-y-2">
         <div class="flex justify-between text-sm">
           <span class="text-gray-400">Test:</span>
-          <span class="text-white font-medium" id="approveTestName">—</span>
+          <span class="text-gray-900 font-medium" id="approveTestName">—</span>
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-gray-400">Patient:</span>
-          <span class="text-white" id="approvePatient">—</span>
+          <span class="text-gray-900" id="approvePatient">—</span>
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-gray-400">Result:</span>
-          <span class="text-white font-mono font-bold" id="approveValue">—</span>
+          <span class="text-gray-900 font-mono font-bold" id="approveValue">—</span>
         </div>
         <div class="flex justify-between text-sm">
           <span class="text-gray-400">Status:</span>
@@ -188,13 +213,13 @@
         </div>
       </div>
       <div class="mb-4">
-        <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Approval Comments (Optional)</label>
+        <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Approval Comments (Optional)</label>
         <textarea id="approveComment" placeholder="Add comments..." rows="2"
-          class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
+          class="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
       </div>
       <input type="hidden" id="approveResultId">
       <div class="flex justify-end gap-3">
-        <button onclick="closeApproveModal()" class="bg-gray-100 hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+        <button onclick="closeApproveModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
         <button onclick="approveResult()" id="approveBtn" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
           <i class="fas fa-check-circle" id="approveBtnIcon"></i> Approve
         </button>
@@ -232,9 +257,9 @@
     }
 
     function resultBadge(s) {
-      const map={normal:['#22c55e','#052e16'],abnormal:['#f59e0b','#431407'],critical:['#ef4444','#450a0a']};
+      const map={normal:['#22c55e','#f0fdf4'],abnormal:['#f59e0b','#fffbeb'],critical:['#ef4444','#fef2f2']};
       const k=(s||'').toLowerCase();
-      const [fg,bg]=map[k]||['#64748b','#1e293b'];
+      const [fg,bg]=map[k]||['#64748b','#f8fafc'];
       const lbl=k==='critical'?'CRITICAL':k.charAt(0).toUpperCase()+k.slice(1);
       const cls=k==='critical'?' critical-badge':'';
       return `<span class="${cls}" style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:700;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${lbl||'—'}</span>`;
@@ -291,9 +316,9 @@
       if (!results.length) {
         document.getElementById('resultsBody').innerHTML = `
           <tr><td colspan="8" class="px-5 py-16 text-center">
-            <i class="fas fa-chart-bar text-4xl text-slate-700 mb-3 block"></i>
+            <i class="fas fa-chart-bar text-4xl text-gray-300 mb-3 block"></i>
             <p class="text-gray-500 font-medium">No results found</p>
-            <p class="text-slate-600 text-sm mt-1">Enter test results to get started</p>
+            <p class="text-gray-400 text-sm mt-1">Enter test results to get started</p>
             <button onclick="openEnterModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
               <i class="fas fa-plus mr-1"></i>Enter Result
             </button>
@@ -301,20 +326,20 @@
         return;
       }
       document.getElementById('resultsBody').innerHTML = results.map(r => `
-        <tr class="border-b border-gray-200/50 hover:bg-gray-100/20 transition-colors ${r.status==='critical'?'bg-red-950/20':''}">
+        <tr class="border-b border-gray-100 hover:bg-blue-50/30 transition-colors ${r.status==='critical'?'bg-red-50/50':''}">`
           <td class="px-5 py-3.5">
-            <div class="text-white text-sm font-medium">${r.test_name||'—'}</div>
+            <div class="text-gray-900 text-sm font-medium">${r.test_name||'—'}</div>
             <div class="text-gray-400 text-xs font-mono">${r.test_code||''}</div>
           </td>
           <td class="px-4 py-3.5 text-gray-600 text-sm">${r.patient_name||'—'}</td>
-          <td class="px-4 py-3.5 font-mono text-white font-bold text-sm">${r.result_value??'—'}</td>
+          <td class="px-4 py-3.5 font-mono text-gray-900 font-bold text-sm">${r.result_value??'—'}</td>
           <td class="px-4 py-3.5 text-gray-500 text-xs">${r.unit||'—'}</td>
           <td class="px-4 py-3.5">${resultBadge(r.status)}</td>
           <td class="px-4 py-3.5 text-gray-400 text-xs">${r.entered_by||'—'}</td>
           <td class="px-4 py-3.5">
             ${r.approved_by || r.approved_date
-              ? `<span class="text-green-400 text-xs flex items-center gap-1"><i class="fas fa-check-circle"></i>${r.approved_by||'Approved'}</span>`
-              : '<span class="text-slate-600 text-xs">Pending</span>'}
+              ? `<span class="text-green-600 text-xs flex items-center gap-1"><i class="fas fa-check-circle"></i>${r.approved_by||'Approved'}</span>`
+              : '<span class="text-gray-400 text-xs">Pending</span>'}
           </td>
           <td class="px-4 py-3.5">
             <div class="flex items-center gap-2">

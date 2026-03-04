@@ -15,39 +15,41 @@
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
     .nav-item.active { background-color: #2563eb !important; color: white !important; }
-    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
+    @keyframes skelPulse { 0%,100%{opacity:.4} 50%{opacity:.7} }
+    .skel { animation: skelPulse 1.5s ease infinite; background: #e2e8f0; border-radius: 4px; }
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
     .tab-btn { padding:.4rem .9rem; border-radius:.5rem; font-size:.8rem; font-weight:500; cursor:pointer; border:1px solid #e2e8f0; background:transparent; color:#64748b; transition:all .2s; }
     .tab-btn.active { background:#2563eb; color:#fff; border-color:#2563eb; }
-    .tab-btn:hover:not(.active) { background:#e2e8f0; color:#cbd5e1; }
-    select option { background:#1e293b; color:#f1f5f9; }
+    .tab-btn:hover:not(.active) { background:#f1f5f9; color:#1e293b; }
+    select option { background:#ffffff; color:#1e293b; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
   <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0" style="min-height:100vh">
     <div class="p-5 border-b border-gray-200">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
           <i class="fas fa-flask text-white text-lg"></i>
         </div>
         <div>
-          <div class="text-white font-bold text-base leading-tight">Enigma</div>
-          <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
+          <div class="text-gray-900 font-bold text-base leading-tight">Enigma</div>
+          <div class="text-blue-600 text-xs font-semibold tracking-widest">LIMS</div>
         </div>
       </div>
     </div>
     <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
-      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
-      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
-      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
-      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
-      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
+      <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
+      <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
+      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
+      <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
+      <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
+      <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
+      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
     </nav>
     <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
@@ -56,7 +58,7 @@
           <div class="text-gray-900 text-sm font-medium truncate" id="userName">Admin</div>
           <div class="text-gray-500 text-xs" id="userRole">Administrator</div>
         </div>
-        <button onclick="Auth.logout()" class="text-gray-500 hover:text-red-400 transition-colors p-1" title="Logout">
+        <button onclick="Auth.logout()" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Logout">
           <i class="fas fa-sign-out-alt text-sm"></i>
         </button>
       </div>
@@ -67,7 +69,7 @@
   <main class="flex-1 overflow-y-auto">
     <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
       <div>
-        <h1 class="text-white font-bold text-xl">Samples</h1>
+        <h1 class="text-gray-900 font-bold text-xl">Samples</h1>
         <p class="text-gray-500 text-xs mt-0.5">Track and manage laboratory samples</p>
       </div>
       <button onclick="openRegisterModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
@@ -76,6 +78,21 @@
     </div>
 
     <div class="p-6">
+
+      <!-- BARCODE QUICK SCAN -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-barcode text-white text-sm"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-xs font-semibold text-blue-800 mb-0.5">Quick Scan — Sample Lookup</p>
+          <input id="barcodeQuickScan" type="text" placeholder="Focus here and scan sample barcode..."
+            class="w-full text-sm bg-transparent border-none outline-none text-blue-900 placeholder-blue-400 font-mono"
+            autofocus>
+        </div>
+        <span class="text-xs text-blue-500 bg-blue-100 px-2 py-1 rounded-full font-medium">Scanner Ready</span>
+      </div>
+
       <!-- Filter tabs -->
       <div class="flex items-center gap-2 mb-5 flex-wrap">
         <button class="tab-btn active" onclick="setFilter('',this)">All</button>
@@ -91,21 +108,21 @@
         <button class="tab-btn" onclick="setFilter('approved',this)">
           <span class="w-2 h-2 rounded-full bg-purple-400 inline-block mr-1.5"></span>Approved
         </button>
-        <span class="ml-auto text-gray-400 text-sm" id="sampleCount"></span>
+        <span class="ml-auto text-gray-500 text-sm" id="sampleCount"></span>
       </div>
 
       <!-- Table -->
-      <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+      <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-gray-200">
-                <th class="px-5 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Sample ID</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Patient</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Type</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Collected</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+              <tr class="bg-gray-50 border-b border-gray-200">
+                <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Sample ID</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Collected</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody id="samplesBody">
@@ -119,21 +136,35 @@
 
   <!-- REGISTER SAMPLE MODAL -->
   <div id="registerModal" class="modal-overlay">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-lg border border-gray-200 shadow-2xl">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-gray-200">
       <div class="flex items-center justify-between mb-5">
-        <h3 class="text-white font-bold text-lg">Register New Sample</h3>
-        <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+        <h3 class="text-gray-900 font-bold text-lg">Register New Sample</h3>
+        <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
       <form id="registerForm" class="space-y-4">
+        <!-- Barcode scan patient -->
+        <div class="mb-3">
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
+            <i class="fas fa-barcode text-blue-500 mr-1"></i>Scan Patient Card <span class="text-gray-400 font-normal normal-case">(or select below)</span>
+          </label>
+          <div class="flex gap-2">
+            <input id="patientBarcodeScan" type="text" placeholder="Scan patient barcode..."
+              class="flex-1 px-3 py-2 border border-blue-300 rounded-lg text-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono placeholder-blue-300">
+            <button type="button" class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700" title="Scan">
+              <i class="fas fa-barcode"></i>
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-1">Plug in USB barcode scanner and scan the patient's ID card</p>
+        </div>
         <div>
-          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Patient <span class="text-red-400">*</span></label>
-          <select id="rPatient" required class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Patient <span class="text-red-500">*</span></label>
+          <select id="rPatient" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">Select patient...</option>
           </select>
         </div>
         <div>
-          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Sample Type <span class="text-red-400">*</span></label>
-          <select id="rType" required class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Sample Type <span class="text-red-500">*</span></label>
+          <select id="rType" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <option value="">Select type...</option>
             <option value="blood">Blood</option>
             <option value="serum">Serum</option>
@@ -147,19 +178,19 @@
           </select>
         </div>
         <div>
-          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Collection Date &amp; Time</label>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Collection Date &amp; Time</label>
           <input type="datetime-local" id="rDate"
-            class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         </div>
         <div>
-          <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Notes</label>
+          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Notes</label>
           <textarea id="rNotes" placeholder="Collection notes, special instructions..." rows="3"
-            class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm resize-none"></textarea>
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 resize-none"></textarea>
         </div>
-        <div id="registerError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div id="registerError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
         <div class="flex justify-end gap-3 pt-2">
-          <button type="button" onclick="closeRegisterModal()" class="bg-gray-100 hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
-          <button type="submit" id="registerBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+          <button type="button" onclick="closeRegisterModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Cancel</button>
+          <button type="submit" id="registerBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
             <i class="fas fa-plus" id="registerBtnIcon"></i>
             <span id="registerBtnText">Register Sample</span>
           </button>
@@ -170,19 +201,19 @@
 
   <!-- STATUS UPDATE MODAL -->
   <div id="statusModal" class="modal-overlay">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md border border-gray-200 shadow-2xl">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-200">
       <div class="flex items-center justify-between mb-5">
-        <h3 class="text-white font-bold text-lg">Update Sample Status</h3>
-        <button onclick="closeStatusModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+        <h3 class="text-gray-900 font-bold text-lg">Update Sample Status</h3>
+        <button onclick="closeStatusModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
-      <div class="bg-gray-100/50 rounded-xl p-4 mb-4">
-        <div class="text-xs text-gray-400 uppercase tracking-wider mb-1">Sample</div>
-        <div class="font-mono text-blue-400 font-bold" id="statusSampleId">—</div>
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-4">
+        <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Sample</div>
+        <div class="font-mono text-blue-600 font-bold" id="statusSampleId">—</div>
         <div class="text-gray-600 text-sm mt-1" id="statusPatientName">—</div>
       </div>
       <div class="mb-4">
-        <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">New Status</label>
-        <select id="newStatus" class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2.5 text-white focus:border-blue-500 focus:outline-none text-sm">
+        <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">New Status</label>
+        <select id="newStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
           <option value="pending">Pending</option>
           <option value="testing">Testing</option>
           <option value="completed">Completed</option>
@@ -191,8 +222,8 @@
       </div>
       <input type="hidden" id="statusSampleDbId">
       <div class="flex justify-end gap-3">
-        <button onclick="closeStatusModal()" class="bg-gray-100 hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
-        <button onclick="updateStatus()" id="statusBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+        <button onclick="closeStatusModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Cancel</button>
+        <button onclick="updateStatus()" id="statusBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
           <i class="fas fa-check" id="statusBtnIcon"></i> Update Status
         </button>
       </div>
@@ -231,11 +262,17 @@
     }
 
     function statusBadge(s) {
-      const map = {pending:['#f59e0b','#431407'],testing:['#3b82f6','#1e3a8a'],completed:['#22c55e','#052e16'],approved:['#a855f7','#2e1065']};
+      const map = {
+        pending:   ['#d97706','#fffbeb'],
+        testing:   ['#2563eb','#eff6ff'],
+        completed: ['#16a34a','#f0fdf4'],
+        approved:  ['#7c3aed','#f5f3ff'],
+        rejected:  ['#dc2626','#fef2f2']
+      };
       const k = (s||'').toLowerCase();
-      const [fg,bg] = map[k]||['#64748b','#1e293b'];
-      const lbl = k.charAt(0).toUpperCase()+k.slice(1);
-      return `<span style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;">${lbl||'—'}</span>`;
+      const [fg, bg] = map[k] || ['#475569','#f8fafc'];
+      const label = k.charAt(0).toUpperCase() + k.slice(1);
+      return `<span style="display:inline-flex;align-items:center;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}33;">${label||'—'}</span>`;
     }
 
     function formatDateTime(d) {
@@ -270,7 +307,7 @@
         allSamples = Array.isArray(data) ? data : (data?.items || []);
         renderSamples(allSamples);
       } catch(e) {
-        document.getElementById('samplesBody').innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-red-400 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>${e.message}</td></tr>`;
+        document.getElementById('samplesBody').innerHTML = `<tr><td colspan="6" class="px-5 py-12 text-center text-red-500 text-sm"><i class="fas fa-exclamation-circle mr-2"></i>${e.message}</td></tr>`;
         showToast('Failed to load samples', 'error');
       }
     }
@@ -280,9 +317,9 @@
       if (!samples.length) {
         document.getElementById('samplesBody').innerHTML = `
           <tr><td colspan="6" class="px-5 py-16 text-center">
-            <i class="fas fa-vial text-4xl text-slate-700 mb-3 block"></i>
+            <i class="fas fa-vial text-4xl text-gray-300 mb-3 block"></i>
             <p class="text-gray-500 font-medium">No samples found</p>
-            <p class="text-slate-600 text-sm mt-1">Register your first sample to get started</p>
+            <p class="text-gray-400 text-sm mt-1">Register your first sample to get started</p>
             <button onclick="openRegisterModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
               <i class="fas fa-plus mr-1"></i>Register Sample
             </button>
@@ -290,12 +327,12 @@
         return;
       }
       document.getElementById('samplesBody').innerHTML = samples.map(s => `
-        <tr class="border-b border-gray-200/50 hover:bg-gray-100/20 transition-colors">
+        <tr class="border-b border-gray-100 hover:bg-blue-50/30 transition-colors">
           <td class="px-5 py-3.5">
-            <span class="font-mono text-blue-400 text-xs font-bold">${s.sample_id||s.id||'—'}</span>
+            <span class="font-mono text-blue-600 text-xs font-semibold">${s.sample_id||s.id||'—'}</span>
           </td>
           <td class="px-4 py-3.5">
-            <div class="text-white text-sm">${s.patient_name||s.patient?.full_name||'—'}</div>
+            <div class="text-gray-900 text-sm">${s.patient_name||s.patient?.full_name||'—'}</div>
           </td>
           <td class="px-4 py-3.5">
             <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 capitalize">${s.sample_type||'—'}</span>
@@ -303,7 +340,7 @@
           <td class="px-4 py-3.5 text-gray-500 text-xs">${formatDateTime(s.collection_date||s.created_at)}</td>
           <td class="px-4 py-3.5">${statusBadge(s.status)}</td>
           <td class="px-4 py-3.5">
-            <button onclick='openStatusModal(${JSON.stringify(s)})' class="bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5">
+            <button onclick='openStatusModal(${JSON.stringify(s)})' class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5">
               <i class="fas fa-edit"></i> Update Status
             </button>
           </td>
@@ -319,7 +356,6 @@
     function openRegisterModal() {
       document.getElementById('registerForm').reset();
       document.getElementById('registerError').classList.add('hidden');
-      // Set default date to now
       const now = new Date();
       const local = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,16);
       document.getElementById('rDate').value = local;
@@ -380,6 +416,16 @@
 
     document.getElementById('registerModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeRegisterModal(); });
     document.getElementById('statusModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeStatusModal(); });
+
+    // Barcode scanner — quick scan handler (Enter key triggers search)
+    document.getElementById('barcodeQuickScan').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && this.value.trim()) {
+        const val = this.value.trim();
+        document.querySelector('[placeholder*="Search"]') && (document.querySelector('[placeholder*="Search"]').value = val);
+        loadSamples(val);
+        this.value = '';
+      }
+    });
 
     loadPatients();
     loadSamples();

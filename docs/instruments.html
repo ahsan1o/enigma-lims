@@ -17,7 +17,7 @@
     .nav-item.active { background-color: #2563eb !important; color: white !important; }
     .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; padding:1rem; }
     .modal-overlay.open { display:flex; }
-    select option { background:#1e293b; color:#f1f5f9; }
+    select option { background:#ffffff; color:#1e293b; }
   </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -30,7 +30,7 @@
           <i class="fas fa-flask text-white text-lg"></i>
         </div>
         <div>
-          <div class="text-white font-bold text-base leading-tight">Enigma</div>
+          <div class="text-gray-900 font-bold text-base leading-tight">Enigma</div>
           <div class="text-blue-400 text-xs font-semibold tracking-widest">LIMS</div>
         </div>
       </div>
@@ -64,7 +64,7 @@
   <main class="flex-1 overflow-y-auto">
     <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-30 flex items-center justify-between">
       <div>
-        <h1 class="text-white font-bold text-xl">Instruments</h1>
+        <h1 class="text-gray-900 font-bold text-xl">Instruments</h1>
         <p class="text-gray-500 text-xs mt-0.5">Manage laboratory equipment and calibration schedules</p>
       </div>
       <button onclick="openAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
@@ -78,11 +78,11 @@
         <div class="relative flex-1 max-w-sm">
           <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
           <input id="searchInput" type="text" placeholder="Search instruments…" oninput="handleSearch(this.value)"
-            class="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+            class="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
         </div>
         <div class="flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-500 text-sm">
           <i class="fas fa-cogs text-gray-400"></i>
-          <span>Total: <strong class="text-white" id="instCount">—</strong></span>
+          <span>Total: <strong class="text-gray-900" id="instCount">—</strong></span>
         </div>
       </div>
 
@@ -100,7 +100,7 @@
   <div id="instModal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-6 w-full max-w-lg border border-gray-200 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between mb-5">
-        <h3 class="text-white font-bold text-lg" id="modalTitle">Add Instrument</h3>
+        <h3 class="text-gray-900 font-bold text-lg" id="modalTitle">Add Instrument</h3>
         <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
       <form id="instForm" class="space-y-4">
@@ -109,36 +109,36 @@
           <div>
             <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Instrument Code <span class="text-red-400">*</span></label>
             <input id="iCode" type="text" required placeholder="e.g. HEMA-001"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
           </div>
           <div>
             <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Instrument Name <span class="text-red-400">*</span></label>
             <input id="iName" type="text" required placeholder="Hematology Analyzer"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
           </div>
           <div>
             <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Manufacturer</label>
             <input id="iMfr" type="text" placeholder="Sysmex, Mindray…"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
           </div>
           <div>
             <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Model</label>
             <input id="iModel" type="text" placeholder="XN-550, BC-5180"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
           </div>
           <div>
             <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Location</label>
             <input id="iLocation" type="text" placeholder="Room 2, Lab A…"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
           </div>
           <div>
             <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Serial Number</label>
             <input id="iSerial" type="text" placeholder="SN-XXXX-YYYY"
-              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
+              class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none placeholder-slate-500">
           </div>
           <div class="col-span-2">
             <label class="block text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1.5">Status</label>
-            <select id="iStatus" class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-white text-sm focus:border-blue-500 focus:outline-none">
+            <select id="iStatus" class="w-full bg-gray-100 border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 text-sm focus:border-blue-500 focus:outline-none">
               <option value="active">Active</option>
               <option value="maintenance">Under Maintenance</option>
               <option value="inactive">Inactive</option>
@@ -146,8 +146,15 @@
           </div>
         </div>
         <div id="instError" class="hidden p-3 bg-red-900/40 border border-red-700/60 rounded-lg text-red-300 text-sm"></div>
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start gap-3">
+          <i class="fas fa-plug text-amber-500 mt-0.5"></i>
+          <div>
+            <p class="text-xs font-semibold text-amber-800">Direct Instrument Integration</p>
+            <p class="text-xs text-amber-600 mt-0.5">In production, this instrument connects via TCP/IP or USB serial port. Results are imported automatically — no manual entry needed.</p>
+          </div>
+        </div>
         <div class="flex justify-end gap-3 pt-2">
-          <button type="button" onclick="closeModal()" class="bg-gray-100 hover:bg-gray-200 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button type="button" onclick="closeModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
           <button type="submit" id="instBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
             <i class="fas fa-save" id="instBtnIcon"></i>
             <span id="instBtnText">Save Instrument</span>
@@ -188,9 +195,9 @@
 
     function statusBadge(s) {
       const map = {
-        active:      ['#22c55e','#052e16'],
-        maintenance: ['#f59e0b','#431407'],
-        inactive:    ['#64748b','#1e293b']
+        active:      ['#22c55e','#f0fdf4'],
+        maintenance: ['#f59e0b','#fffbeb'],
+        inactive:    ['#64748b','#f8fafc']
       };
       const k = (s||'active').toLowerCase();
       const [fg,bg] = map[k] || map.inactive;
@@ -237,7 +244,7 @@
             <div class="flex items-start justify-between">
               <div class="min-w-0 flex-1 mr-3">
                 <span class="font-mono text-blue-400 text-xs font-bold bg-blue-400/10 px-2 py-0.5 rounded">${code}</span>
-                <h4 class="text-white font-semibold text-base mt-2 leading-snug">${name}</h4>
+                <h4 class="text-gray-900 font-semibold text-base mt-2 leading-snug">${name}</h4>
                 ${mfr||model ? `<p class="text-gray-400 text-xs mt-0.5">${[mfr,model].filter(Boolean).join(' \u00b7 ')}</p>` : ''}
               </div>
               ${statusBadge(inst.status)}
