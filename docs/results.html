@@ -299,7 +299,9 @@
           const opt = document.createElement('option');
           opt.value = o.id;
           opt.dataset.sampleId = o.sample_id;
-          opt.textContent = `${o.patient_name||'Patient'} – ${o.test_name||'Test'} (${o.order_id||o.id})`;
+          opt.dataset.testId   = o.test_id;
+          opt.dataset.status   = o.status;
+          opt.textContent = `${o.patient_name||'Patient'} – ${o.test_name||'Test'} (${o.status||'pending'})`;
           sel.appendChild(opt);
         });
       } catch(e) { console.warn('Orders not loaded for dropdown', e); }
@@ -415,11 +417,20 @@
       const errEl = document.getElementById('enterError');
       errEl.classList.add('hidden');
 
+      const orderSel = document.getElementById('rOrder');
+      const selOpt = orderSel.options[orderSel.selectedIndex];
+      if (!orderSel.value) {
+        errEl.textContent = 'Please select an order first.';
+        errEl.classList.remove('hidden'); return;
+      }
+
       const payload = {
-        order_id: document.getElementById('rOrder').value,
+        order_id:     parseInt(orderSel.value),
+        sample_id:    parseInt(selOpt.dataset.sampleId),
+        test_id:      parseInt(selOpt.dataset.testId),
         result_value: document.getElementById('rValue').value.trim(),
-        unit: document.getElementById('rUnit').value.trim()||null,
-        interpretation: document.getElementById('rNotes').value.trim()||null
+        unit:         document.getElementById('rUnit').value.trim() || null,
+        interpretation: document.getElementById('rNotes').value.trim() || null
       };
 
       const btn = document.getElementById('enterBtn');

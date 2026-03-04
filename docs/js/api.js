@@ -13,7 +13,11 @@ const API = {
       if (res.status === 401) { localStorage.removeItem('enigma_token'); localStorage.removeItem('enigma_user'); window.location.href='index.html'; return null; }
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: 'Request failed' }));
-        throw new Error(err.detail || 'Request failed');
+        const detail = err.detail;
+        const msg = Array.isArray(detail)
+          ? detail.map(e => `${(e.loc||[]).slice(-1)[0]||'field'}: ${e.msg}`).join(' | ')
+          : (typeof detail === 'string' ? detail : 'Request failed');
+        throw new Error(msg);
       }
       if (res.status === 204) return null;
       // Hide any "reconnecting" banner on success
