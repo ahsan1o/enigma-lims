@@ -93,9 +93,14 @@
         <h1 class="text-gray-900 font-bold text-xl">Results</h1>
         <p class="text-gray-500 text-xs mt-0.5">Enter and approve laboratory test results</p>
       </div>
-      <button onclick="openEnterModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
-        <i class="fas fa-plus"></i> Enter Result
-      </button>
+      <div class="flex items-center gap-2">
+        <button onclick="openBulkModal()" class="bg-white border border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-600 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+          <i class="fas fa-table-list"></i> Enter by Sample
+        </button>
+        <button onclick="openEnterModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
+          <i class="fas fa-plus"></i> Enter Result
+        </button>
+      </div>
     </div>
 
     <div class="p-6">
@@ -105,8 +110,8 @@
           <i class="fas fa-barcode text-white text-sm"></i>
         </div>
         <div class="flex-1">
-          <p class="text-xs font-semibold text-green-800 mb-0.5">Scan to Enter Result</p>
-          <input id="resultBarcodeScan" type="text" placeholder="Scan sample barcode to jump to result entry..."
+          <p class="text-xs font-semibold text-green-800 mb-0.5">Scan to Enter Results by Sample</p>
+          <input id="resultBarcodeScan" type="text" placeholder="Scan sample barcode to open bulk entry for that sample..."
             class="w-full text-sm bg-transparent border-none outline-none text-green-900 placeholder-green-400 font-mono">
         </div>
         <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full font-medium">
@@ -156,7 +161,7 @@
     </div>
   </main>
 
-  <!-- ENTER RESULT MODAL -->
+  <!-- ENTER RESULT MODAL (single) -->
   <div id="enterModal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-6 w-full max-w-lg border border-gray-200 shadow-2xl">
       <div class="flex items-center justify-between mb-5">
@@ -169,10 +174,9 @@
             <i class="fas fa-barcode text-purple-600"></i>
           </div>
           <div class="flex-1">
-            <p class="text-xs font-semibold text-purple-800">Barcode Lookup</p>
-            <p class="text-xs text-purple-600 mt-0.5">Scan the sample barcode to instantly load its pending orders for result entry</p>
+            <p class="text-xs font-semibold text-purple-800">Single Result Entry</p>
+            <p class="text-xs text-purple-600 mt-0.5">Use "Enter by Sample" to fill all tests for a sample at once</p>
           </div>
-          <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">Auto-load</span>
         </div>
         <div>
           <label class="block text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1.5">Order <span class="text-red-400">*</span></label>
@@ -245,6 +249,71 @@
         <button onclick="approveResult()" id="approveBtn" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
           <i class="fas fa-check-circle" id="approveBtnIcon"></i> Approve
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BULK ENTRY MODAL -->
+  <div id="bulkModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-2xl border border-gray-200 shadow-2xl">
+      <div class="flex items-center justify-between mb-1">
+        <div>
+          <h3 class="text-gray-900 font-bold text-lg">Bulk Result Entry</h3>
+          <p class="text-gray-400 text-xs mt-0.5">Enter all test results for a sample at once</p>
+        </div>
+        <button onclick="closeBulkModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <!-- Tab Bar -->
+      <div class="flex gap-2 my-4 border-b border-gray-200 pb-3">
+        <button id="bulkTab-sample" class="tab-btn active" onclick="switchBulkTab('sample')">
+          <i class="fas fa-list-check mr-1.5"></i>By Sample
+        </button>
+        <button id="bulkTab-machine" class="tab-btn" onclick="switchBulkTab('machine')">
+          <i class="fas fa-microchip mr-1.5"></i>Simulate Machine
+        </button>
+      </div>
+
+      <!-- BY SAMPLE TAB -->
+      <div id="bulkPanel-sample">
+        <div class="flex gap-2 mb-4">
+          <select id="bulkSampleSel" class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none text-sm">
+            <option value="">Select sample...</option>
+          </select>
+          <button onclick="loadSampleOrders()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 flex-shrink-0">
+            <i class="fas fa-arrow-down"></i> Load Tests
+          </button>
+        </div>
+        <div id="bulkOrdersTable" class="mb-4 max-h-72 overflow-y-auto"></div>
+        <div id="bulkSampleError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm mb-3"></div>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeBulkModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button onclick="submitBulkResults()" id="bulkSubmitBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+            <i class="fas fa-save" id="bulkSubmitIcon"></i> Save All Results
+          </button>
+        </div>
+      </div>
+
+      <!-- MACHINE SIMULATION TAB -->
+      <div id="bulkPanel-machine" class="hidden">
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex items-start gap-2.5 text-xs text-amber-800">
+          <i class="fas fa-info-circle text-amber-500 mt-0.5 flex-shrink-0"></i>
+          <span>Simulates analyzer result feed. In production, the analyzer sends results directly to <code class="bg-amber-100 px-1 py-0.5 rounded font-mono">POST /api/results/machine-input</code> via ASTM/HL7 adapter.</span>
+        </div>
+        <div class="flex gap-2 mb-4">
+          <input id="machineBarcode" type="text" placeholder="Sample barcode (e.g., SMP-20240301-001)..."
+            class="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none text-sm font-mono">
+          <button onclick="loadMachineTests()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 flex-shrink-0">
+            <i class="fas fa-arrow-down"></i> Load Tests
+          </button>
+        </div>
+        <div id="machineTestsTable" class="mb-4 max-h-72 overflow-y-auto"></div>
+        <div id="machineError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm mb-3"></div>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeBulkModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors text-sm">Cancel</button>
+          <button onclick="submitMachineInput()" id="machineSubmitBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-lg font-medium transition-colors text-sm flex items-center gap-2">
+            <i class="fas fa-upload" id="machineSubmitIcon"></i> Send to LIMS
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -338,8 +407,8 @@
             <i class="fas fa-chart-bar text-4xl text-gray-300 mb-3 block"></i>
             <p class="text-gray-500 font-medium">No results found</p>
             <p class="text-gray-400 text-sm mt-1">Enter test results to get started</p>
-            <button onclick="openEnterModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-              <i class="fas fa-plus mr-1"></i>Enter Result
+            <button onclick="openBulkModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+              <i class="fas fa-table-list mr-1"></i>Enter by Sample
             </button>
           </td></tr>`;
         return;
@@ -412,6 +481,7 @@
       document.getElementById('criticalBanner').classList.add('hidden');
     }
 
+    // ── Single result form submit ───────────────────────────────────────────────
     document.getElementById('enterForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const errEl = document.getElementById('enterError');
@@ -461,7 +531,6 @@
         if (approved && approved.is_critical) {
           showCriticalBanner(approved.patient_name, approved.test_name);
         } else {
-          // Also check in the local allResults array for the approved result
           const localResult = allResults.find(r => String(r.id) === String(id));
           if (localResult && localResult.status === 'critical') {
             showCriticalBanner(localResult.patient_name, localResult.test_name);
@@ -472,21 +541,236 @@
       finally { btn.disabled = false; icon.className = 'fas fa-check-circle'; }
     }
 
+    // ── Bulk entry modal ────────────────────────────────────────────────────────
+    let _bulkOrders = [];
+    let _machineOrders = [];
+
+    async function openBulkModal(preselectSampleId) {
+      _bulkOrders = [];
+      _machineOrders = [];
+      document.getElementById('bulkOrdersTable').innerHTML = '';
+      document.getElementById('machineTestsTable').innerHTML = '';
+      document.getElementById('machineBarcode').value = '';
+      document.getElementById('bulkSampleError').classList.add('hidden');
+      document.getElementById('machineError').classList.add('hidden');
+      switchBulkTab('sample');
+      await loadSamplesForBulk(preselectSampleId);
+      document.getElementById('bulkModal').classList.add('open');
+    }
+
+    function closeBulkModal() { document.getElementById('bulkModal').classList.remove('open'); }
+
+    function switchBulkTab(tab) {
+      ['sample','machine'].forEach(t => {
+        document.getElementById(`bulkPanel-${t}`).classList.toggle('hidden', t !== tab);
+        document.getElementById(`bulkTab-${t}`).classList.toggle('active', t === tab);
+      });
+    }
+
+    async function loadSamplesForBulk(preselectId) {
+      try {
+        const samples = await API.getSamples();
+        const arr = Array.isArray(samples) ? samples : (samples?.items||[]);
+        const sel = document.getElementById('bulkSampleSel');
+        while(sel.options.length > 1) sel.remove(1);
+        arr.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.dataset.barcode = s.sample_id;
+          opt.textContent = `${s.sample_id} — ${s.patient_name || 'Unknown'} (${s.status || ''})`;
+          sel.appendChild(opt);
+        });
+        if (preselectId) sel.value = String(preselectId);
+      } catch(e) { console.warn('Could not load samples for bulk modal', e); }
+    }
+
+    async function loadSampleOrders() {
+      const sel = document.getElementById('bulkSampleSel');
+      const sampleId = sel.value;
+      if (!sampleId) { showToast('Select a sample first', 'warning'); return; }
+      const tbody = document.getElementById('bulkOrdersTable');
+      tbody.innerHTML = '<p class="text-gray-400 text-sm text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Loading orders...</p>';
+      try {
+        const orders = await API.getOrders('pending', sampleId);
+        _bulkOrders = Array.isArray(orders) ? orders : [];
+        if (!_bulkOrders.length) {
+          tbody.innerHTML = '<p class="text-gray-500 text-sm text-center py-6 bg-gray-50 rounded-xl border border-gray-200">No pending orders found for this sample.</p>';
+          return;
+        }
+        tbody.innerHTML = `
+          <div class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-gray-200 bg-white">
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold">Test</th>
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold w-28">Value <span class="text-red-400">*</span></th>
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold w-24">Unit</th>
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold w-36">Notes</th>
+              </tr></thead>
+              <tbody>
+                ${_bulkOrders.map((o,i) => `
+                  <tr class="border-b border-gray-100 last:border-0 hover:bg-blue-50/30">
+                    <td class="px-3 py-2">
+                      <div class="font-medium text-gray-800 text-sm">${o.test_name||'—'}</div>
+                      <div class="text-xs text-gray-400 font-mono">${o.test_code||''}</div>
+                    </td>
+                    <td class="px-3 py-2">
+                      <input type="text" id="bv_${i}" placeholder="e.g. 5.2" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm font-mono focus:border-blue-500 focus:outline-none bg-white">
+                    </td>
+                    <td class="px-3 py-2">
+                      <input type="text" id="bu_${i}" placeholder="mg/dL" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none bg-white">
+                    </td>
+                    <td class="px-3 py-2">
+                      <input type="text" id="bn_${i}" placeholder="Notes" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:border-blue-500 focus:outline-none bg-white">
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>`;
+      } catch(e) {
+        tbody.innerHTML = `<p class="text-red-500 text-sm text-center py-4">${e.message}</p>`;
+      }
+    }
+
+    async function submitBulkResults() {
+      if (!_bulkOrders.length) { showToast('Load sample orders first', 'warning'); return; }
+      const items = [];
+      _bulkOrders.forEach((o, i) => {
+        const val = document.getElementById(`bv_${i}`)?.value?.trim();
+        if (val) {
+          items.push({
+            order_id: o.id,
+            sample_id: o.sample_id,
+            test_id: o.test_id,
+            result_value: val,
+            unit: document.getElementById(`bu_${i}`)?.value?.trim() || null,
+            interpretation: document.getElementById(`bn_${i}`)?.value?.trim() || null
+          });
+        }
+      });
+      if (!items.length) { showToast('Enter at least one result value', 'warning'); return; }
+
+      const btn = document.getElementById('bulkSubmitBtn');
+      const icon = document.getElementById('bulkSubmitIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+
+      try {
+        const results = await API.createBulkResults(items);
+        const criticals = (results||[]).filter(r => r.is_critical || r.status === 'critical');
+        showToast(`${items.length} result${items.length!==1?'s':''} saved successfully`);
+        if (criticals.length) showCriticalBanner(criticals[0].patient_name, criticals[0].test_name);
+        closeBulkModal();
+        loadResults(currentFilter);
+      } catch(e) {
+        const errEl = document.getElementById('bulkSampleError');
+        errEl.textContent = e.message || 'Failed to save results';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-save'; }
+    }
+
+    async function loadMachineTests() {
+      const barcode = document.getElementById('machineBarcode').value.trim();
+      if (!barcode) { showToast('Enter a sample barcode', 'warning'); return; }
+      const tbody = document.getElementById('machineTestsTable');
+      tbody.innerHTML = '<p class="text-gray-400 text-sm text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</p>';
+      try {
+        // Search samples by barcode keyword
+        const samples = await API.getSamples('', barcode);
+        const arr = Array.isArray(samples) ? samples : (samples?.items||[]);
+        const sample = arr.find(s => s.sample_id === barcode);
+        if (!sample) {
+          tbody.innerHTML = `<p class="text-red-500 text-sm text-center py-4 bg-red-50 rounded-xl border border-red-200">Sample not found for barcode <strong>${barcode}</strong>.</p>`;
+          return;
+        }
+        const orders = await API.getOrders('pending', sample.id);
+        _machineOrders = Array.isArray(orders) ? orders : [];
+        if (!_machineOrders.length) {
+          tbody.innerHTML = '<p class="text-gray-500 text-sm text-center py-6 bg-gray-50 rounded-xl border border-gray-200">No pending orders for this sample.</p>';
+          return;
+        }
+        tbody.innerHTML = `
+          <div class="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+            <table class="w-full text-sm">
+              <thead><tr class="border-b border-gray-200 bg-white">
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold w-24">Code</th>
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold">Test Name</th>
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold w-28">Value <span class="text-red-400">*</span></th>
+                <th class="px-3 py-2.5 text-left text-xs text-gray-500 uppercase font-semibold w-24">Unit</th>
+              </tr></thead>
+              <tbody>
+                ${_machineOrders.map((o,i) => `
+                  <tr class="border-b border-gray-100 last:border-0 hover:bg-amber-50/30">
+                    <td class="px-3 py-2 font-mono text-gray-700 text-sm">${o.test_code||'—'}</td>
+                    <td class="px-3 py-2 text-gray-600 text-sm">${o.test_name||'—'}</td>
+                    <td class="px-3 py-2">
+                      <input type="text" id="mv_${i}" placeholder="Value" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm font-mono focus:border-amber-500 focus:outline-none bg-white">
+                    </td>
+                    <td class="px-3 py-2">
+                      <input type="text" id="mu_${i}" placeholder="Unit" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:border-amber-500 focus:outline-none bg-white">
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>`;
+      } catch(e) {
+        tbody.innerHTML = `<p class="text-red-500 text-sm text-center py-4">${e.message}</p>`;
+      }
+    }
+
+    async function submitMachineInput() {
+      const barcode = document.getElementById('machineBarcode').value.trim();
+      if (!barcode) { showToast('Enter a sample barcode', 'warning'); return; }
+      if (!_machineOrders.length) { showToast('Load tests first', 'warning'); return; }
+
+      const results = [];
+      _machineOrders.forEach((o, i) => {
+        const val = document.getElementById(`mv_${i}`)?.value?.trim();
+        if (val) {
+          results.push({
+            test_code: o.test_code,
+            result_value: val,
+            unit: document.getElementById(`mu_${i}`)?.value?.trim() || null
+          });
+        }
+      });
+      if (!results.length) { showToast('Enter at least one result value', 'warning'); return; }
+
+      const btn = document.getElementById('machineSubmitBtn');
+      const icon = document.getElementById('machineSubmitIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+
+      try {
+        const res = await API.machineInput({ sample_barcode: barcode, results });
+        const inserted = res?.inserted ?? results.length;
+        const notFound = res?.not_found ?? 0;
+        showToast(`Machine input: ${inserted} inserted${notFound ? ', ' + notFound + ' not matched' : ''}`);
+        closeBulkModal();
+        loadResults(currentFilter);
+      } catch(e) {
+        const errEl = document.getElementById('machineError');
+        errEl.textContent = e.message || 'Machine input failed';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-upload'; }
+    }
+
+    // ── Modal background close ──────────────────────────────────────────────────
     document.getElementById('enterModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeEnterModal(); });
     document.getElementById('approveModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeApproveModal(); });
+    document.getElementById('bulkModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeBulkModal(); });
 
+    // ── Barcode scanner: opens bulk modal in machine tab ────────────────────────
     document.getElementById('resultBarcodeScan')?.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && this.value.trim()) {
         const val = this.value.trim();
-        openEnterModal();
-        const sel = document.getElementById('rOrder');
-        for (let opt of sel.options) {
-          if (opt.text.includes(val) || opt.value === val) { sel.value = opt.value; break; }
-        }
         this.value = '';
+        openBulkModal().then(() => {
+          switchBulkTab('machine');
+          document.getElementById('machineBarcode').value = val;
+          loadMachineTests();
+        });
       }
     });
 
+    // ── Init ────────────────────────────────────────────────────────────────────
     loadOrdersForDropdown().then(() => {
       const params = new URLSearchParams(window.location.search);
       const sid = params.get('sample_id');
@@ -497,9 +781,8 @@
         banner.innerHTML = `<i class="fas fa-check-circle text-lg"></i><span>Visit registered! Enter results for the new orders below.</span><button onclick="this.parentElement.remove()" class="ml-2 text-green-200 hover:text-white"><i class="fas fa-times"></i></button>`;
         document.body.appendChild(banner);
         setTimeout(() => banner.remove?.(), 12000);
-        const sel = document.getElementById('rOrder');
-        const firstMatch = [...sel.options].find(opt => String(opt.dataset.sampleId) === String(sid));
-        if (firstMatch) { sel.value = firstMatch.value; openEnterModal(); }
+
+        openBulkModal(parseInt(sid)).then(() => loadSampleOrders());
       }
     });
     loadResults();

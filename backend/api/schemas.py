@@ -209,6 +209,9 @@ class OrderResponse(BaseModel):
     doctor_id: Optional[int] = None
     patient_name: Optional[str] = None
     test_name: Optional[str] = None
+    test_code: Optional[str] = None
+    test_price: Optional[float] = None
+    sample_barcode: Optional[str] = None
     doctor_name: Optional[str] = None
     priority: str
     status: str
@@ -440,3 +443,56 @@ class PatientHistoryEntry(BaseModel):
     has_critical: bool = False
     class Config:
         from_attributes = True
+
+
+# Reference range schemas
+class ReferenceRangeCreate(BaseModel):
+    gender: str = "Any"   # "M", "F", "Any"
+    min_age: int = 0
+    max_age: int = 999
+    ref_min: Optional[float] = None
+    ref_max: Optional[float] = None
+    critical_min: Optional[float] = None
+    critical_max: Optional[float] = None
+
+class ReferenceRangeResponse(BaseModel):
+    id: int
+    test_id: int
+    gender: str
+    min_age: int
+    max_age: int
+    ref_min: Optional[float]
+    ref_max: Optional[float]
+    critical_min: Optional[float]
+    critical_max: Optional[float]
+    class Config:
+        from_attributes = True
+
+
+# Bulk order schemas
+class BulkOrderCreate(BaseModel):
+    sample_id: int
+    test_ids: List[int]
+    doctor_id: Optional[int] = None
+    priority: str = "normal"
+
+
+# Bulk result schemas
+class BulkResultItem(BaseModel):
+    order_id: int
+    sample_id: int
+    test_id: int
+    result_value: str
+    unit: Optional[str] = None
+    interpretation: Optional[str] = None
+
+
+# Machine result input schemas
+class MachineResultItem(BaseModel):
+    test_code: str
+    result_value: str
+    unit: Optional[str] = None
+
+class MachineResultsInput(BaseModel):
+    sample_barcode: str
+    results: List[MachineResultItem]

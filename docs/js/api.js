@@ -87,12 +87,15 @@ const API = {
   updateTest: (id, data) => API.put(`/api/tests/${id}`, data),
 
   // Orders
-  getOrders: (status = '') => API.get(`/api/orders?limit=200${status ? '&status=' + status : ''}`),
+  getOrders: (status = '', sampleId = '') => API.get(`/api/orders?limit=200${status ? '&status=' + status : ''}${sampleId ? '&sample_id=' + sampleId : ''}`),
   createOrder: (data) => API.post('/api/orders', data),
+  createBulkOrders: (data) => API.post('/api/orders/bulk', data),
 
   // Results
   getResults: (sampleId = '') => API.get(`/api/results?limit=200${sampleId ? '&sample_id=' + sampleId : ''}`),
   createResult: (data) => API.post('/api/results', data),
+  createBulkResults: (items) => API.post('/api/results/bulk', items),
+  machineInput: (data) => API.post('/api/results/machine-input', data),
   approveResult: (id) => API.post(`/api/results/${id}/approve`, {}),
 
   // Instruments
@@ -135,4 +138,10 @@ const API = {
 
   // Sample reject
   rejectSample: (id, reason) => API.put(`/api/samples/${id}/reject`, { rejection_reason: reason }),
+
+  // Reference ranges
+  getTestRanges: (testId) => API.get(`/api/tests/${testId}/ranges`),
+  createTestRange: (testId, data) => API.post(`/api/tests/${testId}/ranges`, data),
+  updateTestRange: (testId, rangeId, data) => API.put(`/api/tests/${testId}/ranges/${rangeId}`, data),
+  deleteTestRange: (testId, rangeId) => API.delete(`/api/tests/${testId}/ranges/${rangeId}`),
 };

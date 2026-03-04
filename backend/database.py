@@ -30,6 +30,18 @@ def _migrate_schema():
     """Run safe schema migrations for columns added after initial release."""
     migrations = [
         "ALTER TABLE tests ADD COLUMN price FLOAT DEFAULT 0.0",
+        """CREATE TABLE IF NOT EXISTS test_reference_ranges (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            test_id INTEGER NOT NULL REFERENCES tests(id) ON DELETE CASCADE,
+            gender VARCHAR(10) DEFAULT 'Any',
+            min_age INTEGER DEFAULT 0,
+            max_age INTEGER DEFAULT 999,
+            ref_min FLOAT,
+            ref_max FLOAT,
+            critical_min FLOAT,
+            critical_max FLOAT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )""",
     ]
     with engine.connect() as conn:
         for sql in migrations:

@@ -83,9 +83,6 @@
         <button onclick="exportOrdersCSV()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
           <i class="fas fa-download"></i> Export CSV
         </button>
-        <button onclick="openPanelOrderModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
-          <i class="fas fa-layer-group"></i> Order Panel
-        </button>
         <button onclick="openNewOrderModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm">
           <i class="fas fa-plus"></i> New Order
         </button>
@@ -131,124 +128,97 @@
     </div>
   </main>
 
-  <!-- NEW ORDER MODAL -->
+  <!-- NEW ORDER MODAL — multi-test requisition -->
   <div id="orderModal" class="modal-overlay">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-gray-200">
-      <div class="flex items-center justify-between mb-5">
-        <h3 class="text-gray-900 font-bold text-lg">New Test Order</h3>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl border border-gray-200 flex flex-col" style="max-height:92vh;">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+        <div>
+          <h3 class="text-gray-900 font-bold text-lg">New Test Order</h3>
+          <p class="text-gray-400 text-xs mt-0.5">Select sample, choose tests, submit all at once</p>
+        </div>
         <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
       </div>
-      <form id="orderForm" class="space-y-4">
-        <!-- Barcode scan for sample -->
-        <div class="mb-3">
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
-            <i class="fas fa-barcode text-blue-500 mr-1"></i>Scan Sample Barcode <span class="text-gray-400 font-normal normal-case">(auto-fills below)</span>
-          </label>
-          <div class="flex gap-2">
-            <input id="orderBarcodeScan" type="text" placeholder="Scan sample tube barcode..."
-              class="flex-1 px-3 py-2 border border-blue-300 rounded-lg text-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono placeholder-blue-300">
-            <button type="button" onclick="matchSampleBarcode()" class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-          <p class="text-xs text-gray-400 mt-1">Scan the barcode on the sample tube to auto-select the sample</p>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Sample <span class="text-red-500">*</span></label>
-          <select id="rSample" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="">Select sample...</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Test <span class="text-red-500">*</span></label>
-          <select id="oTest" required onchange="onTestSelect(this)" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="">Select test...</option>
-          </select>
-          <div id="testPriceHint" class="hidden mt-2 flex items-center gap-2 p-2.5 bg-green-50 border border-green-200 rounded-lg text-sm">
-            <i class="fas fa-tag text-green-600 text-xs"></i>
-            <span class="text-green-700 font-medium" id="testPriceValue"></span>
-            <span class="text-green-500 text-xs">— will appear on report</span>
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Referring Doctor</label>
-          <select id="oDoctor" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="">None</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Priority</label>
-          <select id="oPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="normal">Normal</option>
-            <option value="urgent">Urgent</option>
-            <option value="stat">STAT (Immediate)</option>
-          </select>
-        </div>
-        <div id="orderError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
-        <div class="flex justify-end gap-3 pt-2">
-          <button type="button" onclick="closeModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Cancel</button>
-          <button type="submit" id="orderBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
-            <i class="fas fa-plus" id="orderBtnIcon"></i>
-            <span>Create Order</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- PANEL ORDER MODAL -->
-  <div id="panelOrderModal" class="modal-overlay">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-gray-200">
-      <div class="flex items-center justify-between mb-1">
-        <div>
-          <h3 class="text-gray-900 font-bold text-lg">Order Test Panel</h3>
-          <p class="text-gray-400 text-xs mt-0.5">Creates one order per test in the selected panel</p>
-        </div>
-        <button onclick="closePanelOrderModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
-      </div>
-      <form id="panelOrderForm" class="space-y-4 mt-4">
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Panel <span class="text-red-500">*</span></label>
-          <select id="pPanel" required onchange="onPanelSelect(this)" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-            <option value="">Select panel...</option>
-          </select>
-          <div id="panelTestChips" class="hidden mt-2 p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
-            <p class="text-xs text-indigo-500 font-semibold mb-2"><i class="fas fa-flask mr-1"></i>Tests included:</p>
-            <div id="panelChipsInner" class="flex flex-wrap gap-1.5"></div>
+      <div class="flex flex-1 overflow-hidden">
+        <!-- LEFT: Sample + Doctor + Priority -->
+        <div class="w-72 flex-shrink-0 border-r border-gray-100 p-5 overflow-y-auto space-y-4">
+          <!-- Barcode scan -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+              <i class="fas fa-barcode text-blue-500 mr-1"></i>Scan Sample Barcode
+            </label>
+            <div class="flex gap-1.5">
+              <input id="orderBarcodeScan" type="text" placeholder="Scan or type barcode..."
+                class="flex-1 px-2.5 py-2 border border-blue-300 rounded-lg text-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono placeholder-blue-300">
+              <button type="button" onclick="matchSampleBarcode()" class="px-2.5 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
           </div>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Sample <span class="text-red-500">*</span></label>
-          <select id="pSample" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-            <option value="">Select sample...</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Referring Doctor</label>
-          <select id="pDoctor" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-            <option value="">None</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">Priority</label>
-          <select id="pPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-            <option value="normal">Normal</option>
-            <option value="urgent">Urgent</option>
-            <option value="stat">STAT (Immediate)</option>
-          </select>
-        </div>
-        <div id="panelOrderProgress" class="hidden p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm flex items-center gap-2">
-          <i class="fas fa-spinner fa-spin text-blue-500"></i><span id="panelProgressText">Creating orders...</span>
-        </div>
-        <div id="panelOrderError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
-        <div class="flex justify-end gap-3 pt-2">
-          <button type="button" onclick="closePanelOrderModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Cancel</button>
-          <button type="submit" id="panelOrderBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
-            <i class="fas fa-layer-group" id="panelOrderBtnIcon"></i>
-            <span>Order All Tests</span>
+          <!-- Sample dropdown -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Sample <span class="text-red-500">*</span></label>
+            <select id="rSample" required onchange="onSampleSelect(this)"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select sample...</option>
+            </select>
+            <div id="sampleInfoBox" class="hidden mt-2 p-2.5 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700"></div>
+          </div>
+          <!-- Doctor -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Referring Doctor</label>
+            <select id="oDoctor" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">None</option>
+            </select>
+          </div>
+          <!-- Priority -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Priority</label>
+            <select id="oPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="normal">Normal</option>
+              <option value="urgent">Urgent</option>
+              <option value="stat">STAT (Immediate)</option>
+            </select>
+          </div>
+          <!-- Price total -->
+          <div class="bg-green-50 border border-green-200 rounded-xl p-3">
+            <div class="text-xs font-semibold text-green-700 uppercase tracking-wider mb-1">Total</div>
+            <div class="text-2xl font-bold text-green-700" id="oTotalPrice">PKR 0</div>
+            <div class="text-xs text-green-500 mt-0.5" id="oTestCount">0 tests selected</div>
+          </div>
+          <!-- Error -->
+          <div id="orderError" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"></div>
+          <!-- Submit -->
+          <button id="orderSubmitBtn" onclick="submitBulkOrder()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+            <i class="fas fa-clipboard-list" id="orderBtnIcon"></i>
+            <span id="orderBtnText">Place Orders</span>
           </button>
         </div>
-      </form>
+
+        <!-- RIGHT: Test selection -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <!-- Tab bar -->
+          <div class="flex gap-1 px-4 pt-4 pb-2 flex-shrink-0 border-b border-gray-100">
+            <button onclick="switchTab('tests',this)" class="tab-btn active" id="tabTests">
+              <i class="fas fa-flask mr-1.5 text-xs"></i>Individual Tests
+            </button>
+            <button onclick="switchTab('panels',this)" class="tab-btn" id="tabPanels">
+              <i class="fas fa-layer-group mr-1.5 text-xs"></i>Panels
+            </button>
+            <div class="flex-1"></div>
+            <input id="oTestSearch" type="text" placeholder="Search tests..." oninput="filterTests(this.value)"
+              class="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44" id="oTestSearchBox">
+          </div>
+
+          <!-- Individual tests list -->
+          <div id="panelTests" class="flex-1 overflow-y-auto p-3 space-y-1">
+            <div class="text-gray-400 text-sm text-center py-8"><i class="fas fa-spinner fa-spin mr-2"></i>Loading tests…</div>
+          </div>
+
+          <!-- Panels list (hidden by default) -->
+          <div id="panelPanels" class="hidden flex-1 overflow-y-auto p-3 space-y-2"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -263,7 +233,7 @@
       }
     });
 
-        Auth.setupNav();
+    Auth.setupNav();
 
     function showToast(msg, type='success') {
       const colors={success:'bg-green-600',error:'bg-red-600',warning:'bg-amber-600',info:'bg-blue-600'};
@@ -310,77 +280,11 @@
     let allOrders = [];
     let testsList = [];
     let panelsList = [];
+    let samplesList = [];
+    // Map<testId, {id, name, price}> — selected tests for current requisition
+    let _selectedTests = new Map();
 
-    function onTestSelect(sel) {
-      const tid = parseInt(sel.value);
-      const test = testsList.find(t => t.id === tid);
-      const hint = document.getElementById('testPriceHint');
-      const val = document.getElementById('testPriceValue');
-      if (test && test.price > 0) {
-        val.textContent = `PKR ${parseFloat(test.price).toLocaleString('en-PK', {minimumFractionDigits: 0})}`;
-        hint.classList.remove('hidden');
-      } else {
-        hint.classList.add('hidden');
-      }
-    }
-
-    async function loadDropdowns() {
-      try {
-        const [samplesData, testsData, doctorsData, panelsData] = await Promise.all([
-          API.getSamples().catch(()=>null),
-          API.getTests().catch(()=>null),
-          API.getDoctors().catch(()=>null),
-          API.getPanels(true).catch(()=>null)
-        ]);
-
-        const samples = Array.isArray(samplesData) ? samplesData : (samplesData?.items||[]);
-        const tests = Array.isArray(testsData) ? testsData : (testsData?.items||[]);
-        const doctors = Array.isArray(doctorsData) ? doctorsData : (doctorsData?.items||[]);
-        const panels = Array.isArray(panelsData) ? panelsData : (panelsData?.items||[]);
-        testsList = tests;
-        panelsList = panels;
-
-        const ss = document.getElementById('rSample');
-        while(ss.options.length>1) ss.remove(1);
-        samples.forEach(s => {
-          const o = document.createElement('option');
-          o.value = s.id;
-          o.textContent = `${s.sample_id||s.id} – ${s.patient_name||'Patient'}`;
-          ss.appendChild(o);
-        });
-
-        const ts = document.getElementById('oTest');
-        while(ts.options.length>1) ts.remove(1);
-        tests.forEach(t => {
-          const o = document.createElement('option');
-          o.value = t.id;
-          const price = t.price > 0 ? ` — PKR ${parseFloat(t.price).toLocaleString('en-PK',{minimumFractionDigits:0})}` : '';
-          o.textContent = `${t.test_code||t.code} – ${t.test_name||t.name}${price}`;
-          ts.appendChild(o);
-        });
-
-        const ds = document.getElementById('oDoctor');
-        while(ds.options.length>1) ds.remove(1);
-        doctors.forEach(d => {
-          const o = document.createElement('option');
-          o.value = d.id;
-          o.textContent = d.full_name || `Dr. ${d.username||d.name}`;
-          ds.appendChild(o);
-        });
-
-        // Populate panel dropdown
-        const ps = document.getElementById('pPanel');
-        while(ps.options.length>1) ps.remove(1);
-        panels.forEach(p => {
-          const o = document.createElement('option');
-          o.value = p.id;
-          const cnt = p.items ? p.items.length : (p.test_count || 0);
-          o.textContent = `${p.name} (${cnt} test${cnt!==1?'s':''})`;
-          ps.appendChild(o);
-        });
-      } catch(e) { console.warn('Dropdowns error', e); }
-    }
-
+    // ── Order list ─────────────────────────────────────────────────────────────
     async function loadOrders(filter='') {
       currentFilter = filter;
       document.getElementById('ordersBody').innerHTML = `<tr><td colspan="7" class="px-5 py-12 text-center text-gray-400 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>`;
@@ -394,7 +298,6 @@
             <tr><td colspan="7" class="px-5 py-16 text-center">
               <i class="fas fa-clipboard-list text-4xl text-gray-300 mb-3 block"></i>
               <p class="text-gray-500 font-medium">No orders found</p>
-              <p class="text-gray-400 text-sm mt-1">Create a new test order to get started</p>
               <button onclick="openNewOrderModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                 <i class="fas fa-plus mr-1"></i>New Order
               </button>
@@ -403,10 +306,10 @@
         }
         document.getElementById('ordersBody').innerHTML = orders.map(o => `
           <tr class="border-b border-gray-100 hover:bg-blue-50/30 transition-colors">
-            <td class="px-5 py-3 font-mono text-blue-600 text-xs font-semibold">${o.order_id||o.id||'—'}</td>
+            <td class="px-5 py-3 font-mono text-blue-600 text-xs font-semibold">#${o.id||'—'}</td>
             <td class="px-4 py-3">
               <div class="text-gray-900 text-sm font-medium">${o.patient_name||'—'}</div>
-              <div class="text-gray-400 text-xs font-mono">${o.sample_id||''}</div>
+              <div class="text-gray-400 text-xs font-mono">${o.sample_barcode||''}</div>
             </td>
             <td class="px-4 py-3">
               <div class="text-gray-700 text-sm">${o.test_name||'—'}</div>
@@ -429,146 +332,242 @@
       loadOrders(filter);
     }
 
+    // ── Dropdown loading ───────────────────────────────────────────────────────
+    async function loadDropdowns() {
+      try {
+        const [samplesData, testsData, doctorsData, panelsData] = await Promise.all([
+          API.getSamples().catch(()=>null),
+          API.getTests().catch(()=>null),
+          API.getDoctors().catch(()=>null),
+          API.getPanels(true).catch(()=>null)
+        ]);
+        samplesList = Array.isArray(samplesData) ? samplesData : (samplesData?.items||[]);
+        testsList   = Array.isArray(testsData)   ? testsData   : (testsData?.items||[]);
+        panelsList  = Array.isArray(panelsData)  ? panelsData  : (panelsData?.items||[]);
+        const doctors = Array.isArray(doctorsData) ? doctorsData : (doctorsData?.items||[]);
+
+        // Sample dropdown
+        const ss = document.getElementById('rSample');
+        while(ss.options.length>1) ss.remove(1);
+        samplesList.forEach(s => {
+          const o = document.createElement('option');
+          o.value = s.id;
+          o.textContent = `${s.sample_id||s.id} – ${s.patient_name||'Patient'}`;
+          o.dataset.sampleId = s.sample_id || '';
+          o.dataset.sampleType = s.sample_type || '';
+          o.dataset.patientName = s.patient_name || '';
+          ss.appendChild(o);
+        });
+
+        // Doctor dropdown
+        const ds = document.getElementById('oDoctor');
+        while(ds.options.length>1) ds.remove(1);
+        doctors.forEach(d => {
+          const o = document.createElement('option');
+          o.value = d.id;
+          o.textContent = `Dr. ${d.name||d.full_name||d.username}`;
+          ds.appendChild(o);
+        });
+
+        // Render test + panel lists
+        filterTests('');
+        renderPanelList();
+      } catch(e) { console.warn('Dropdowns error', e); }
+    }
+
+    // ── Test / panel rendering ─────────────────────────────────────────────────
+    function filterTests(search) {
+      const term = (search||'').toLowerCase().trim();
+      const list = term
+        ? testsList.filter(t => t.test_name.toLowerCase().includes(term) || (t.test_code||'').toLowerCase().includes(term))
+        : testsList;
+      const container = document.getElementById('panelTests');
+      if (!list.length) {
+        container.innerHTML = `<div class="text-gray-400 text-sm text-center py-8">No tests found</div>`;
+        return;
+      }
+      container.innerHTML = list.map(t => {
+        const sel = _selectedTests.has(t.id);
+        return `<label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${sel ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50 border border-transparent'}">
+          <input type="checkbox" ${sel?'checked':''} onchange="toggleTest(${t.id},'${escHtml(t.test_name)}',${t.price||0})"
+            class="w-4 h-4 rounded border-gray-300 text-blue-600 flex-shrink-0 accent-blue-600">
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-gray-900 truncate">${escHtml(t.test_name)}</div>
+            <div class="text-xs text-gray-400 font-mono">${escHtml(t.test_code||'')}</div>
+          </div>
+          <div class="text-xs font-semibold text-green-700 flex-shrink-0">${t.price>0 ? 'PKR '+t.price.toLocaleString() : ''}</div>
+        </label>`;
+      }).join('');
+    }
+
+    function renderPanelList() {
+      const container = document.getElementById('panelPanels');
+      if (!panelsList.length) {
+        container.innerHTML = `<div class="text-gray-400 text-sm text-center py-8">No panels defined yet</div>`;
+        return;
+      }
+      container.innerHTML = panelsList.map(p => {
+        const items = p.items || [];
+        const allSel = items.length > 0 && items.every(i => _selectedTests.has(i.test_id));
+        const someTotal = items.reduce((s, i) => {
+          const t = testsList.find(x => x.id === i.test_id);
+          return s + (t ? (t.price||0) : 0);
+        }, 0);
+        return `<div class="border ${allSel?'border-indigo-300 bg-indigo-50':'border-gray-200 bg-white'} rounded-xl p-3">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <div class="text-sm font-semibold text-gray-900">${escHtml(p.name)}</div>
+              <div class="text-xs text-gray-400">${items.length} test${items.length!==1?'s':''} · PKR ${someTotal.toLocaleString()}</div>
+            </div>
+            <button onclick="togglePanel(${p.id})"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${allSel ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-gray-100 text-gray-700 hover:bg-indigo-100 hover:text-indigo-700'}">
+              ${allSel ? 'Remove' : 'Add All'}
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            ${items.map(i => `<span class="px-2 py-0.5 rounded-full text-xs ${_selectedTests.has(i.test_id)?'bg-indigo-100 text-indigo-700':'bg-gray-100 text-gray-500'}">${escHtml(i.test_name||'Test')}</span>`).join('')}
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function toggleTest(testId, testName, testPrice) {
+      if (_selectedTests.has(testId)) { _selectedTests.delete(testId); }
+      else { _selectedTests.set(testId, {id: testId, name: testName, price: parseFloat(testPrice)||0}); }
+      filterTests(document.getElementById('oTestSearch').value||'');
+      renderPanelList();
+      updateTotal();
+    }
+
+    function togglePanel(panelId) {
+      const panel = panelsList.find(p => p.id === panelId);
+      if (!panel) return;
+      const items = panel.items || [];
+      const allSel = items.length > 0 && items.every(i => _selectedTests.has(i.test_id));
+      if (allSel) {
+        items.forEach(i => _selectedTests.delete(i.test_id));
+      } else {
+        items.forEach(i => {
+          if (!_selectedTests.has(i.test_id)) {
+            const t = testsList.find(x => x.id === i.test_id);
+            _selectedTests.set(i.test_id, {id: i.test_id, name: i.test_name, price: t ? (t.price||0) : 0});
+          }
+        });
+      }
+      filterTests(document.getElementById('oTestSearch').value||'');
+      renderPanelList();
+      updateTotal();
+    }
+
+    function updateTotal() {
+      let total = 0;
+      _selectedTests.forEach(t => { total += t.price||0; });
+      document.getElementById('oTotalPrice').textContent = 'PKR ' + total.toLocaleString();
+      const n = _selectedTests.size;
+      document.getElementById('oTestCount').textContent = `${n} test${n!==1?'s':''} selected`;
+    }
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panelTests').classList.toggle('hidden', tab !== 'tests');
+      document.getElementById('panelPanels').classList.toggle('hidden', tab !== 'panels');
+    }
+
+    function onSampleSelect(sel) {
+      const opt = sel.options[sel.selectedIndex];
+      const box = document.getElementById('sampleInfoBox');
+      if (opt && opt.value) {
+        box.textContent = `${opt.dataset.sampleType||'?'} · ${opt.dataset.patientName||''}`;
+        box.classList.remove('hidden');
+      } else { box.classList.add('hidden'); }
+    }
+
+    // ── Modal open/close ───────────────────────────────────────────────────────
     function openNewOrderModal() {
-      document.getElementById('orderForm').reset();
+      _selectedTests = new Map();
+      document.getElementById('rSample').value = '';
+      document.getElementById('oDoctor').value = '';
+      document.getElementById('oPriority').value = 'normal';
+      document.getElementById('oTestSearch').value = '';
       document.getElementById('orderError').classList.add('hidden');
+      document.getElementById('sampleInfoBox').classList.add('hidden');
+      updateTotal();
+      filterTests('');
+      renderPanelList();
       document.getElementById('orderModal').classList.add('open');
     }
     function closeModal() { document.getElementById('orderModal').classList.remove('open'); }
-
-    document.getElementById('orderForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const errEl = document.getElementById('orderError');
-      errEl.classList.add('hidden');
-
-      const payload = {
-        sample_id: parseInt(document.getElementById('rSample').value),
-        test_id:   parseInt(document.getElementById('oTest').value),
-        doctor_id: parseInt(document.getElementById('oDoctor').value),
-        priority:  document.getElementById('oPriority').value
-      };
-
-      const btn = document.getElementById('orderBtn');
-      const icon = document.getElementById('orderBtnIcon');
-      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
-
-      try {
-        await API.createOrder(payload);
-        showToast('Order created successfully');
-        closeModal(); loadOrders(currentFilter);
-      } catch(err) {
-        errEl.textContent = err.message||'Failed to create order';
-        errEl.classList.remove('hidden');
-      } finally { btn.disabled = false; icon.className = 'fas fa-plus'; }
-    });
-
     document.getElementById('orderModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
 
-    // ─── Panel Order Logic ────────────────────────────────────────────
-    function onPanelSelect(sel) {
-      const panelId = parseInt(sel.value);
-      const panel = panelsList.find(p => p.id === panelId);
-      const chipsDiv = document.getElementById('panelTestChips');
-      const inner = document.getElementById('panelChipsInner');
-      if (panel && panel.items && panel.items.length) {
-        inner.innerHTML = panel.items.map(item =>
-          `<span class="px-2.5 py-1 bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-full border border-indigo-200">${item.test_name||item.name||'Test'}</span>`
-        ).join('');
-        chipsDiv.classList.remove('hidden');
-      } else {
-        chipsDiv.classList.add('hidden');
-      }
-    }
-
-    function openPanelOrderModal() {
-      document.getElementById('panelOrderForm').reset();
-      document.getElementById('panelTestChips').classList.add('hidden');
-      document.getElementById('panelOrderError').classList.add('hidden');
-      document.getElementById('panelOrderProgress').classList.add('hidden');
-      // Mirror sample + doctor options from single-order modal
-      document.getElementById('pSample').innerHTML = document.getElementById('rSample').innerHTML;
-      document.getElementById('pDoctor').innerHTML = document.getElementById('oDoctor').innerHTML;
-      document.getElementById('panelOrderModal').classList.add('open');
-    }
-    function closePanelOrderModal() { document.getElementById('panelOrderModal').classList.remove('open'); }
-
-    document.getElementById('panelOrderForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const panelId = parseInt(document.getElementById('pPanel').value);
-      const sampleId = parseInt(document.getElementById('pSample').value);
-      const doctorIdVal = document.getElementById('pDoctor').value;
-      const doctorId = doctorIdVal ? parseInt(doctorIdVal) : null;
-      const priority = document.getElementById('pPriority').value;
-
-      const panel = panelsList.find(p => p.id === panelId);
-      const errEl = document.getElementById('panelOrderError');
-      errEl.classList.add('hidden');
-
-      if (!panel || !panel.items || !panel.items.length) {
-        errEl.textContent = 'Selected panel has no tests. Add tests to this panel first.';
-        errEl.classList.remove('hidden');
-        return;
-      }
-
-      const btn = document.getElementById('panelOrderBtn');
-      const icon = document.getElementById('panelOrderBtnIcon');
-      const prog = document.getElementById('panelOrderProgress');
-      const progText = document.getElementById('panelProgressText');
-      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
-      prog.classList.remove('hidden');
-
-      let created = 0, failed = 0;
-      const total = panel.items.length;
-
-      for (const item of panel.items) {
-        const testId = item.test_id || item.id;
-        if (!testId) { failed++; continue; }
-        progText.textContent = `Creating order ${created + failed + 1} of ${total}…`;
-        try {
-          await API.createOrder({ sample_id: sampleId, test_id: testId, doctor_id: doctorId, priority });
-          created++;
-        } catch(err) {
-          console.warn('Panel order failed for test', testId, err.message);
-          failed++;
-        }
-      }
-
-      btn.disabled = false; icon.className = 'fas fa-layer-group';
-      prog.classList.add('hidden');
-
-      if (created > 0) {
-        const msg = failed > 0
-          ? `Created ${created}/${total} orders — ${failed} already existed`
-          : `Created ${created} order${created!==1?'s':''} from "${panel.name}"`;
-        showToast(msg, failed > 0 ? 'warning' : 'success');
-        closePanelOrderModal();
-        loadOrders(currentFilter);
-      } else {
-        errEl.textContent = 'All orders failed. Tests may already be ordered for this sample.';
-        errEl.classList.remove('hidden');
-      }
-    });
-    document.getElementById('panelOrderModal').addEventListener('click', e => { if(e.target===e.currentTarget) closePanelOrderModal(); });
-
+    // ── Barcode scan ───────────────────────────────────────────────────────────
     function matchSampleBarcode() {
       const val = document.getElementById('orderBarcodeScan').value.trim();
       if (!val) return;
       const sel = document.getElementById('rSample');
       for (let opt of sel.options) {
-        if (opt.text.includes(val) || opt.value === val) { sel.value = opt.value; break; }
+        if (opt.dataset.sampleId === val || opt.text.includes(val)) {
+          sel.value = opt.value; onSampleSelect(sel); break;
+        }
       }
     }
-    document.getElementById('orderBarcodeScan')?.addEventListener('keydown', function(e) {
+    document.getElementById('orderBarcodeScan').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') { e.preventDefault(); matchSampleBarcode(); }
     });
 
+    // ── Submit ──────────────────────────────────────────────────────────────────
+    async function submitBulkOrder() {
+      const errEl = document.getElementById('orderError');
+      errEl.classList.add('hidden');
+      const sampleId = parseInt(document.getElementById('rSample').value);
+      if (!sampleId) {
+        errEl.textContent = 'Please select a sample first.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (_selectedTests.size === 0) {
+        errEl.textContent = 'Select at least one test.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      const doctorIdVal = document.getElementById('oDoctor').value;
+      const btn = document.getElementById('orderSubmitBtn');
+      const icon = document.getElementById('orderBtnIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+      document.getElementById('orderBtnText').textContent = 'Creating…';
+
+      try {
+        const payload = {
+          sample_id: sampleId,
+          test_ids: [..._selectedTests.keys()],
+          doctor_id: doctorIdVal ? parseInt(doctorIdVal) : null,
+          priority: document.getElementById('oPriority').value
+        };
+        const created = await API.createBulkOrders(payload);
+        const n = Array.isArray(created) ? created.length : _selectedTests.size;
+        showToast(`Created ${n} order${n!==1?'s':''} successfully`);
+        closeModal();
+        loadOrders(currentFilter);
+      } catch(err) {
+        errEl.textContent = err.message || 'Failed to create orders';
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        icon.className = 'fas fa-clipboard-list';
+        document.getElementById('orderBtnText').textContent = 'Place Orders';
+      }
+    }
+
+    // ── CSV Export ─────────────────────────────────────────────────────────────
     function exportOrdersCSV() {
       if (!allOrders.length) { showToast('No orders to export', 'warning'); return; }
       const headers = ['Order ID', 'Patient', 'Sample ID', 'Test', 'Test Code', 'Doctor', 'Priority', 'Status', 'Created'];
       const rows = allOrders.map(o => [
-        o.order_id || o.id || '',
+        o.id || '',
         o.patient_name || '',
-        o.sample_id || '',
+        o.sample_barcode || '',
         o.test_name || '',
         o.test_code || '',
         o.doctor_name || '',
@@ -581,26 +580,20 @@
         .join('\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
+      const a = document.createElement('a'); a.href = url;
       a.download = `orders_export_${new Date().toISOString().slice(0,10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast(`Exported ${allOrders.length} order${allOrders.length !== 1 ? 's' : ''} to CSV`);
+      showToast(`Exported ${allOrders.length} orders to CSV`);
     }
 
     loadDropdowns().then(() => {
-      // Auto-open order modal when arriving from sample registration journey
       const params = new URLSearchParams(window.location.search);
       const sid = params.get('sample_id');
       if (sid) {
         const sel = document.getElementById('rSample');
         sel.value = sid;
-        if (sel.value) {
-          openNewOrderModal();
-        }
+        if (sel.value) { onSampleSelect(sel); openNewOrderModal(); }
       }
     });
     loadOrders();

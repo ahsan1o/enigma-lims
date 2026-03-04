@@ -97,6 +97,7 @@ class Test(Base):
     instrument = relationship("Instrument", back_populates="tests")
     orders = relationship("Order", back_populates="test")
     results = relationship("Result", back_populates="test")
+    reference_ranges = relationship("TestReferenceRange", back_populates="test", cascade="all, delete-orphan")
 
 
 class Order(Base):
@@ -281,6 +282,24 @@ class InvoiceItem(Base):
 
     invoice = relationship("Invoice", back_populates="items")
     test = relationship("Test")
+
+
+class TestReferenceRange(Base):
+    """Age/gender-specific reference ranges for test definitions"""
+    __tablename__ = "test_reference_ranges"
+
+    id = Column(Integer, primary_key=True)
+    test_id = Column(Integer, ForeignKey("tests.id"), nullable=False)
+    gender = Column(String(10), default="Any")   # "M", "F", "Any"
+    min_age = Column(Integer, default=0)          # years, inclusive
+    max_age = Column(Integer, default=999)        # years, inclusive
+    ref_min = Column(Float)
+    ref_max = Column(Float)
+    critical_min = Column(Float)
+    critical_max = Column(Float)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    test = relationship("Test", back_populates="reference_ranges")
 
 
 class Reagent(Base):

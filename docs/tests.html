@@ -194,6 +194,75 @@
     </div>
   </div>
 
+  <!-- REFERENCE RANGES MODAL -->
+  <div id="rangesModal" class="modal-overlay">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-3xl border border-gray-200 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-gray-900 font-bold text-lg">Reference Ranges</h3>
+          <p class="text-gray-400 text-xs mt-0.5">Age/gender-specific ranges for <strong id="rangesTestName" class="text-blue-600">—</strong></p>
+        </div>
+        <button onclick="closeRangesModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-800 flex items-start gap-2">
+        <i class="fas fa-info-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
+        <span>Add rows for specific populations (e.g., Males 18–60, Females 18–60, Pediatric 0–17). The system picks the most specific match when flagging results. Leave Gender as "Any" for universal ranges.</span>
+      </div>
+      <input type="hidden" id="rangesTestId">
+      <!-- Existing Ranges Table -->
+      <div id="rangesTableWrap" class="mb-4 max-h-60 overflow-y-auto">
+        <p class="text-gray-400 text-sm text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</p>
+      </div>
+      <!-- Add Range Form -->
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+        <p class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Add New Range</p>
+        <div class="grid grid-cols-7 gap-2 items-end">
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Gender</label>
+            <select id="rGender" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm bg-white focus:outline-none focus:border-blue-500">
+              <option value="Any">Any</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Age Min</label>
+            <input type="number" id="rAgeMin" value="0" min="0" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Age Max</label>
+            <input type="number" id="rAgeMax" value="999" min="0" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Ref Min</label>
+            <input type="number" step="any" id="rRefMin" placeholder="—" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Ref Max</label>
+            <input type="number" step="any" id="rRefMax" placeholder="—" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Crit Min</label>
+            <input type="number" step="any" id="rCritMin" placeholder="—" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 mb-1">Crit Max</label>
+            <input type="number" step="any" id="rCritMax" placeholder="—" class="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+        <div id="rangesAddError" class="hidden mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs"></div>
+        <div class="flex justify-end mt-3">
+          <button onclick="saveRange()" id="rangesAddBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
+            <i class="fas fa-plus" id="rangesAddIcon"></i> Add Range
+          </button>
+        </div>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button onclick="closeRangesModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm">Close</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
@@ -280,7 +349,10 @@
             <td class="px-4 py-3.5 text-gray-600 text-xs font-mono">${refRange} ${t.unit||''}</td>
             <td class="px-4 py-3.5 text-sm">${price}</td>
             <td class="px-4 py-3.5">
-              ${isAdmin ? `<button onclick='openEditModal(${JSON.stringify(t)})' class="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors" title="Edit"><i class="fas fa-pencil text-xs"></i></button>` : ''}
+              ${isAdmin ? `<div class="flex items-center gap-1">
+                <button onclick='openEditModal(${JSON.stringify(t)})' class="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors" title="Edit"><i class="fas fa-pencil text-xs"></i></button>
+                <button onclick='openRangesModal(${t.id}, ${JSON.stringify(t.test_name||t.name||"")})' class="p-1.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition-colors text-xs font-medium" title="Manage reference ranges"><i class="fas fa-sliders text-xs"></i></button>
+              </div>` : ''}
             </td>
           </tr>`;
       }).join('');
@@ -359,6 +431,118 @@
     });
 
     document.getElementById('testModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+    // ── Reference Ranges ───────────────────────────────────────────────────────
+    let _rangesTestId = null;
+
+    function openRangesModal(testId, testName) {
+      _rangesTestId = testId;
+      document.getElementById('rangesTestId').value = testId;
+      document.getElementById('rangesTestName').textContent = testName;
+      document.getElementById('rangesAddError').classList.add('hidden');
+      document.getElementById('rGender').value = 'Any';
+      document.getElementById('rAgeMin').value = '0';
+      document.getElementById('rAgeMax').value = '999';
+      document.getElementById('rRefMin').value = '';
+      document.getElementById('rRefMax').value = '';
+      document.getElementById('rCritMin').value = '';
+      document.getElementById('rCritMax').value = '';
+      loadRanges(testId);
+      document.getElementById('rangesModal').classList.add('open');
+    }
+
+    function closeRangesModal() { document.getElementById('rangesModal').classList.remove('open'); }
+
+    async function loadRanges(testId) {
+      const wrap = document.getElementById('rangesTableWrap');
+      wrap.innerHTML = '<p class="text-gray-400 text-sm text-center py-4"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</p>';
+      try {
+        const ranges = await API.getTestRanges(testId);
+        renderRanges(Array.isArray(ranges) ? ranges : []);
+      } catch(e) {
+        wrap.innerHTML = `<p class="text-red-500 text-sm text-center py-4">${e.message}</p>`;
+      }
+    }
+
+    function renderRanges(ranges) {
+      const wrap = document.getElementById('rangesTableWrap');
+      if (!ranges.length) {
+        wrap.innerHTML = '<p class="text-gray-400 text-sm text-center py-4 bg-gray-50 rounded-xl border border-gray-200">No ranges defined. The system will use the flat reference values from the test.</p>';
+        return;
+      }
+      const gLabel = g => g === 'M' ? 'Male' : g === 'F' ? 'Female' : 'Any';
+      wrap.innerHTML = `
+        <table class="w-full text-sm border border-gray-200 rounded-xl overflow-hidden">
+          <thead><tr class="bg-gray-50 border-b border-gray-200">
+            <th class="px-3 py-2 text-left text-xs text-gray-500 uppercase font-semibold">Gender</th>
+            <th class="px-3 py-2 text-left text-xs text-gray-500 uppercase font-semibold">Age</th>
+            <th class="px-3 py-2 text-left text-xs text-gray-500 uppercase font-semibold">Ref Min</th>
+            <th class="px-3 py-2 text-left text-xs text-gray-500 uppercase font-semibold">Ref Max</th>
+            <th class="px-3 py-2 text-left text-xs text-gray-500 uppercase font-semibold">Crit Min</th>
+            <th class="px-3 py-2 text-left text-xs text-gray-500 uppercase font-semibold">Crit Max</th>
+            <th class="px-3 py-2"></th>
+          </tr></thead>
+          <tbody>
+            ${ranges.map(r => `
+              <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                <td class="px-3 py-2 text-gray-800 text-sm">${gLabel(r.gender)}</td>
+                <td class="px-3 py-2 text-gray-600 text-sm font-mono">${r.min_age}–${r.max_age >= 999 ? '∞' : r.max_age} yrs</td>
+                <td class="px-3 py-2 text-gray-600 text-sm font-mono">${r.ref_min ?? '—'}</td>
+                <td class="px-3 py-2 text-gray-600 text-sm font-mono">${r.ref_max ?? '—'}</td>
+                <td class="px-3 py-2 text-red-600 text-sm font-mono">${r.critical_min ?? '—'}</td>
+                <td class="px-3 py-2 text-red-600 text-sm font-mono">${r.critical_max ?? '—'}</td>
+                <td class="px-3 py-2">
+                  <button onclick="deleteRange(${r.id})" class="p-1 rounded bg-red-50 text-red-500 hover:bg-red-100 transition-colors" title="Delete">
+                    <i class="fas fa-trash text-xs"></i>
+                  </button>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    async function saveRange() {
+      const testId = _rangesTestId;
+      if (!testId) return;
+      const errEl = document.getElementById('rangesAddError');
+      errEl.classList.add('hidden');
+      const payload = {
+        gender:       document.getElementById('rGender').value,
+        min_age:      parseInt(document.getElementById('rAgeMin').value) || 0,
+        max_age:      parseInt(document.getElementById('rAgeMax').value) || 999,
+        ref_min:      document.getElementById('rRefMin').value  ? parseFloat(document.getElementById('rRefMin').value)  : null,
+        ref_max:      document.getElementById('rRefMax').value  ? parseFloat(document.getElementById('rRefMax').value)  : null,
+        critical_min: document.getElementById('rCritMin').value ? parseFloat(document.getElementById('rCritMin').value) : null,
+        critical_max: document.getElementById('rCritMax').value ? parseFloat(document.getElementById('rCritMax').value) : null,
+      };
+      const btn = document.getElementById('rangesAddBtn');
+      const icon = document.getElementById('rangesAddIcon');
+      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
+      try {
+        await API.createTestRange(testId, payload);
+        document.getElementById('rRefMin').value = '';
+        document.getElementById('rRefMax').value = '';
+        document.getElementById('rCritMin').value = '';
+        document.getElementById('rCritMax').value = '';
+        showToast('Range added');
+        loadRanges(testId);
+      } catch(e) {
+        errEl.textContent = e.message || 'Failed to add range';
+        errEl.classList.remove('hidden');
+      } finally { btn.disabled = false; icon.className = 'fas fa-plus'; }
+    }
+
+    async function deleteRange(rangeId) {
+      if (!confirm('Delete this reference range?')) return;
+      try {
+        await API.deleteTestRange(_rangesTestId, rangeId);
+        showToast('Range deleted', 'warning');
+        loadRanges(_rangesTestId);
+      } catch(e) { showToast(e.message || 'Delete failed', 'error'); }
+    }
+
+    document.getElementById('rangesModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeRangesModal(); });
+
     loadInstruments(); loadTests();
     Help.init('tests');
   </script>
