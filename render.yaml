@@ -10,7 +10,3 @@ services:
         value: 3.11.0
       - key: SECRET_KEY
         generateValue: true
-    disk:
-      name: lims-data
-      mountPath: /opt/render/project/src/data
-      sizeGB: 1

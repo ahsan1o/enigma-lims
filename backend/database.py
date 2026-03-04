@@ -9,7 +9,7 @@ from sqlalchemy.pool import StaticPool
 from models import Base
 
 # Database configuration
-DB_PATH = os.path.join(os.path.dirname(__file__), "..", "data")
+DB_PATH = os.path.join(os.path.dirname(__file__), "data")
 os.makedirs(DB_PATH, exist_ok=True)
 
 DB_URL = f"sqlite:///{os.path.join(DB_PATH, 'kotli_lims.db')}"
