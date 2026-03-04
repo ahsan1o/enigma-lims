@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 import logging
 
-from database import init_db, get_db, create_default_admin
+from database import init_db, get_db, create_default_admin, create_default_technician
 from models import User
 from utils.auth import verify_token
 
@@ -84,6 +84,7 @@ def startup_event():
     logger.info("Kotli LIMS Starting...")
     init_db()
     create_default_admin()
+    create_default_technician()
     logger.info("Initialization complete")
 
 

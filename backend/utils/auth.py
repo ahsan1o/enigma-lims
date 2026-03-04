@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
 from bcrypt import hashpw, checkpw, gensalt
-from functools import lru_cache
+from fastapi import Header, HTTPException, Depends
 
 import os
 
@@ -46,3 +46,21 @@ def verify_token(token: str) -> Optional[dict]:
         return payload
     except JWTError:
         return None
+
+
+def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
+    """Extract and validate JWT from Authorization header"""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token = authorization.split(" ", 1)[1]
+    payload = verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return payload
+
+
+def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
+    """Require admin role"""
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return current_user

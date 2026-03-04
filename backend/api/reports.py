@@ -9,14 +9,29 @@ router = APIRouter(prefix="/api/reports", tags=["reports"])
 
 @router.get("/{sample_id}")
 def generate_report(sample_id: int, db: Session = Depends(get_db)):
-    """Generate a simple text-based report for a sample"""
+    """Generate a report for a sample including test prices"""
     sample = db.query(Sample).filter(Sample.id == sample_id).first()
     if not sample:
         raise HTTPException(status_code=404, detail="Sample not found")
 
     results = db.query(Result).filter(Result.sample_id == sample_id).all()
 
-    # Build report as JSON (PDF generation requires reportlab which may fail on deploy)
+    result_items = []
+    total_amount = 0.0
+    for r in results:
+        price = (r.test.price or 0.0) if r.test else 0.0
+        total_amount += price
+        result_items.append({
+            "test_name": r.test.test_name if r.test else "Unknown",
+            "test_code": r.test.test_code if r.test else "",
+            "result_value": r.result_value,
+            "unit": r.unit,
+            "reference_range": f"{r.test.reference_min} - {r.test.reference_max}" if r.test and r.test.reference_min is not None else "N/A",
+            "status": r.status,
+            "interpretation": r.interpretation,
+            "price": price
+        })
+
     report_data = {
         "report_type": "Lab Report",
         "lab_name": "Enigma LIMS",
@@ -24,24 +39,20 @@ def generate_report(sample_id: int, db: Session = Depends(get_db)):
             "id": sample.sample_id,
             "type": sample.sample_type,
             "collection_date": sample.collection_date.isoformat(),
-            "status": sample.status
+            "status": sample.status,
+            "priority": sample.priority or "routine"
         },
         "patient": {
             "name": sample.patient.name if sample.patient else "Unknown",
             "age": sample.patient.age if sample.patient else None,
-            "gender": sample.patient.gender if sample.patient else None
+            "gender": sample.patient.gender if sample.patient else None,
+            "phone": sample.patient.phone if sample.patient else None
         },
-        "results": [
-            {
-                "test_name": r.test.test_name if r.test else "Unknown",
-                "result_value": r.result_value,
-                "unit": r.unit,
-                "reference_range": f"{r.test.reference_min}-{r.test.reference_max}" if r.test and r.test.reference_min else "N/A",
-                "status": r.status,
-                "interpretation": r.interpretation
-            }
-            for r in results
-        ],
+        "results": result_items,
+        "billing": {
+            "total_amount": round(total_amount, 2),
+            "currency": "PKR"
+        },
         "generated_at": __import__("datetime").datetime.utcnow().isoformat()
     }
     return report_data
@@ -65,3 +76,4 @@ def list_reports(db: Session = Depends(get_db)):
         }
         for s in samples
     ]
+

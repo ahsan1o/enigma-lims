@@ -141,6 +141,7 @@ class TestCreate(BaseModel):
     reference_max: Optional[float] = None
     critical_min: Optional[float] = None
     critical_max: Optional[float] = None
+    price: Optional[float] = 0.0
     method: Optional[str] = None
     machine_id: Optional[int] = None
 
@@ -152,6 +153,7 @@ class TestUpdate(BaseModel):
     reference_max: Optional[float] = None
     critical_min: Optional[float] = None
     critical_max: Optional[float] = None
+    price: Optional[float] = None
     method: Optional[str] = None
 
 class TestResponse(BaseModel):
@@ -164,6 +166,7 @@ class TestResponse(BaseModel):
     reference_max: Optional[float]
     critical_min: Optional[float]
     critical_max: Optional[float]
+    price: Optional[float] = 0.0
     method: Optional[str]
     machine_id: Optional[int]
     created_at: datetime

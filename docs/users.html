@@ -36,20 +36,21 @@
         </div>
       </div>
     </div>
-    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
       <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
       <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
       <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="panels.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-layer-group w-5 text-center"></i><span>Test Panels</span></a>
       <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
       <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
       <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="billing.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-receipt w-5 text-center"></i><span>Billing</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="reagents.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-flask-vial w-5 text-center"></i><span>Reagents</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
-      <a href="audit.html" id="auditNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-history w-5 text-center"></i><span>Audit Log</span></a>
+      <div data-admin-only="true" class="my-2 px-3"><div class="border-t border-gray-200 pt-2"><span class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Admin</span></div></div>
+      <a href="tests.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests &amp; Prices</span></a>
+      <a href="panels.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-layer-group w-5 text-center"></i><span>Test Panels</span></a>
+      <a href="billing.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-receipt w-5 text-center"></i><span>Billing</span></a>
+      <a href="instruments.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="reagents.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-flask-vial w-5 text-center"></i><span>Reagents</span></a>
+      <a href="users.html" id="usersNav" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="audit.html" id="auditNav" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-history w-5 text-center"></i><span>Audit Log</span></a>
     </nav>
     <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
@@ -176,25 +177,16 @@
   <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
-    if (!Auth.requireAuth()) throw new Error('not logged in');
+    if (!Auth.requireAdmin()) throw new Error('not authorized');
 
-    // Admin-only guard
+    Auth.setupNav();
     const currentUser = Auth.getUser();
-    if (currentUser && currentUser.role !== 'admin') {
-      window.location.href = 'dashboard.html';
-    }
 
     document.querySelectorAll('.nav-item').forEach(link => {
       if (link.getAttribute('href') === 'users.html') {
         link.classList.add('bg-blue-600', 'text-white'); link.classList.remove('text-gray-600');
       }
     });
-
-    if (currentUser) {
-      document.getElementById('userName').textContent = currentUser.full_name || currentUser.username;
-      document.getElementById('userRole').textContent = (currentUser.role||'').charAt(0).toUpperCase()+(currentUser.role||'').slice(1);
-      document.getElementById('userAvatar').textContent = (currentUser.full_name||currentUser.username||'A').charAt(0).toUpperCase();
-    }
 
     function showToast(msg, type='success') {
       const colors={success:'bg-green-600',error:'bg-red-600',warning:'bg-amber-600',info:'bg-blue-600'};

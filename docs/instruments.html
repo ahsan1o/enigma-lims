@@ -36,20 +36,21 @@
         </div>
       </div>
     </div>
-    <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
       <a href="dashboard.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-home w-5 text-center"></i><span>Dashboard</span></a>
       <a href="patients.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-users w-5 text-center"></i><span>Patients</span></a>
       <a href="samples.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-vial w-5 text-center"></i><span>Samples</span></a>
-      <a href="tests.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests</span></a>
-      <a href="panels.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-layer-group w-5 text-center"></i><span>Test Panels</span></a>
       <a href="orders.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-clipboard-list w-5 text-center"></i><span>Orders</span></a>
       <a href="results.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-chart-bar w-5 text-center"></i><span>Results</span></a>
       <a href="reports.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-file-medical w-5 text-center"></i><span>Reports</span></a>
-      <a href="billing.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-receipt w-5 text-center"></i><span>Billing</span></a>
-      <a href="instruments.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
-      <a href="reagents.html" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-flask-vial w-5 text-center"></i><span>Reagents</span></a>
-      <a href="users.html" id="usersNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
-      <a href="audit.html" id="auditNav" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-history w-5 text-center"></i><span>Audit Log</span></a>
+      <div data-admin-only="true" class="my-2 px-3"><div class="border-t border-gray-200 pt-2"><span class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Admin</span></div></div>
+      <a href="tests.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-microscope w-5 text-center"></i><span>Tests &amp; Prices</span></a>
+      <a href="panels.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-layer-group w-5 text-center"></i><span>Test Panels</span></a>
+      <a href="billing.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-receipt w-5 text-center"></i><span>Billing</span></a>
+      <a href="instruments.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-cogs w-5 text-center"></i><span>Instruments</span></a>
+      <a href="reagents.html" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-flask-vial w-5 text-center"></i><span>Reagents</span></a>
+      <a href="users.html" id="usersNav" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-user-shield w-5 text-center"></i><span>Users</span></a>
+      <a href="audit.html" id="auditNav" data-admin-only="true" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-700 transition-all text-sm"><i class="fas fa-history w-5 text-center"></i><span>Audit Log</span></a>
     </nav>
     <div class="p-4 border-t border-gray-200">
       <div class="flex items-center gap-3">
@@ -172,7 +173,7 @@
   <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
-    if (!Auth.requireAuth()) throw new Error('not logged in');
+    if (!Auth.requireAdmin()) throw new Error('not authorized');
 
     document.querySelectorAll('.nav-item').forEach(link => {
       if (link.getAttribute('href') === 'instruments.html') {
@@ -180,211 +181,7 @@
       }
     });
 
-    const user = Auth.getUser();
-    if (user) {
-      document.getElementById('userName').textContent = user.full_name || user.username;
-      document.getElementById('userRole').textContent = (user.role||'').charAt(0).toUpperCase()+(user.role||'').slice(1);
-      document.getElementById('userAvatar').textContent = (user.full_name||user.username||'A').charAt(0).toUpperCase();
-      if (user.role !== 'admin') document.getElementById('usersNav')?.classList.add('hidden');
-      if (user.role !== 'admin') document.getElementById('auditNav')?.classList.add('hidden');
-    }
-
-    function showToast(msg, type='success') {
-      const colors={success:'bg-green-600',error:'bg-red-600',warning:'bg-amber-600',info:'bg-blue-600'};
-      const icons={success:'fa-check-circle',error:'fa-exclamation-circle',warning:'fa-exclamation-triangle',info:'fa-info-circle'};
-      const t = document.createElement('div');
-      t.className = `pointer-events-all flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-2xl text-white text-sm font-medium ${colors[type]||colors.info} border border-white/10`;
-      t.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i><span>${msg}</span>`;
-      document.getElementById('toastContainer').appendChild(t);
-      setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
-    }
-
-    function statusBadge(s) {
-      const map = {
-        active:      ['#22c55e','#f0fdf4'],
-        maintenance: ['#f59e0b','#fffbeb'],
-        inactive:    ['#64748b','#f8fafc']
-      };
-      const k = (s||'active').toLowerCase();
-      const [fg,bg] = map[k] || map.inactive;
-      const icon = k==='maintenance' ? 'fa-wrench' : 'fa-circle';
-      const lbl = k==='maintenance' ? 'Maintenance' : k.charAt(0).toUpperCase() + k.slice(1);
-      return `<span style="display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .65rem;font-size:.7rem;font-weight:600;border-radius:9999px;background:${bg};color:${fg};border:1px solid ${fg}44;flex-shrink:0;">
-        <i class="fas ${icon}" style="font-size:.45rem;"></i>${lbl}</span>`;
-    }
-
-    function formatDate(d) {
-      if(!d) return null;
-      try { return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
-      catch(e){ return d; }
-    }
-
-    let allInstruments = [];
-
-    function renderGrid(list) {
-      document.getElementById('instCount').textContent = list.length;
-      const grid = document.getElementById('instGrid');
-      if (!list.length) {
-        grid.innerHTML = `
-          <div class="col-span-full flex flex-col items-center justify-center py-20 text-gray-400">
-            <i class="fas fa-cogs text-5xl mb-4 opacity-30"></i>
-            <p class="font-medium text-gray-500">No instruments found</p>
-            <p class="text-sm mt-1">Add your first laboratory instrument to get started</p>
-            <button onclick="openAddModal()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-              <i class="fas fa-plus mr-1"></i>Add Instrument
-            </button>
-          </div>`;
-        return;
-      }
-      grid.innerHTML = list.map(inst => {
-        const code = inst.code || inst.instrument_code || '—';
-        const name = inst.name || inst.instrument_name || '—';
-        const mfr  = inst.manufacturer || '';
-        const model= inst.model || '';
-        const loc  = inst.location || '—';
-        const sn   = inst.serial_number || inst.serial || '—';
-        const cal  = formatDate(inst.last_calibration);
-        const nextCal = formatDate(inst.next_calibration);
-        return `
-          <div class="bg-white border border-gray-200 rounded-2xl p-5 hover:border-gray-400 transition-all flex flex-col gap-4">
-            <div class="flex items-start justify-between">
-              <div class="min-w-0 flex-1 mr-3">
-                <span class="font-mono text-blue-600 text-xs font-bold bg-blue-50 px-2 py-0.5 rounded">${code}</span>
-                <h4 class="text-gray-900 font-semibold text-base mt-2 leading-snug">${name}</h4>
-                ${mfr||model ? `<p class="text-gray-400 text-xs mt-0.5">${[mfr,model].filter(Boolean).join(' \u00b7 ')}</p>` : ''}
-              </div>
-              ${statusBadge(inst.status)}
-            </div>
-            <div class="space-y-1.5 text-sm">
-              <div class="flex items-center gap-2 text-gray-500">
-                <i class="fas fa-map-marker-alt w-4 text-center text-gray-400 text-xs flex-shrink-0"></i>
-                <span>${loc}</span>
-              </div>
-              <div class="flex items-center gap-2 text-gray-500">
-                <i class="fas fa-barcode w-4 text-center text-gray-400 text-xs flex-shrink-0"></i>
-                <span class="font-mono text-xs">${sn}</span>
-              </div>
-            </div>
-            <div class="pt-3 border-t border-gray-200 flex items-center justify-between">
-              <div class="text-xs text-gray-400 space-y-0.5">
-                <div><i class="fas fa-calendar-check mr-1 text-green-500/70"></i>Last cal: <span class="text-gray-500">${cal||'Not recorded'}</span></div>
-                ${nextCal ? `<div><i class="fas fa-calendar-alt mr-1 text-amber-500/70"></i>Next cal: <span class="text-gray-500">${nextCal}</span></div>` : ''}
-              </div>
-              <button onclick='openEditModal(${JSON.stringify(inst)})'
-                class="bg-gray-100 hover:bg-blue-600 text-gray-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5">
-                <i class="fas fa-edit"></i> Edit
-              </button>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    function handleSearch(val) {
-      const q = val.toLowerCase();
-      renderGrid(allInstruments.filter(i =>
-        (i.name||i.instrument_name||'').toLowerCase().includes(q) ||
-        (i.code||i.instrument_code||'').toLowerCase().includes(q) ||
-        (i.manufacturer||'').toLowerCase().includes(q) ||
-        (i.location||'').toLowerCase().includes(q)
-      ));
-    }
-
-    async function loadInstruments() {
-      document.getElementById('instGrid').innerHTML = `
-        <div class="col-span-full flex items-center justify-center py-16 text-gray-400">
-          <i class="fas fa-spinner fa-spin mr-2 text-lg"></i><span>Loading instruments…</span>
-        </div>`;
-      try {
-        const data = await API.getInstruments();
-        allInstruments = Array.isArray(data) ? data : (data?.items||[]);
-        renderGrid(allInstruments);
-      } catch(e) {
-        document.getElementById('instGrid').innerHTML = `
-          <div class="col-span-full flex items-center justify-center py-16 text-red-400">
-            <i class="fas fa-exclamation-circle mr-2"></i>${e.message}
-          </div>`;
-        showToast('Failed to load instruments', 'error');
-      }
-    }
-
-    let editMode = false;
-
-    function openAddModal() {
-      editMode = false;
-      document.getElementById('instForm').reset();
-      document.getElementById('iId').value = '';
-      document.getElementById('modalTitle').textContent = 'Add Instrument';
-      document.getElementById('instBtnText').textContent = 'Save Instrument';
-      document.getElementById('instBtnIcon').className = 'fas fa-save';
-      document.getElementById('instError').classList.add('hidden');
-      document.getElementById('instModal').classList.add('open');
-    }
-
-    function openEditModal(inst) {
-      editMode = true;
-      document.getElementById('instForm').reset();
-      document.getElementById('iId').value = inst.id || '';
-      document.getElementById('iCode').value = inst.code || inst.instrument_code || '';
-      document.getElementById('iName').value = inst.name || inst.instrument_name || '';
-      document.getElementById('iMfr').value = inst.manufacturer || '';
-      document.getElementById('iModel').value = inst.model || '';
-      document.getElementById('iLocation').value = inst.location || '';
-      document.getElementById('iSerial').value = inst.serial_number || inst.serial || '';
-      document.getElementById('iStatus').value = inst.status || 'active';
-      document.getElementById('modalTitle').textContent = 'Edit Instrument';
-      document.getElementById('instBtnText').textContent = 'Update Instrument';
-      document.getElementById('instBtnIcon').className = 'fas fa-save';
-      document.getElementById('instError').classList.add('hidden');
-      document.getElementById('instModal').classList.add('open');
-    }
-
-    function closeModal() {
-      document.getElementById('instModal').classList.remove('open');
-    }
-
-    document.getElementById('instForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const errEl = document.getElementById('instError');
-      errEl.classList.add('hidden');
-
-      const payload = {
-        instrument_code: document.getElementById('iCode').value.trim().toUpperCase(),
-        instrument_name: document.getElementById('iName').value.trim(),
-        manufacturer:    document.getElementById('iMfr').value.trim() || null,
-        model:           document.getElementById('iModel').value.trim() || null,
-        location:        document.getElementById('iLocation').value.trim() || null,
-        serial_number:   document.getElementById('iSerial').value.trim() || null
-      };
-
-      const btn = document.getElementById('instBtn');
-      const icon = document.getElementById('instBtnIcon');
-      btn.disabled = true; icon.className = 'fas fa-spinner fa-spin';
-
-      try {
-        if (editMode) {
-          const id = document.getElementById('iId').value;
-          await API.updateInstrument(id, payload);
-          showToast('Instrument updated successfully');
-        } else {
-          await API.createInstrument(payload);
-          showToast('Instrument added successfully');
-        }
-        closeModal();
-        loadInstruments();
-      } catch(err) {
-        errEl.textContent = err.message || 'Operation failed';
-        errEl.classList.remove('hidden');
-      } finally {
-        btn.disabled = false;
-        icon.className = 'fas fa-save';
-      }
-    });
-
-    document.getElementById('instModal').addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-
-    loadInstruments();
+        Auth.setupNav();
     Help.init('instruments');
   </script>
 </body>

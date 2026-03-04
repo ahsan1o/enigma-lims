@@ -87,6 +87,7 @@ class Test(Base):
     reference_max = Column(Float)
     critical_min = Column(Float)
     critical_max = Column(Float)
+    price = Column(Float, default=0.0)
     method = Column(String(255))
     machine_id = Column(Integer, ForeignKey("instruments.id"))
     created_at = Column(DateTime, default=datetime.utcnow)

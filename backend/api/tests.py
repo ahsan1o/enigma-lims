@@ -4,6 +4,7 @@ from typing import List, Optional
 from database import get_db
 from models import Test
 from api.schemas import TestCreate, TestUpdate, TestResponse
+from utils.auth import require_admin
 
 router = APIRouter(prefix="/api/tests", tags=["tests"])
 
@@ -20,7 +21,7 @@ def list_tests(
     return query.offset(skip).limit(limit).all()
 
 @router.post("", response_model=TestResponse, status_code=201)
-def create_test(data: TestCreate, db: Session = Depends(get_db)):
+def create_test(data: TestCreate, db: Session = Depends(get_db), _admin=Depends(require_admin)):
     existing = db.query(Test).filter(Test.test_code == data.test_code).first()
     if existing:
         raise HTTPException(status_code=400, detail="Test code already exists")
@@ -38,7 +39,7 @@ def get_test(test_id: int, db: Session = Depends(get_db)):
     return test
 
 @router.put("/{test_id}", response_model=TestResponse)
-def update_test(test_id: int, data: TestUpdate, db: Session = Depends(get_db)):
+def update_test(test_id: int, data: TestUpdate, db: Session = Depends(get_db), _admin=Depends(require_admin)):
     test = db.query(Test).filter(Test.id == test_id).first()
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
@@ -49,7 +50,7 @@ def update_test(test_id: int, data: TestUpdate, db: Session = Depends(get_db)):
     return test
 
 @router.delete("/{test_id}")
-def delete_test(test_id: int, db: Session = Depends(get_db)):
+def delete_test(test_id: int, db: Session = Depends(get_db), _admin=Depends(require_admin)):
     test = db.query(Test).filter(Test.id == test_id).first()
     if not test:
         raise HTTPException(status_code=404, detail="Test not found")
